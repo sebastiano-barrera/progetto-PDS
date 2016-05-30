@@ -1,0 +1,617 @@
+---
+- proto: KeyBackspace
+  win_vk: VK_BACK
+  qt:
+    key: Qt::Key_Backspace
+    mods: []
+- proto: KeyTab
+  win_vk: VK_TAB
+  qt:
+    key: Qt::Key_Tab
+    mods: []
+- proto: KeyReturn
+  win_vk: VK_RETURN
+  qt:
+    key: Qt::Key_Return
+    mods: []
+- proto: KeyLShift
+  win_vk: VK_SHIFT
+  qt:
+    key: Qt::Key_Shift
+    mods: []
+- proto: KeyControl
+  win_vk: VK_CONTROL
+  qt:
+    key: Qt::Key_Control
+    mods: []
+- proto: KeyAlt
+  win_vk: VK_MENU
+  qt:
+    key: Qt::Key_Alt
+    mods: []
+- proto: KeyMeta
+  win_vk: VK_LWIN
+  qt:
+    key: Qt::Key_Meta
+    mods: []
+- proto: KeyA
+  win_vk: '0x41'
+  qt:
+    key: Qt::Key_A
+    mods: []
+- proto: KeyB
+  win_vk: '0x42'
+  qt:
+    key: Qt::Key_B
+    mods: []
+- proto: KeyC
+  win_vk: '0x43'
+  qt:
+    key: Qt::Key_C
+    mods: []
+- proto: KeyD
+  win_vk: '0x44'
+  qt:
+    key: Qt::Key_D
+    mods: []
+- proto: KeyE
+  win_vk: '0x45'
+  qt:
+    key: Qt::Key_E
+    mods: []
+- proto: KeyF
+  win_vk: '0x46'
+  qt:
+    key: Qt::Key_F
+    mods: []
+- proto: KeyG
+  win_vk: '0x47'
+  qt:
+    key: Qt::Key_G
+    mods: []
+- proto: KeyH
+  win_vk: '0x48'
+  qt:
+    key: Qt::Key_H
+    mods: []
+- proto: KeyI
+  win_vk: '0x49'
+  qt:
+    key: Qt::Key_I
+    mods: []
+- proto: KeyJ
+  win_vk: '0x4a'
+  qt:
+    key: Qt::Key_J
+    mods: []
+- proto: KeyK
+  win_vk: '0x4b'
+  qt:
+    key: Qt::Key_K
+    mods: []
+- proto: KeyL
+  win_vk: '0x4c'
+  qt:
+    key: Qt::Key_L
+    mods: []
+- proto: KeyM
+  win_vk: '0x4d'
+  qt:
+    key: Qt::Key_M
+    mods: []
+- proto: KeyN
+  win_vk: '0x4e'
+  qt:
+    key: Qt::Key_N
+    mods: []
+- proto: KeyO
+  win_vk: '0x4f'
+  qt:
+    key: Qt::Key_O
+    mods: []
+- proto: KeyP
+  win_vk: '0x50'
+  qt:
+    key: Qt::Key_P
+    mods: []
+- proto: KeyQ
+  win_vk: '0x51'
+  qt:
+    key: Qt::Key_Q
+    mods: []
+- proto: KeyR
+  win_vk: '0x52'
+  qt:
+    key: Qt::Key_R
+    mods: []
+- proto: KeyS
+  win_vk: '0x53'
+  qt:
+    key: Qt::Key_S
+    mods: []
+- proto: KeyT
+  win_vk: '0x54'
+  qt:
+    key: Qt::Key_T
+    mods: []
+- proto: KeyU
+  win_vk: '0x55'
+  qt:
+    key: Qt::Key_U
+    mods: []
+- proto: KeyV
+  win_vk: '0x56'
+  qt:
+    key: Qt::Key_V
+    mods: []
+- proto: KeyW
+  win_vk: '0x57'
+  qt:
+    key: Qt::Key_W
+    mods: []
+- proto: KeyX
+  win_vk: '0x58'
+  qt:
+    key: Qt::Key_X
+    mods: []
+- proto: KeyY
+  win_vk: '0x59'
+  qt:
+    key: Qt::Key_Y
+    mods: []
+- proto: KeyZ
+  win_vk: '0x5a'
+  qt:
+    key: Qt::Key_Z
+    mods: []
+- proto: Key0
+  win_vk: '0x30'
+  qt:
+    key: Qt::Key_0
+    mods: []
+- proto: Key1
+  win_vk: '0x31'
+  qt:
+    key: Qt::Key_1
+    mods: []
+- proto: Key2
+  win_vk: '0x32'
+  qt:
+    key: Qt::Key_2
+    mods: []
+- proto: Key3
+  win_vk: '0x33'
+  qt:
+    key: Qt::Key_3
+    mods: []
+- proto: Key4
+  win_vk: '0x34'
+  qt:
+    key: Qt::Key_4
+    mods: []
+- proto: Key5
+  win_vk: '0x35'
+  qt:
+    key: Qt::Key_5
+    mods: []
+- proto: Key6
+  win_vk: '0x36'
+  qt:
+    key: Qt::Key_6
+    mods: []
+- proto: Key7
+  win_vk: '0x37'
+  qt:
+    key: Qt::Key_7
+    mods: []
+- proto: Key8
+  win_vk: '0x38'
+  qt:
+    key: Qt::Key_8
+    mods: []
+- proto: Key9
+  win_vk: '0x39'
+  qt:
+    key: Qt::Key_9
+    mods: []
+- proto: KeyPause
+  win_vk: VK_PAUSE
+  qt:
+    key: Qt::Key_Pause
+    mods: []
+- proto: KeyCapsLock
+  win_vk: VK_CAPITAL
+  qt:
+    key: Qt::Key_CapsLock
+    mods: []
+- proto: KeyEscape
+  win_vk: VK_ESCAPE
+  qt:
+    key: Qt::Key_Escape
+    mods: []
+- proto: KeySpace
+  win_vk: VK_SPACE
+  qt:
+    key: Qt::Key_Space
+    mods: []
+- proto: KeyPageUp
+  win_vk: VK_PRIOR
+  qt:
+    key: Qt::Key_PageUp
+    mods: []
+- proto: KeyPageDown
+  win_vk: VK_NEXT
+  qt:
+    key: Qt::Key_PageDown
+    mods: []
+- proto: KeyEnd
+  win_vk: VK_END
+  qt:
+    key: Qt::Key_End
+    mods: []
+- proto: KeyHome
+  win_vk: VK_HOME
+  qt:
+    key: Qt::Key_Home
+    mods: []
+- proto: KeyLeft
+  win_vk: VK_LEFT
+  qt:
+    key: Qt::Key_Left
+    mods: []
+- proto: KeyUp
+  win_vk: VK_UP
+  qt:
+    key: Qt::Key_Up
+    mods: []
+- proto: KeyRight
+  win_vk: VK_RIGHT
+  qt:
+    key: Qt::Key_Right
+    mods: []
+- proto: KeyDown
+  win_vk: VK_DOWN
+  qt:
+    key: Qt::Key_Down
+    mods: []
+- proto: KeySelect
+  win_vk: VK_SELECT
+  qt:
+    key: Qt::Key_Select
+    mods: []
+- proto: KeyPrint
+  win_vk: VK_PRINT
+  qt:
+    key: Qt::Key_Print
+    mods: []
+- proto: KeyExecute
+  win_vk: VK_EXECUTE
+  qt:
+    key: Qt::Key_Execute
+    mods: []
+- proto: KeyInsert
+  win_vk: VK_INSERT
+  qt:
+    key: Qt::Key_Insert
+    mods: []
+- proto: KeyDelete
+  win_vk: VK_DELETE
+  qt:
+    key: Qt::Key_Delete
+    mods: []
+- proto: KeyHelp
+  win_vk: VK_HELP
+  qt:
+    key: Qt::Key_Help
+    mods: []
+- proto: KeySleep
+  win_vk: VK_SLEEP
+  qt:
+    key: Qt::Key_Sleep
+    mods: []
+- proto: KeyKeypad0
+  win_vk: VK_NUMPAD0
+  qt:
+    key: Qt::Key_0
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad1
+  win_vk: VK_NUMPAD1
+  qt:
+    key: Qt::Key_1
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad2
+  win_vk: VK_NUMPAD2
+  qt:
+    key: Qt::Key_2
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad3
+  win_vk: VK_NUMPAD3
+  qt:
+    key: Qt::Key_3
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad4
+  win_vk: VK_NUMPAD4
+  qt:
+    key: Qt::Key_4
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad5
+  win_vk: VK_NUMPAD5
+  qt:
+    key: Qt::Key_5
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad6
+  win_vk: VK_NUMPAD6
+  qt:
+    key: Qt::Key_6
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad7
+  win_vk: VK_NUMPAD7
+  qt:
+    key: Qt::Key_7
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad8
+  win_vk: VK_NUMPAD8
+  qt:
+    key: Qt::Key_8
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypad9
+  win_vk: VK_NUMPAD9
+  qt:
+    key: Qt::Key_9
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadAsterisk
+  win_vk: VK_MULTIPLY
+  qt:
+    key: Qt::Key_Asterisk
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadPlus
+  win_vk: VK_ADD
+  qt:
+    key: Qt::Key_Plus
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadComma
+  win_vk: VK_SEPARATOR
+  qt:
+    key: Qt::Key_Comma
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadMinus
+  win_vk: VK_SUBTRACT
+  qt:
+    key: Qt::Key_Minus
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadPeriod
+  win_vk: VK_DECIMAL
+  qt:
+    key: Qt::Key_Period
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyKeypadSlash
+  win_vk: VK_DIVIDE
+  qt:
+    key: Qt::Key_Slash
+    mods:
+    - Qt::KeypadModifier
+- proto: KeyF1
+  win_vk: VK_F1
+  qt:
+    key: Qt::Key_F1
+    mods: []
+- proto: KeyF2
+  win_vk: VK_F2
+  qt:
+    key: Qt::Key_F2
+    mods: []
+- proto: KeyF3
+  win_vk: VK_F3
+  qt:
+    key: Qt::Key_F3
+    mods: []
+- proto: KeyF4
+  win_vk: VK_F4
+  qt:
+    key: Qt::Key_F4
+    mods: []
+- proto: KeyF5
+  win_vk: VK_F5
+  qt:
+    key: Qt::Key_F5
+    mods: []
+- proto: KeyF6
+  win_vk: VK_F6
+  qt:
+    key: Qt::Key_F6
+    mods: []
+- proto: KeyF7
+  win_vk: VK_F7
+  qt:
+    key: Qt::Key_F7
+    mods: []
+- proto: KeyF8
+  win_vk: VK_F8
+  qt:
+    key: Qt::Key_F8
+    mods: []
+- proto: KeyF9
+  win_vk: VK_F9
+  qt:
+    key: Qt::Key_F9
+    mods: []
+- proto: KeyF10
+  win_vk: VK_F10
+  qt:
+    key: Qt::Key_F10
+    mods: []
+- proto: KeyF11
+  win_vk: VK_F11
+  qt:
+    key: Qt::Key_F11
+    mods: []
+- proto: KeyF12
+  win_vk: VK_F12
+  qt:
+    key: Qt::Key_F12
+    mods: []
+- proto: KeyF13
+  win_vk: VK_F13
+  qt:
+    key: Qt::Key_F13
+    mods: []
+- proto: KeyF14
+  win_vk: VK_F14
+  qt:
+    key: Qt::Key_F14
+    mods: []
+- proto: KeyF15
+  win_vk: VK_F15
+  qt:
+    key: Qt::Key_F15
+    mods: []
+- proto: KeyF16
+  win_vk: VK_F16
+  qt:
+    key: Qt::Key_F16
+    mods: []
+- proto: KeyF17
+  win_vk: VK_F17
+  qt:
+    key: Qt::Key_F17
+    mods: []
+- proto: KeyF18
+  win_vk: VK_F18
+  qt:
+    key: Qt::Key_F18
+    mods: []
+- proto: KeyF19
+  win_vk: VK_F19
+  qt:
+    key: Qt::Key_F19
+    mods: []
+- proto: KeyF20
+  win_vk: VK_F20
+  qt:
+    key: Qt::Key_F20
+    mods: []
+- proto: KeyF21
+  win_vk: VK_F21
+  qt:
+    key: Qt::Key_F21
+    mods: []
+- proto: KeyF22
+  win_vk: VK_F22
+  qt:
+    key: Qt::Key_F22
+    mods: []
+- proto: KeyF23
+  win_vk: VK_F23
+  qt:
+    key: Qt::Key_F23
+    mods: []
+- proto: KeyF24
+  win_vk: VK_F24
+  qt:
+    key: Qt::Key_F24
+    mods: []
+- proto: KeyNumLock
+  win_vk: VK_NUMLOCK
+  qt:
+    key: Qt::Key_NumLock
+    mods: []
+- proto: KeyScrollLock
+  win_vk: VK_SCROLL
+  qt:
+    key: Qt::Key_ScrollLock
+    mods: []
+- proto: KeyBack
+  win_vk: VK_BROWSER_BACK
+  qt:
+    key: Qt::Key_Back
+    mods: []
+- proto: KeyForward
+  win_vk: VK_BROWSER_FORWARD
+  qt:
+    key: Qt::Key_Forward
+    mods: []
+- proto: KeyRefresh
+  win_vk: VK_BROWSER_REFRESH
+  qt:
+    key: Qt::Key_Refresh
+    mods: []
+- proto: KeyStop
+  win_vk: VK_BROWSER_STOP
+  qt:
+    key: Qt::Key_Stop
+    mods: []
+- proto: KeySearch
+  win_vk: VK_BROWSER_SEARCH
+  qt:
+    key: Qt::Key_Search
+    mods: []
+- proto: KeyFavorites
+  win_vk: VK_BROWSER_FAVORITES
+  qt:
+    key: Qt::Key_Favorites
+    mods: []
+- proto: KeyHomePage
+  win_vk: VK_BROWSER_HOME
+  qt:
+    key: Qt::Key_HomePage
+    mods: []
+- proto: KeyVolumeMute
+  win_vk: VK_VOLUME_MUTE
+  qt:
+    key: Qt::Key_VolumeMute
+    mods: []
+- proto: KeyVolumeDown
+  win_vk: VK_VOLUME_DOWN
+  qt:
+    key: Qt::Key_VolumeDown
+    mods: []
+- proto: KeyVolumeUp
+  win_vk: VK_VOLUME_UP
+  qt:
+    key: Qt::Key_VolumeUp
+    mods: []
+- proto: KeyMediaNext
+  win_vk: VK_MEDIA_NEXT_TRACK
+  qt:
+    key: Qt::Key_MediaNext
+    mods: []
+- proto: KeyMediaPrev
+  win_vk: VK_MEDIA_PREV_TRACK
+  qt:
+    key: Qt::Key_MediaPrev
+    mods: []
+- proto: KeyMediaStop
+  win_vk: VK_MEDIA_STOP
+  qt:
+    key: Qt::Key_MediaStop
+    mods: []
+- proto: KeyMediaTogglePlayPause
+  win_vk: VK_MEDIA_PLAY_PAUSE
+  qt:
+    key: Qt::Key_MediaTogglePlayPause
+    mods: []
+- proto: KeyPlay
+  win_vk: VK_PLAY
+  qt:
+    key: Qt::Key_Play
+    mods: []
+- proto: KeyZoom
+  win_vk: VK_ZOOM
+  qt:
+    key: Qt::Key_Zoom
+    mods: []

@@ -1,0 +1,21 @@
+import "keys.proto";
+
+message KeystrokeRequest {
+  required bool ctrl  = 1;
+  required bool alt   = 2;
+  required bool shift = 3;
+  required bool meta  = 4;
+  required Keycode key = 5;
+}
+
+message AppListRequest {}
+
+message AppList {
+  repeated Application apps = 1;
+}
+
+message Application {
+    required uint32 process_id = 1;
+    required string name = 2;
+    // TODO: Window icon
+}

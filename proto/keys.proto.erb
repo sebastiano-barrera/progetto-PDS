@@ -1,0 +1,11 @@
+<%
+require 'yaml'
+
+table = YAML.load STDIN
+%>
+
+enum Keycode {
+	<%- table.each_with_index do |e, index| -%>
+	<%= e['proto'] %> = <%= index %>;
+	<%-	 end -%>
+}
