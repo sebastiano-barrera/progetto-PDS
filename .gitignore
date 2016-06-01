@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+#visual studio files
+ *.VC.opendb
+*.VC.db
