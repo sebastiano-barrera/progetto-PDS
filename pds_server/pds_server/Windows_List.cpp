@@ -17,7 +17,7 @@ Windows_List::~Windows_List()
 
 void Windows_List::Populate()
 {
-	std::unique_lock<std::shared_mutex> lck(this->lock);
+	std::unique_lock<std::shared_mutex > lck(this->lock);
 	std::cout << "Populating Windows list" << std::endl;
 	if (EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(this))) {
 		std::cout << "Population process terminated" << std::endl;
