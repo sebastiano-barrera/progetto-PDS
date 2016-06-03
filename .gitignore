@@ -27,6 +27,11 @@
 *.out
 *.app
 
+# Build directories (QtCreator's git gitdefault)
+build*/
+# Only submodule live under extern/
+extern/
+
 #visual studio files
  *.VC.opendb
 *.VC.db

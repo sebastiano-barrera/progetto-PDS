@@ -1,21 +1,22 @@
+syntax = "proto2";
+
 import "keys.proto";
 
 message KeystrokeRequest {
-  required bool ctrl  = 1;
-  required bool alt   = 2;
-  required bool shift = 3;
-  required bool meta  = 4;
-  required Keycode key = 5;
+  required uint32 app_id = 1;
+  required bool ctrl  = 2;
+  required bool alt   = 3;
+  required bool shift = 4;
+  required bool meta  = 5;
+  required Keycode key = 6;
 }
-
-message AppListRequest {}
 
 message AppList {
   repeated Application apps = 1;
 }
 
 message Application {
-    required uint32 process_id = 1;
+    required uint32 app_id = 1;
     required string name = 2;
     // TODO: Window icon
 }
