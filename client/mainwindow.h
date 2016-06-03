@@ -27,6 +27,9 @@ public:
 public slots:
     void appListReceived(const AppList&);
 
+protected:
+    virtual void closeEvent(QCloseEvent *) override;
+
 private:
     std::unique_ptr<Ui::MainWindow> ui_;
     QTcpSocket conn_;

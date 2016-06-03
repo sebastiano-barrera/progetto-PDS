@@ -21,6 +21,56 @@
     <item>
      <widget class="QListView" name="appListView"/>
     </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Send keystroke</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Keystroke:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KeystrokeSelector" name="keySelector">
+         <property name="text">
+          <string>Not yet selected</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -42,6 +92,11 @@
    <extends>QWidget</extends>
    <header location="global">connectionwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>KeystrokeSelector</class>
+   <extends>QPushButton</extends>
+   <header>keystrokeselector.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

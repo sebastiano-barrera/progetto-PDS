@@ -2,6 +2,9 @@
 
 #include "mainwindow.h"
 #include "protocol.pb.h"
+#include "keystrokeselector.h"
+
+#include <QCloseEvent>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -29,4 +32,15 @@ void MainWindow::appListReceived(const AppList &appList)
         item->setEditable(false);
         appListModel_.appendRow(item);
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+#ifdef _WIN32
+    // not the dirtiest hack, but not pretty either...
+    if (keyboardGrabber() == ui_->keySelector) {
+        event->ignore();
+        // I don't really know how to make this portable or even just not gravely shameful
+        ui_->keySelector->setKey(Qt::ALT + Qt::Key_F4);
+    }
+#endif
 }
