@@ -7,6 +7,7 @@ class Process_Window
 	unsigned int id;
 	DWORD tid;
 	HICON icon;
+	HWND window;
 	//TODO: icon representation
 public:
 	Process_Window();

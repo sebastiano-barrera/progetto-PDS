@@ -3,11 +3,20 @@
 #include <iostream>
 #include <Windows.h>
 
-
 BOOL CALLBACK EnumWindowsProc(__in HWND hWnd, __in LPARAM lParam);
 BOOL IsAltTabWindow(HWND hwnd);
+
+using namespace std;
+
 Windows_List::Windows_List()
 {
+	//std::cout << "Creating Windows list" << std::endl;
+	if (EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(this))) {
+		//std::cout << "Windows list created" << std::endl;
+	}
+	else {
+		std::cout << "Windows_List() failed\n" << std::endl;
+	}
 }
 
 
@@ -15,22 +24,10 @@ Windows_List::~Windows_List()
 {
 }
 
-void Windows_List::Populate()
+void Windows_List::addProcessWindow(HWND hWnd, Process_Window wnd)
 {
-	std::unique_lock<std::shared_mutex > lck(this->lock);
-	std::cout << "Populating Windows list" << std::endl;
-	if (EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(this))) {
-		std::cout << "Population process terminated" << std::endl;
-	}
-	else {
-		std::cout << "Windows_List::Populate() failed\n" << std::endl;
-	}
-
-}
-
-void Windows_List::addProcessWindow(Process_Window wnd)
-{
-	this->list.push_back(wnd);
+	std::unique_lock<std::shared_mutex> lck(this->lock);	
+	this->list.insert(std::pair<HWND, Process_Window> (hWnd, wnd));
 }
 
 void Windows_List::printProcessList()
@@ -38,8 +35,52 @@ void Windows_List::printProcessList()
 	std::shared_lock<std::shared_mutex> lck(this->lock);
 	
 	for (auto pw : this->list) {
-		pw.WindowInfo();
+		pw.second.WindowInfo();
 	}
+	cout << endl;
+}
+
+void Windows_List::Update()
+{
+
+	Windows_List updated; //getting the new list of windows
+	bool closed;
+	bool opened;
+	unique_lock<shared_mutex> lck(this->lock); //the update process must be atomic
+	
+	//looking for the old windows in the new list --> EVENT: WINDOW CLOSED
+	for (auto old_w : this->list) {
+		closed = true;
+		for (auto new_w : updated.list) {
+			if (old_w.first == new_w.first) { //comparing handles
+				closed = false;
+				break;
+			}
+		}
+		if (closed) {
+			cout << "FINESTRA CHIUSA ";
+			old_w.second.WindowInfo();
+			
+			//SEND EVENT
+		}
+	}
+
+	//looking for new windows in the old list --> EVENT: NEW WINDOW CREATED
+	for (auto new_w : updated.list) {
+		opened = true;
+		for (auto old_w : this->list) {
+			if (new_w.first == old_w.first) { //comparing handles
+				opened = false;
+				break;
+			}
+		}
+		if (opened) {
+			cout << "NUOVA FINESTRA ";
+			new_w.second.WindowInfo();
+			//SEND EVENT
+		}
+	}
+	this->list = updated.list; //updating the list
 }
 
 
@@ -47,7 +88,7 @@ void Windows_List::printProcessList()
 BOOL CALLBACK EnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
 	Windows_List *w = reinterpret_cast<Windows_List*>(lParam);
 	if (IsAltTabWindow(hWnd)) {
-		w->addProcessWindow(Process_Window(hWnd));
+		w->addProcessWindow(hWnd, Process_Window(hWnd));
 	}
 	w = nullptr;
 	return true;

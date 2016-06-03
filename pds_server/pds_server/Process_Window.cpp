@@ -11,7 +11,7 @@ Process_Window::Process_Window(HWND hWnd)
 	LPTSTR title = new WCHAR[256];
 	HICON hicon;
 	PICONINFO icon_info=nullptr;
-
+	this->window = hWnd;
 	this->tid = GetWindowThreadProcessId(hWnd, NULL);
 	if (GetWindowText(hWnd, title, 256)>0) {
 		this->title = std::wstring(title);
@@ -44,5 +44,5 @@ Process_Window::~Process_Window()
 
 void Process_Window::WindowInfo()
 {
-	std::wcout << "Tid: "<<this->tid << "-->" << this->title <<" icon handle: "<<this->icon<< std::endl;
+	std::wcout << "Tid: "<<this->tid << "-->" << this->title <<" handle: "<<this->window<< std::endl;
 }
