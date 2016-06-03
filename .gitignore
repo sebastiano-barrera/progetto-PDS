@@ -26,3 +26,8 @@
 *.exe
 *.out
 *.app
+
+# Build directories (QtCreator's git gitdefault)
+build*/
+# Only submodule live under extern/
+extern/
