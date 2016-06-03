@@ -36,7 +36,7 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
     switch (state_) {
     case Init:
         {
-            AppList appList;
+            msgs::AppList appList;
             appList.ParseFromArray(msg.data(), msg.size());
             emit appListReceived(appList);
         }

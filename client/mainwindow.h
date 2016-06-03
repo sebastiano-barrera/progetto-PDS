@@ -14,8 +14,9 @@ namespace Ui {
     class MainWindow;
 }
 
+namespace msgs {
 class AppList;
-
+}
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +26,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
 public slots:
-    void appListReceived(const AppList&);
+    void appListReceived(const msgs::AppList&);
 
 protected:
     virtual void closeEvent(QCloseEvent *) override;

@@ -6,6 +6,9 @@
 
 #include <QCloseEvent>
 
+using msgs::Application;
+using msgs::AppList;
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

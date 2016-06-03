@@ -5,7 +5,10 @@
 #include "messagestream.h"
 
 class QTcpSocket;
+
+namespace msgs {
 class AppList;
+}
 
 class ClientProtocol : public QObject
 {
@@ -27,7 +30,7 @@ public:
     void setClient(QTcpSocket *client);
 
 signals:
-    void appListReceived(const AppList&);
+    void appListReceived(const msgs::AppList&);
 
 public slots:
     void start();
