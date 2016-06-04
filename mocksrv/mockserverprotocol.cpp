@@ -4,6 +4,8 @@
 #include <QHostAddress>
 #include "protocol.pb.h"
 
+#include <iostream>
+
 MockServerProtocol::MockServerProtocol(const QVector<WindowInfo> &windows,
                                        QTcpSocket *client,
                                        QObject *parent) :
@@ -20,7 +22,7 @@ MockServerProtocol::MockServerProtocol(const QVector<WindowInfo> &windows,
 
     timer_.setInterval(1500);
     timer_.setSingleShot(false);
-    timer_.start();
+    // timer_.start();
 
     connect(&timer_, &QTimer::timeout, this, &MockServerProtocol::onTimeout);
     connect(&msgStream_, &MessageStream::messageReceived,
@@ -68,4 +70,9 @@ void MockServerProtocol::onTimeout()
 
 void MockServerProtocol::messageReceived(const QByteArray& msg)
 {
+    msgs::KeystrokeRequest req;
+    req.ParseFromArray(msg.data(), msg.size());
+
+    qDebug() << "received request: "
+             << req.DebugString().c_str();
 }

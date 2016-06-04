@@ -10,7 +10,8 @@
 class QTcpSocket;
 
 namespace msgs {
-class AppList;
+    class AppList;
+    class KeystrokeRequest;
 }
 
 
@@ -35,6 +36,8 @@ public:
     void setSocket(QTcpSocket *client);
 
     inline bool isStarted() const { return state_ != Stopped; }
+
+    void sendRequest(const msgs::KeystrokeRequest&);
 
 signals:
     void started();

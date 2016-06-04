@@ -67,6 +67,8 @@ void MessageStream::readyRead()
         if (nbytesread == -1)
             goto err;
 
+        msgbuf_->append(buf, nbytesread);
+
         assert ((quint32)nbytesread <= remaining_);
         remaining_ -= nbytesread;
         if (remaining_ == 0) {
@@ -81,15 +83,6 @@ err:
     // of this object are handling errors (the `error' signal and getter)
     msgbuf_ = nullptr;
 }
-
-void MessageStream::sendMessage(const QByteArray &msg)
-{
-    std::unique_lock<std::mutex> lock(mutex_);
-    quint32 msg_len = msg.size();
-    dev_->write((char*) &msg_len, sizeof(msg_len));
-    dev_->write(msg);
-}
-
 
 void MessageStream::sendMessage(const google::protobuf::Message &msg)
 {

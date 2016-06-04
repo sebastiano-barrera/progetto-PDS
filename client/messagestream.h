@@ -6,6 +6,7 @@
 #include <QByteArray>
 
 #include <memory>
+#include <mutex>
 
 /// Wraps a QIODevice and allows to send and receive messages (typically
 /// protobuf-made). It implements a simple wire protocol to delimit messages.
@@ -18,7 +19,7 @@ public:
     inline QIODevice* device() const { return dev_; }
     void setDevice(QIODevice*);
 
-    void sendMessage(const QByteArray&);
+    void sendMessage(const char* data, size_t len);
 
 signals:
     void messageReceived(const QByteArray&);
@@ -30,6 +31,7 @@ private:
     QIODevice *dev_;
     std::unique_ptr<QByteArray> msgbuf_;
     quint32 remaining_;
+    std::mutex mutex_;
 };
 
 #endif // MESSAGESTREAM_H

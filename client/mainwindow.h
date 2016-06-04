@@ -25,6 +25,9 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent *) override;
 
+private slots:
+    void sendKeystroke();
+
 private:
     std::unique_ptr<Ui::MainWindow> ui_;
     QTcpSocket conn_;

@@ -78,3 +78,12 @@ err:
     // of this object are handling errors (the `error' signal and getter)
     msgbuf_ = nullptr;
 }
+
+
+void MessageStream::sendMessage(const char* data, size_t len)
+{
+    std::unique_lock<std::mutex> lock(mutex_);
+    quint32 len_u32 = len;  // just to be sure about size
+    dev_->write((char*) &len_u32, sizeof(len_u32));
+    dev_->write(data, len);
+}

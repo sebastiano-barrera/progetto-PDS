@@ -1,10 +1,11 @@
 #include "ui_mainwindow.h"
-
+#include "keyconv.h"
 #include "mainwindow.h"
 #include "protocol.pb.h"
 #include "keystrokeselector.h"
 
 #include <QCloseEvent>
+#include <QItemSelectionModel>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -15,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->appListView->setModel(&appListModel_);
     ui_->connectBar->setSocket(&conn_);
     proto_.setSocket(&conn_);
+
+    connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
 
     connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
 
@@ -33,4 +36,32 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         ui_->keySelector->setKey(Qt::ALT + Qt::Key_F4);
     }
 #endif
+}
+
+void MainWindow::sendKeystroke()
+{
+    int qkey = ui_->keySelector->key();
+    // key without the modifiers
+    int qkey_nomods = qkey & ~Qt::KeyboardModifierMask;
+    msgs::Keycode keycode = keyconv::toKeycode(qkey_nomods);
+
+    msgs::KeystrokeRequest req;
+    req.set_key(keycode);
+    req.set_ctrl ((qkey & Qt::ControlModifier) != 0);
+    req.set_alt  ((qkey & Qt::AltModifier) != 0);
+    req.set_shift((qkey & Qt::ShiftModifier) != 0);
+    req.set_meta ((qkey & Qt::MetaModifier) != 0);
+
+    auto selIndices = ui_->appListView->selectionModel()->selectedRows();
+    qDebug() << "sending keystroke for "
+             << selIndices.size()
+             << " selected items";
+    for (QModelIndex index : selIndices) {
+        const App* app = appListModel_.atIndex(index);
+        if (app == nullptr)
+            continue;
+
+        req.set_app_id(app->id());
+        proto_.sendRequest(req);
+    }
 }

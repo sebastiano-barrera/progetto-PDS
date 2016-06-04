@@ -35,7 +35,6 @@ public:
 
 public slots:
     void sendMessage(const google::protobuf::Message&);
-    void sendMessage(const QByteArray&);
 
 signals:
     void messageReceived(const QByteArray&);

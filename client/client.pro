@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     messagestream.cpp \
     clientprotocol.cpp \
     keystrokeselector.cpp \
-    applist.cpp
+    applist.cpp \
+    keyconv.cpp
 
 SOURCES += ../proto/cpp/protocol.pb.cc \
     ../proto/cpp/keys.pb.cc
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     messagestream.h \
     clientprotocol.h \
     keystrokeselector.h \
-    applist.h
+    applist.h \
+    keyconv.h
 
 FORMS    += mainwindow.ui \
     connectionwidget.ui

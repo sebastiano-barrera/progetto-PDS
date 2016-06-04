@@ -593,7 +593,7 @@
 - proto: KeyMediaPrev
   win_vk: VK_MEDIA_PREV_TRACK
   qt:
-    key: Qt::Key_MediaPrev
+    key: Qt::Key_MediaPrevious
     mods: []
 - proto: KeyMediaStop
   win_vk: VK_MEDIA_STOP

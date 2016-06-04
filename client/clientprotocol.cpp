@@ -74,3 +74,10 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
         }
     }
 }
+
+void ClientProtocol::sendRequest(const msgs::KeystrokeRequest &req)
+{
+    qDebug() << req.DebugString().c_str();
+    std::string raw = req.SerializeAsString();
+    msgStream_.sendMessage(raw.data(), raw.size());
+}
