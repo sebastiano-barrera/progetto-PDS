@@ -57,7 +57,7 @@ void Windows_List::printProcessList()
 	std::shared_lock<std::shared_mutex> lck(this->lock);
 	cout << "list size : " << this->list.size()<<endl;
 	for (auto pw : this->list) {
-		cout << "ID: " << this->winId << " ";
+		cout << "ID: " << pw.first << " ";
 		pw.second.WindowInfo();
 	}
 	cout << endl;

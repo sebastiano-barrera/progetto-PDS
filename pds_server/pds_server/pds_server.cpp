@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 void checkWindowsEvents();
-Windows_List list;
+Windows_List w_list;
 int main()
 {
 	std::thread t1(checkWindowsEvents);
@@ -19,8 +19,8 @@ int main()
 void checkWindowsEvents() {
 	std::cout << "Lanciato thread per controllare gli eventi" << std::endl;
 	while (true) {
-		list.printProcessList();
-		list.Update();
+		w_list.printProcessList();
+		w_list.Update();
 		Sleep(2500);
 
 	}
