@@ -14,5 +14,6 @@ public:
 	Process_Window(HWND hWnd);
 	~Process_Window();
 	void WindowInfo();
+	HWND GetHandle();
 };
 

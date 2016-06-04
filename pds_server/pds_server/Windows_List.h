@@ -5,16 +5,18 @@
 #include <shared_mutex>
 #include <unordered_map>
 #include <Windows.h>
+#include <atomic>
 class Windows_List
 {
-	std::unordered_map < HWND, Process_Window> list;
+	static uint32_t winId;
+	std::unordered_map < uint32_t, Process_Window> list;
 	std::shared_mutex lock;
-	
+	void addProcessWindowNoLock(Process_Window wnd);
 
 public:
 	Windows_List();
 	~Windows_List();
-	void addProcessWindow(HWND hWnd, Process_Window wnd);
+	void addProcessWindow(Process_Window wnd);
 	void printProcessList();
 	void Update();
 protected:
