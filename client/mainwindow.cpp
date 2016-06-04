@@ -14,10 +14,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->setupUi(this);
     ui_->appListView->setModel(&appListModel_);
     ui_->connectBar->setSocket(&conn_);
-    proto_.setClient(&conn_);
+    proto_.setSocket(&conn_);
 
     connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
+
     connect(&proto_, &ClientProtocol::appListReceived, &appListModel_, &AppList::replaceAll);
+    connect(&proto_, &ClientProtocol::appCreated, &appListModel_, &AppList::addApp);
+    connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
+    connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

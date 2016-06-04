@@ -1,5 +1,10 @@
 #include "messagestream.h"
+
+#include <QDebug>
+
+#include <google/protobuf/message.h>
 #include <cassert>
+#include <thread>
 
 
 MessageStream::MessageStream(QIODevice *device, QObject *parent) :
@@ -79,7 +84,20 @@ err:
 
 void MessageStream::sendMessage(const QByteArray &msg)
 {
+    std::unique_lock<std::mutex> lock(mutex_);
     quint32 msg_len = msg.size();
     dev_->write((char*) &msg_len, sizeof(msg_len));
     dev_->write(msg);
+}
+
+
+void MessageStream::sendMessage(const google::protobuf::Message &msg)
+{
+    std::unique_lock<std::mutex> lock(mutex_);
+    qDebug() << "Sending message: " << msg.DebugString().c_str();
+
+    std::string encoded = msg.SerializeAsString();
+    quint32 msg_len = encoded.size();
+    dev_->write((char*) &msg_len, sizeof(msg_len));
+    dev_->write(encoded.data(), encoded.size());
 }

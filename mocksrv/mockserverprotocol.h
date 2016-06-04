@@ -2,7 +2,7 @@
 #define MOCKSERVERPROTOCOL_H
 
 #include <QObject>
-
+#include <QTimer>
 #include "messagestream.h"
 #include "windowinfo.h"
 
@@ -18,19 +18,27 @@ class MockServerProtocol : public QObject {
         WindowListPosted,
     };
 
-    State state_;
-    QTcpSocket *client_;
-    MessageStream msgStream_;
     const QVector<WindowInfo> &windows_;
 
+    State state_;
+    MessageStream msgStream_;
+    QTcpSocket *client_;
+
+    QTimer timer_;
+    int last_id_;
+
 public:
-    MockServerProtocol(QTcpSocket *client,
-                       const QVector<WindowInfo> &windows,
+    MockServerProtocol(const QVector<WindowInfo> &windows,
+                       QTcpSocket *client = 0,
                        QObject *parent = 0);
 
 public slots:
     void start();
     void messageReceived(const QByteArray& msg);
+    void stop();
+
+private slots:
+    void onTimeout();
 };
 
 #endif // MOCKSERVERPROTOCOL_H

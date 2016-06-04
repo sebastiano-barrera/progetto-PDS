@@ -17,7 +17,21 @@ message AppList {
 }
 
 message Application {
-    required uint32 app_id = 1;
+    required uint32 id = 1;
     required string name = 2;
     // TODO: Window icon
+}
+
+message AppDestroyed {
+    required uint32 id = 1;
+}
+
+// in a case like this, one would normally use a `tagged union', also known as
+// a `Type-Length-Value' encoding in network protocol jargon, but it turns out
+// that a message composed of all `optional' fields is encoded by Protobuf in
+// much the same way (and just as efficiently) as a sequence of TLV messages.
+// See: https://developers.google.com/protocol-buffers/docs/encoding#optional
+message Event {
+    optional AppDestroyed destroyed = 1;
+    optional Application  created = 2;
 }

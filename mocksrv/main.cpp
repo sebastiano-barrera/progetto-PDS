@@ -17,6 +17,10 @@ int main(int argc, char *argv[])
         { "main.cpp [master] - mocksrv - QtCreator" },
         { "protobuf - Microsoft Visual Studio" },
         { "Gestione attività" },
+        { "Google Chrome - YouTube" },
+        { "Sony Japan | ソニーグループ ポータルサイト" },
+        { "Git Bash" },
+        { "Adobe Photoshop" },
     };
 
     QTcpServer server;
@@ -27,15 +31,12 @@ int main(int argc, char *argv[])
     }
 
     QObject::connect(&server, &QTcpServer::newConnection, [&]() {
+        // the protocol object is simply created, set up and started.
+        // we let Qt's main loop do the spinning
         auto client = server.nextPendingConnection();
-        auto proto = new MockServerProtocol(client, windows);
+        auto proto = new MockServerProtocol(windows, client);
         QObject::connect (client, &QTcpSocket::aboutToClose,
                           proto, &MockServerProtocol::deleteLater);
-
-        QThread *thread = new QThread();
-        proto->moveToThread(thread);
-        thread->start();
-
         proto->start();
     });
 

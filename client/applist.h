@@ -3,7 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QString>
-#include <QHash>
+#include <QMap>
 
 namespace msgs {
     class Application;
@@ -35,12 +35,14 @@ class AppList : public QAbstractListModel
 {
     Q_OBJECT
 
-    QHash<App::Id, App> apps_;
+    // using a map keeps the keys ordered, and allows us to predict
+    // the order of the rows in the model when calling beginInsertRows
+    QMap<App::Id, App> apps_;
 
 public:
     explicit AppList(QObject *parent = 0);
 
-    inline const QHash<App::Id, App>& apps() const { return apps_; }
+    inline const QMap<App::Id, App>& apps() const { return apps_; }
 
     template <typename Iter> void replaceAll(Iter start, Iter end)
     {
@@ -48,19 +50,20 @@ public:
         apps_.clear();
         for(Iter iter=start; iter != end; iter++) {
             const auto& app = *iter;
-            apps_.insert(app.app_id(), app);
+            apps_.insert(app.id(), app);
         }
         endResetModel();
     }
 
-    const App& atIndex(const QModelIndex& index) const;
+    const App* atIndex(const QModelIndex& index) const;
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 public slots:
-    void replaceAll(const msgs::AppList& msg);
-//    void addApp(App&&);
-//    void removeApp(App::Id);
+    void replaceAll(const App* apps, size_t n_apps);
+    void addApp(const App &);
+    void removeApp(App::Id);
+    void clear();
 };
 
 #endif // APPLIST_H
