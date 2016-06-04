@@ -44,5 +44,10 @@ Process_Window::~Process_Window()
 
 void Process_Window::WindowInfo()
 {
-	std::wcout << "Tid: "<<this->tid << "-->" << this->title <<" handle: "<<this->window<< std::endl;
+	std::wcout << "Tid: "<<this->tid << "--> Title:" << this->title <<" handle: "<<this->window<< std::endl;
+}
+
+HWND Process_Window::GetHandle()
+{
+	return this->window;
 }

@@ -3,10 +3,23 @@
 #include <iostream>
 #include <Windows.h>
 
+uint32_t Windows_List::winId = 0;
+
 BOOL CALLBACK EnumWindowsProc(__in HWND hWnd, __in LPARAM lParam);
+BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam);
+void MyEnumWindows(std::vector<HWND>* v);
 BOOL IsAltTabWindow(HWND hwnd);
 
 using namespace std;
+
+void Windows_List::addProcessWindowNoLock(Process_Window wnd)
+{
+	this->list.insert(std::pair<uint32_t, Process_Window>(this->winId, wnd));
+	do {
+		this->winId++;
+
+	} while (this->list.count(winId) != 0);
+}
 
 Windows_List::Windows_List()
 {
@@ -24,17 +37,27 @@ Windows_List::~Windows_List()
 {
 }
 
-void Windows_List::addProcessWindow(HWND hWnd, Process_Window wnd)
+void Windows_List::addProcessWindow(Process_Window wnd)
 {
-	std::unique_lock<std::shared_mutex> lck(this->lock);	
-	this->list.insert(std::pair<HWND, Process_Window> (hWnd, wnd));
+	//cout << "waiting for lock";
+	std::unique_lock<std::shared_mutex> lck(this->lock);
+	//cout << "Inserting ID: " << this->winId << " " ;
+	//wnd.WindowInfo();
+	//cout << "lock acquired";
+	this->list.insert(std::pair<uint32_t, Process_Window>(this->winId, wnd));
+	do {
+		this->winId++;
+		
+	} while (this->list.count(winId) != 0);
+
 }
 
 void Windows_List::printProcessList()
 {	
 	std::shared_lock<std::shared_mutex> lck(this->lock);
-	
+	cout << "list size : " << this->list.size()<<endl;
 	for (auto pw : this->list) {
+		cout << "ID: " << this->winId << " ";
 		pw.second.WindowInfo();
 	}
 	cout << endl;
@@ -42,45 +65,61 @@ void Windows_List::printProcessList()
 
 void Windows_List::Update()
 {
+	std::vector<HWND> updated;
 
-	Windows_List updated; //getting the new list of windows
+	/*
+		cout << "Update()\n";
+	for (auto h : updated) {
+		cout << h << ", ";
+	}
+	cout << endl;
+	*/
 	bool closed;
 	bool opened;
 	unique_lock<shared_mutex> lck(this->lock); //the update process must be atomic
+	std::vector<std::pair<uint32_t, Process_Window>> still_active; //keeps track of the windows still active
+	std::vector<Process_Window> new_windows; //keeps track of the new window
 	
+	MyEnumWindows(&updated);
 	//looking for the old windows in the new list --> EVENT: WINDOW CLOSED
-	for (auto old_w : this->list) {
+	for (auto old : this->list) {
 		closed = true;
-		for (auto new_w : updated.list) {
-			if (old_w.first == new_w.first) { //comparing handles
+		for (auto nw : updated) {
+			if (old.second.GetHandle() == nw) { //comparing windows HANDLES
 				closed = false;
+				still_active.push_back(old);
 				break;
 			}
 		}
 		if (closed) {
-			cout << "FINESTRA CHIUSA ";
-			old_w.second.WindowInfo();
-			
+			cout << "Closed  window :";
+			old.second.WindowInfo();
 			//SEND EVENT
 		}
 	}
 
 	//looking for new windows in the old list --> EVENT: NEW WINDOW CREATED
-	for (auto new_w : updated.list) {
+	for (auto nw : updated) {
 		opened = true;
-		for (auto old_w : this->list) {
-			if (new_w.first == old_w.first) { //comparing handles
+		for (auto old : this->list) {
+			if (nw == old.second.GetHandle()) { //comparing windows HANDLES
 				opened = false;
 				break;
 			}
 		}
 		if (opened) {
-			cout << "NUOVA FINESTRA ";
-			new_w.second.WindowInfo();
+			Process_Window w(nw);
+			cout << "Opened window : ";
+			w.WindowInfo();
+			new_windows.push_back(w);
 			//SEND EVENT
 		}
 	}
-	this->list = updated.list; //updating the list
+	this->list.clear();
+	this->list.insert(still_active.begin(), still_active.end());
+	for (auto i : new_windows) {
+		this->addProcessWindowNoLock(i); // we already owe a lock
+	}
 }
 
 
@@ -88,7 +127,16 @@ void Windows_List::Update()
 BOOL CALLBACK EnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
 	Windows_List *w = reinterpret_cast<Windows_List*>(lParam);
 	if (IsAltTabWindow(hWnd)) {
-		w->addProcessWindow(hWnd, Process_Window(hWnd));
+		w->addProcessWindow(Process_Window(hWnd));
+	}
+	w = nullptr;
+	return true;
+}
+
+BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
+	std::vector<HWND>*w = reinterpret_cast<std::vector<HWND>*>(lParam);
+	if (IsAltTabWindow(hWnd)) {
+		w->push_back(hWnd);
 	}
 	w = nullptr;
 	return true;
@@ -125,4 +173,13 @@ BOOL IsAltTabWindow(HWND hwnd)
 		return FALSE;
 
 	return TRUE;
+}
+
+void MyEnumWindows(std::vector<HWND>* v) {
+	if (EnumWindows(MyEnumWindowsProc, reinterpret_cast<LPARAM>(v))) {
+		//std::cout << "Windows list created" << std::endl;
+	}
+	else {
+		std::cout << "Windows_List() failed\n" << std::endl;
+	}
 }
