@@ -49,6 +49,8 @@ void ConnectionWidget::connectClicked()
     if (sock_ == nullptr)
         return;
 
+    qDebug() << "socket state is " << sock_->state();
+
     if (sock_->state() == QAbstractSocket::UnconnectedState)
         openConn();    // unconnected => connect
     else if (sock_->state() == QAbstractSocket::ConnectedState)
@@ -59,7 +61,7 @@ void ConnectionWidget::connectClicked()
 
 void ConnectionWidget::openConn()
 {
-    if (!sock_ || sock_->isOpen())
+    if (!sock_)
         return;
     QHostAddress addr(ui_->lneHostName->text());
     quint16 port = ui_->spnPort->value();
@@ -105,13 +107,13 @@ void ConnectionWidget::stateChanged()
 
     case QAbstractSocket::ClosingState:
         setEnabled(true);
-        ui_->lblError->setText("Closing..");
+        ui_->lblError->setText("Closing...");
         break;
 
     default:
         // all other states (in QAbstractSocket::SocketState)
         // are never observable (socket is a client)
-        setEnabled(false);
+        setEnabled(true);
         break;
     }
 }
