@@ -8,7 +8,9 @@ table = YAML.load STDIN
 %>
 
 enum Keycode {
-	<%- table.each_with_index do |e, index| -%>
-	<%= e['proto'] %> = <%= index %>;
-	<%-	 end -%>
+    KeyUnknown = 0;
+
+    <%- table.each_with_index do |e, index| -%>
+    <%= e['proto'] %> = <%= index + 1 %>;
+    <%- end -%>
 }
