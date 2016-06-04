@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "clientprotocol.h"
+#include "applist.h"
 
 #include "ui_mainwindow.h"
 #include <QMainWindow>
@@ -10,13 +11,9 @@
 
 #include <memory>
 
-namespace Ui {
-    class MainWindow;
-}
-
-namespace msgs {
-class AppList;
-}
+namespace Ui { class MainWindow; }
+namespace msgs { class AppList; }
+class QModelIndex;
 
 class MainWindow : public QMainWindow
 {
@@ -24,9 +21,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-
-public slots:
-    void appListReceived(const msgs::AppList&);
 
 protected:
     virtual void closeEvent(QCloseEvent *) override;
@@ -36,7 +30,7 @@ private:
     QTcpSocket conn_;
     ClientProtocol proto_;
 
-    QStandardItemModel appListModel_;
+    AppList appListModel_;
 };
 
 #endif // MAINWINDOW_H
