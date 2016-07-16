@@ -26,6 +26,10 @@ message AppDestroyed {
     required uint32 id = 1;
 }
 
+message AppGotFocus {
+    required uint32 id = 1;
+}
+
 // in a case like this, one would normally use a `tagged union', also known as
 // a `Type-Length-Value' encoding in network protocol jargon, but it turns out
 // that a message composed of all `optional' fields is encoded by Protobuf in
@@ -34,4 +38,5 @@ message AppDestroyed {
 message Event {
     optional AppDestroyed destroyed = 1;
     optional Application  created = 2;
+    optional AppGotFocus  got_focus = 3;
 }
