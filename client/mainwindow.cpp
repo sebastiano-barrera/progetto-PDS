@@ -21,7 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
 
-    connect(&proto_, &ClientProtocol::appListReceived, &appListModel_, &AppList::replaceAll);
+    // GCC: disambiguate overload
+    auto replaceAll = static_cast<void (AppList::*)(const App*, size_t)>(&AppList::replaceAll);
+    connect(&proto_, &ClientProtocol::appListReceived, &appListModel_, replaceAll);
     connect(&proto_, &ClientProtocol::appCreated, &appListModel_, &AppList::addApp);
     connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
     connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);

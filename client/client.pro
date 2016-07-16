@@ -39,10 +39,16 @@ FORMS    += mainwindow.ui \
 
 INCLUDEPATH += $$PWD/../extern/include $$PWD/../proto/cpp
 DEPENDPATH += $$PWD/../extern/include
-     CONFIG(release, debug|release):LIBS += $$PWD/../extern/lib/libprotobuf.lib
-else:CONFIG(debug,   debug|release):LIBS += $$PWD/../extern/lib/libprotobufd.lib
+
+unix* {
+# LIBS += -L../extern/lib -lprotobuf -pthread -lpthread -lz
+    LIBS += ../extern/lib/libprotobuf.a
+}
 
 win32-msvc* {
+         CONFIG(release, debug|release):LIBS += $$PWD/../extern/lib/libprotobuf.lib
+    else:CONFIG(debug,   debug|release):LIBS += $$PWD/../extern/lib/libprotobufd.lib
+
     MSVC_VER = $$(VisualStudioVersion)
     equals(MSVC_VER, 14.0){
         # After the introduction of the Universal CRT, these include paths and libs are needed,

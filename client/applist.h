@@ -26,8 +26,8 @@ public:
 
 private:
     bool valid_;
-    QString name_;
     Id id_;
+    QString name_;
 };
 
 

@@ -22,9 +22,14 @@ SOURCES += ../proto/cpp/protocol.pb.cc \
 
 INCLUDEPATH += $$PWD/../extern/include $$PWD/../proto/cpp
 DEPENDPATH += $$PWD/../extern/include
-LIBS += $$PWD/../extern/lib/libprotobufd.lib
+
+unix* {
+    LIBS += $$PWD/../extern/lib/libprotobuf.a
+}
 
 win32-msvc* {
+    LIBS += $$PWD/../extern/lib/libprotobufd.lib
+
     MSVC_VER = $$(VisualStudioVersion)
     equals(MSVC_VER, 14.0){
         # After the introduction of the Universal CRT, these include paths and libs are needed,
@@ -36,7 +41,4 @@ win32-msvc* {
         #LIBS += "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86/ucrt.lib"
         LIBS += "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86/ucrtd.lib"
     }
-
-#         CONFIG(release, debug|release): LIBS += $$PWD/../extern/lib/libprotobuf.lib $$PWD/../extern/lib/libprotoc.lib
-#    else:CONFIG(debug,   debug|release): LIBS += $$PWD/../extern/lib/libprotobufd.lib $$PWD/../extern/lib/libprotocd.lib
 }

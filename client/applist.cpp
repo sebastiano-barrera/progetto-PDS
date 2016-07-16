@@ -10,8 +10,8 @@ App::App()
 
 App::App(const msgs::Application &msg) :
     valid_(true),
-    name_(QString::fromStdString(msg.name())),
-    id_(msg.id())
+    id_(msg.id()),
+    name_(QString::fromStdString(msg.name()))
     { }
 
 
