@@ -15,11 +15,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->setupUi(this);
     ui_->appListView->setModel(&appListModel_);
     ui_->connectBar->setSocket(&conn_);
+
     proto_.setSocket(&conn_);
 
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
 
     connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
+    connect(&conn_, &QTcpSocket::connected, &appListModel_, &AppList::resetConnectionTime);
 
     // GCC: disambiguate overload
     auto replaceAll = static_cast<void (AppList::*)(const App*, size_t)>(&AppList::replaceAll);
@@ -27,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&proto_, &ClientProtocol::appCreated, &appListModel_, &AppList::addApp);
     connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
     connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);
+    connect(&proto_, &ClientProtocol::appGotFocus, &appListModel_, &AppList::setFocusedApp);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -37,6 +40,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         // I don't really know how to make this portable or even just not gravely shameful
         ui_->keySelector->setKey(Qt::ALT + Qt::Key_F4);
     }
+#else
+    (void) event;
 #endif
 }
 

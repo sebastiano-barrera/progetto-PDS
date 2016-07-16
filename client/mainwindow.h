@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <QTcpSocket>
+#include <QTimer>
 
 #include <memory>
 

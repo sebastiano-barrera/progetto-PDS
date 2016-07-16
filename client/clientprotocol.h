@@ -45,6 +45,7 @@ signals:
     void appListReceived(const App *app, size_t n_apps);
     void appCreated(const App&);
     void appDestroyed(App::Id);
+    void appGotFocus(App::Id);
 
 public slots:
     void start();

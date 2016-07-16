@@ -19,7 +19,11 @@
      <widget class="ConnectionWidget" name="connectBar" native="true"/>
     </item>
     <item>
-     <widget class="QListView" name="appListView"/>
+     <widget class="QTreeView" name="appListView">
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QGroupBox" name="groupBox">
@@ -79,7 +83,7 @@
      <x>0</x>
      <y>0</y>
      <width>433</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>

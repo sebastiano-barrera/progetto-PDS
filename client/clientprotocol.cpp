@@ -70,6 +70,8 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
                 emit appCreated(App(event.created()));
             if (event.has_destroyed())
                 emit appDestroyed(event.destroyed().id());
+            if (event.has_got_focus())
+                emit appGotFocus(event.got_focus().id());
             break;
         }
     }
