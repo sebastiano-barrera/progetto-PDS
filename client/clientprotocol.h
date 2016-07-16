@@ -50,6 +50,7 @@ signals:
 public slots:
     void start();
     void stop();
+    void hardStop();
     void receiveMessage(const QByteArray&);
 };
 

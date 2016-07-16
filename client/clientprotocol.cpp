@@ -28,6 +28,7 @@ void ClientProtocol::setSocket(QTcpSocket *client)
 
     if (client_) {
         connect(client_, &QTcpSocket::aboutToClose, this, &ClientProtocol::stop);
+        connect(client_, &QTcpSocket::disconnected, this, &ClientProtocol::hardStop);
 
         if (client_->isOpen())
             start();
@@ -42,6 +43,20 @@ void ClientProtocol::start()
 
 void ClientProtocol::stop()
 {
+    // Any operations that still need to be done right before
+    // closing the socket go here.  At this stage the socket
+    // is still open, although not for long.
+
+    // The final phase of a soft stop is a hard stop
+    hardStop();
+}
+
+void ClientProtocol::hardStop()
+{
+    // Here the socket is to be considered already closed for any reason
+    // (closed by either local or remote peer, or error)
+    // It's mostly important to signal the end of the protocol
+    // to any collaborator/observing objects.
     state_ = Stopped;
     emit stopped();
 }
