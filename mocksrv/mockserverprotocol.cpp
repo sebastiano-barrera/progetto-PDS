@@ -22,7 +22,7 @@ MockServerProtocol::MockServerProtocol(const QVector<WindowInfo> &windows,
 
     timer_.setInterval(1500);
     timer_.setSingleShot(false);
-    // timer_.start();
+    timer_.start();
 
     connect(&timer_, &QTimer::timeout, this, &MockServerProtocol::onTimeout);
     connect(&msgStream_, &MessageStream::messageReceived,
@@ -44,8 +44,13 @@ void MockServerProtocol::start()
     }
 
     last_id_ = n_windows;
-
     msgStream_.sendMessage(msg);
+
+    msgs::Event focusEvent;
+    auto *focusedApp = focusEvent.mutable_got_focus();
+    focusedApp->set_id(qrand() % n_windows);
+    msgStream_.sendMessage(focusEvent);
+
     state_ = WindowListPosted;
 }
 
@@ -61,10 +66,11 @@ void MockServerProtocol::onTimeout()
     const WindowInfo& win = windows_[index];
 
     msgs::Event event;
-    auto app = event.mutable_created();
-    app->set_id(index);
-    app->set_name(win.name().toStdString());
-
+    auto *createdApp = event.mutable_created();
+    createdApp->set_id(index);
+    createdApp->set_name(win.name().toStdString());
+    auto *focusedApp = event.mutable_got_focus();
+    focusedApp->set_id(index);
     msgStream_.sendMessage(event);
 }
 
