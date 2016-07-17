@@ -1,5 +1,6 @@
 #include "applist.h"
 #include "protocol.pb.h"
+#include "connection.h"
 
 #include <QPixmap>
 #include <QImage>
@@ -61,15 +62,12 @@ quint64 App::focusTimeMS() const
 }
 
 
-
 AppList::AppList(QObject *parent) :
-    QAbstractTableModel(parent),
-    focusedApp_(App::INVALID_ID)
+    QAbstractTableModel(parent)
 {
     updateTimer_.setInterval(200);
     updateTimer_.setSingleShot(false);
     connect(&updateTimer_, &QTimer::timeout, this, &AppList::focusTimeColumnChanged);
-    // updateTimer_ is started by resetConnectionTime()
 }
 
 const App* AppList::atIndex(const QModelIndex& index) const
@@ -77,19 +75,9 @@ const App* AppList::atIndex(const QModelIndex& index) const
     if (index.parent().isValid())
         return nullptr;
 
-    auto id = apps_.keys().value(index.row(), App::INVALID_ID);
-    if (id == App::INVALID_ID)
+    if (index.row() >= order_.size())
         return nullptr;
-    return &apps_.find(id).value();
-}
-
-QModelIndex AppList::indexOf(App::Id appId, int column) const
-{
-    int row = apps_.keys().indexOf(appId);
-    if (row == -1)
-        return {};  // return invalid index
-
-    return this->index(row, column);
+    return order_.at(index.row());
 }
 
 int AppList::rowCount(const QModelIndex &parent) const
@@ -97,7 +85,7 @@ int AppList::rowCount(const QModelIndex &parent) const
     if (parent.isValid())  // parent != invisible root
         return 0;
 
-    return apps_.size();
+    return order_.size();
 }
 
 int AppList::columnCount(const QModelIndex &parent) const
@@ -162,57 +150,36 @@ QVariant AppList::headerData(int section, Qt::Orientation orientation, int role)
     return headers[section];
 }
 
-void AppList::replaceAll(const App *apps, size_t n_apps)
+void AppList::addApp(const App *app)
 {
-    replaceAll(apps, apps + n_apps);
-}
-
-void AppList::addApp(const App &app)
-{
-    if (apps_.contains(app.id())) {
-        apps_[app.id()] = app;
+    if (app == nullptr)
         return;
-    }
 
-    // There really should be a way to do this that is O(log n) and
-    // doesn't involve copying
-    QList<App::Id> keys = apps_.keys();
-    int index = qLowerBound(keys, app.id()) - keys.begin();
+    connect(app, &QObject::destroyed,
+            this, [=]() { removeApp(app); });
 
+    int index = order_.size();
     beginInsertRows(QModelIndex(), index, index);
-    apps_.insert(app.id(), app);
+    order_.append(app);
     endInsertRows();
 }
 
-void AppList::removeApp(App::Id id)
+void AppList::removeApp(const App *app)
 {
-    if (!apps_.contains(id))
+    // here, the App object may be about to be destroyed
+    int row = order_.indexOf(app);
+    if (row == -1)
         return;
-
-    int row = apps_.keys().indexOf(id);
     beginRemoveRows(QModelIndex(), row, row);
-    apps_.remove(id);
+    order_.removeAt(row);
     endRemoveRows();
 }
 
-void AppList::clear()
+void AppList::addConnection(const Connection &conn)
 {
-    beginResetModel();
-    apps_.clear();
-    endResetModel();
-}
-
-void AppList::setFocusedApp(App::Id appId)
-{
-    auto iter = apps_.find(focusedApp_);
-    if (iter != apps_.end())
-        iter->setFocused(false);
-
-    focusedApp_ = appId;
-
-    iter = apps_.find(appId);
-    if (iter != apps_.end())
-        iter->setFocused(true);
+    for (const App* app : conn.apps())
+        addApp(app);
+    connect(&conn, &Connection::appCreated, this, &AppList::addApp);
 }
 
 void AppList::focusTimeColumnChanged()
@@ -221,11 +188,4 @@ void AppList::focusTimeColumnChanged()
     QModelIndex topLeft = index(0, 1);
     QModelIndex bottomRight = index(rowCount(root) - 1,  columnCount(root) - 1);
     dataChanged(topLeft, bottomRight);
-}
-
-void AppList::resetConnectionTime()
-{
-    updateTimer_.start();
-    connectionTimer_.restart();
-    assert (connectionTimer_.isValid());
 }

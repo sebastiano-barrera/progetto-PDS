@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "clientprotocol.h"
+#include "connection.h"
 #include "applist.h"
 
 #include "ui_mainwindow.h"
@@ -40,9 +41,8 @@ private:
     void updatePendingReqMsg();
 
     std::unique_ptr<Ui::MainWindow> ui_;
-    QTcpSocket conn_;
-    ClientProtocol proto_;
-    QSortFilterProxyModel proxyModel_;
+    QVector<Connection> connections_;
+    QSortFilterProxyModel proxyModel_;  
     AppList appListModel_;
     QMessageBox msgBox_;
     int numPendingReqs_;

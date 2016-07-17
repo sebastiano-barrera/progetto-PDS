@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "protocol.pb.h"
 #include "keystrokeselector.h"
+#include "connection.h"
 
 #include <QCloseEvent>
 #include <QItemSelectionModel>
@@ -44,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
         numPendingReqs_ = 0;
         updatePendingReqMsg();
     });
-
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -81,11 +81,12 @@ void MainWindow::sendKeystroke()
     // copy a new request for each selected window
     for (QModelIndex index : selIndices) {
         const App* app = appListModel_.atIndex(index);
-        if (app == nullptr)
+        if (app == nullptr || !app->isFocused()) 
             continue;
 
-        req.set_app_id(app->id());
-        proto_.sendRequest(std::make_unique<msgs::KeystrokeRequest>(req));
+        auto req_inst = std::make_unique<msgs::KeystrokeRequest>(req);
+        req_inst->set_app_id(app->id());
+        app->parentConn()->sendRequest(std::move(req_inst));
         numPendingReqs_++;
     }
 

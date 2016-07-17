@@ -10,7 +10,6 @@
 #include <QPixmap>
 
 namespace msgs {
-    class Application;
     class AppList;
 }
 
@@ -54,30 +53,11 @@ class AppList : public QAbstractTableModel
 {
     Q_OBJECT
 
-    // using a map keeps the keys ordered, and allows us to predict
-    // the order of the rows in the model when calling beginInsertRows
-    QMap<App::Id, App> apps_;
-    App::Id focusedApp_;
     QTimer updateTimer_;
-    QElapsedTimer connectionTimer_;
-
-    QModelIndex indexOf(App::Id, int column = 0) const;
+    QVector<const App*> order_;
 
 public:
     explicit AppList(QObject *parent = 0);
-
-    inline const QMap<App::Id, App>& apps() const { return apps_; }
-
-    template <typename Iter> void replaceAll(Iter start, Iter end)
-    {
-        beginResetModel();
-        apps_.clear();
-        for(Iter iter=start; iter != end; iter++) {
-            const auto& app = *iter;
-            apps_.insert(app.id(), app);
-        }
-        endResetModel();
-    }
 
     const App* atIndex(const QModelIndex& index) const;
     int columnCount(const QModelIndex &parent) const override;
@@ -85,15 +65,13 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-
 public slots:
-    void replaceAll(const App* apps, size_t n_apps);
-    void addApp(const App &);
-    void removeApp(App::Id);
-    void clear();
-    void setFocusedApp(App::Id);
+    void addApp(const App *app);
+    void removeApp(const App *app);
+    void addConnection(const Connection &);
+
+private slots:
     void focusTimeColumnChanged();
-    void resetConnectionTime();
 };
 
 #endif // APPLIST_H
