@@ -50,5 +50,19 @@
     <ClCompile Include="Windows_List.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\proto\protocol.pb.cc">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\proto\keys.pb.cc">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\extern\install\lib\libprotobuf.lib">
+      <Filter>File di origine</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

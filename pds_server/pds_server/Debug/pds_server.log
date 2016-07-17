@@ -1,2 +1,17 @@
-﻿  Windows_List.cpp
-  pds_server.vcxproj -> C:\Users\Alessandro Gaballo\workspace\pds_server\Debug\pds_server.exe
+﻿  keys.pb.cc
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\xutility(2322): error C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xutility(2322): note: vedere la dichiarazione di 'std::copy::_Unchecked_iterators::_Deprecate'
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1329): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1328): note: durante la compilazione della funzione membro '<Sconosciuto>' della classe <Sconosciuto>
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1321): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1321): note: vedere il riferimento all'istanza '<Sconosciuto>' della classe <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1320): note: durante la compilazione della funzione membro '<Sconosciuto>' della classe <Sconosciuto>
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1315): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1314): note: durante la compilazione della funzione membro '<Sconosciuto>' della classe <Sconosciuto>
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1296): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1260): note: durante la compilazione della funzione membro '<Sconosciuto>' della classe <Sconosciuto>
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1100): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\repeated_field.h(1045): note: durante la compilazione della funzione membro '<Sconosciuto>' della classe <Sconosciuto>
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\wire_format_lite_inl.h(278): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\wire_format_lite_inl.h(258): note: vedere il riferimento all'istanza '<Sconosciuto>' della classe <Sconosciuto> di cui è in corso la compilazione
+  c:\users\alessandro gaballo\workspace\extern\install\include\google\protobuf\wire_format_lite_inl.h(313): note: vedere il riferimento all'istanza '<Sconosciuto>' della funzione <Sconosciuto> di cui è in corso la compilazione

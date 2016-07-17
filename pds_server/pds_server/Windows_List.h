@@ -16,6 +16,7 @@ class Windows_List
 public:
 	Windows_List();
 	~Windows_List();
+	std::list<Process_Window> WindowsList();
 	void addProcessWindow(Process_Window wnd);
 	void printProcessList();
 	void Update();

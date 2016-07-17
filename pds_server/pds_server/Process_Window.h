@@ -15,5 +15,9 @@ public:
 	~Process_Window();
 	void WindowInfo();
 	HWND GetHandle();
+	DWORD GetId();
+	//std::wstring GetTitle();
+	std::string GetTitle();
+	bool SendKeyStroke(msgs::KeystrokeRequest req);
 };
 

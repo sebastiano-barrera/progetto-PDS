@@ -5,12 +5,14 @@
 #include "Windows_List.h"
 #include <iostream>
 #include <thread>
+#include "protocol.pb.h"
+
+
 void checkWindowsEvents();
 Windows_List w_list;
 int main()
 {
-	std::thread t1(checkWindowsEvents);
-	t1.detach();
+	std::thread (checkWindowsEvents).detach();
 	while (true);
 	return 0;
 }
@@ -21,7 +23,7 @@ void checkWindowsEvents() {
 	while (true) {
 		w_list.printProcessList();
 		w_list.Update();
-		Sleep(2500);
+		Sleep(250);
 
 	}
 }

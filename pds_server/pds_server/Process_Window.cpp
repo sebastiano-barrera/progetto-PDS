@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Process_Window.h"
 #include <iostream>
+#include <string>
+#include <codecvt>
+#include "protocol.pb.h"
+#include "keys.pb.h"
+
+INPUT PressKey(int key);
 
 Process_Window::Process_Window()
 {
@@ -51,3 +57,58 @@ HWND Process_Window::GetHandle()
 {
 	return this->window;
 }
+
+DWORD Process_Window::GetId()
+{
+	return this->tid;
+}
+std::string Process_Window::GetTitle()
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> conversion;
+	return conversion.to_bytes(this->title);
+}
+
+bool Process_Window::SendKeyStroke(msgs::KeystrokeRequest req)
+{
+	int i,n= 0;
+	INPUT ip[5];
+	if (req.ctrl()) {
+		ip[i++] = PressKey(0);
+	}
+	if (req.alt()) {
+		ip[i++] = PressKey(0);
+	}
+	if (req.shift()) {
+		ip[i++] = PressKey(0);
+	}
+	if (req.meta()) {
+		ip[i++] = PressKey(0);
+	}
+	ip[i++] = PressKey(0);
+	n = i;
+	BringWindowToTop(window);
+	SendInput(n, ip, sizeof(INPUT));
+	while (i > 0) {
+		ip[--i].ki.dwFlags = KEYEVENTF_KEYUP;
+	}
+	SendInput(n, ip, sizeof(INPUT));
+}
+
+INPUT PressKey(int key) {
+	INPUT input;
+	input.type = INPUT_KEYBOARD;
+	input.ki.time = 0;
+	input.ki.wScan = 0;
+	input.ki.dwExtraInfo = 0;
+	input.ki.wVk = key;
+	return input;
+}
+
+/*
+std::wstring Process_Window::GetTitle()
+{
+	return title;
+}
+*/
+
+

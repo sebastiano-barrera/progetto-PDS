@@ -21,6 +21,15 @@ void Windows_List::addProcessWindowNoLock(Process_Window wnd)
 	} while (this->list.count(winId) != 0);
 }
 
+std::list<Process_Window> Windows_List::WindowsList()
+{
+	std::list<Process_Window> windows;
+	for (auto it = list.begin(); it != list.end(); it++) {
+		windows.push_back(it->second);
+	}
+	return windows;
+}
+
 Windows_List::Windows_List()
 {
 	//std::cout << "Creating Windows list" << std::endl;
@@ -66,14 +75,6 @@ void Windows_List::printProcessList()
 void Windows_List::Update()
 {
 	std::vector<HWND> updated;
-
-	/*
-		cout << "Update()\n";
-	for (auto h : updated) {
-		cout << h << ", ";
-	}
-	cout << endl;
-	*/
 	bool closed;
 	bool opened;
 	unique_lock<shared_mutex> lck(this->lock); //the update process must be atomic
