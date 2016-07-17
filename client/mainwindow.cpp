@@ -1,9 +1,10 @@
 #include "ui_mainwindow.h"
-#include "keyconv.h"
 #include "mainwindow.h"
-#include "protocol.pb.h"
 #include "keystrokeselector.h"
 #include "connection.h"
+#include "connectdialog.h"
+#include "keyconv.h"
+#include "protocol.pb.h"
 
 #include <QCloseEvent>
 #include <QItemSelectionModel>
@@ -18,11 +19,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui_->setupUi(this);
     ui_->appListView->setModel(&proxyModel_);
-    ui_->connectBar->setSocket(&conn_);
+    ui_->serverListView->setModel(&serverListModel_);
 
     proto_.setSocket(&conn_);
 
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
+    connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
+    connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
+    connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
 
     connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
     connect(&conn_, &QTcpSocket::connected, &appListModel_, &AppList::resetConnectionTime);
@@ -135,4 +139,19 @@ void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
 
     msgBox_.setText(dialogText);
     msgBox_.show();
+}
+
+void MainWindow::openConnectDialog()
+{
+    auto dialog = new ConnectDialog(this);
+    connect(dialog, &QDialog::accepted, [=]() {
+        // move the connection object out of the dialog,
+        // claim ownership, and add to collection
+        std::unique_ptr<Connection> conn = std::move(dialog->giveConnection());
+        connections_.emplace_back(std::move(conn));
+
+        emit connectionAdded(connections_.back().get());
+    });
+
+    dialog->show();
 }

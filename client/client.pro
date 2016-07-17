@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     applist.cpp \
     keyconv.cpp \
     connection.cpp \
-    serverlistmodel.cpp
+    serverlistmodel.cpp \
+    connectdialog.cpp
 
 SOURCES += ../proto/protocol.pb.cc \
     ../proto/keys.pb.cc
@@ -35,10 +36,12 @@ HEADERS  += mainwindow.h \
     applist.h \
     keyconv.h \
     connection.h \
-    serverlistmodel.h
+    serverlistmodel.h \
+    connectdialog.h
 
 FORMS    += mainwindow.ui \
-    connectionwidget.ui
+    connectionwidget.ui \
+    connectdialog.ui
 
 
 INCLUDEPATH += $$PWD/../extern/include $$PWD/../proto/cpp

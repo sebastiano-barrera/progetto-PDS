@@ -34,8 +34,7 @@ void ConnectionWidget::setSocket(QAbstractSocket *sock)
     sock_ = sock;
 
     if (sock_ != nullptr) {
-        connect(sock_, &QAbstractSocket::stateChanged,
-                this, &ConnectionWidget::stateChanged);
+        connect(sock_, &QAbstractSocket::stateChanged, this, &ConnectionWidget::stateChanged);
         // need to do this to disambiguate with the `error()` getter
         auto sig_error = static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error);
         connect(sock_, sig_error, this, &ConnectionWidget::error);

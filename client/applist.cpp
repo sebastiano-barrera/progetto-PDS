@@ -155,8 +155,7 @@ void AppList::addApp(const App *app)
     if (app == nullptr)
         return;
 
-    connect(app, &QObject::destroyed,
-            this, [=]() { removeApp(app); });
+    connect(app, &QObject::destroyed, this, [=]() { removeApp(app); });
 
     int index = order_.size();
     beginInsertRows(QModelIndex(), index, index);
@@ -175,11 +174,15 @@ void AppList::removeApp(const App *app)
     endRemoveRows();
 }
 
-void AppList::addConnection(const Connection &conn)
+void AppList::addConnection(const Connection *conn)
 {
-    for (const App* app : conn.apps())
+    if (conn == nullptr)
+        return;
+
+    for (const App* app : conn->apps())
         addApp(app);
-    connect(&conn, &Connection::appCreated, this, &AppList::addApp);
+
+    connect(conn, &Connection::appCreated, this, &AppList::addApp);
 }
 
 void AppList::focusTimeColumnChanged()

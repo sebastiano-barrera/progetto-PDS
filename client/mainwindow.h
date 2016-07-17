@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "clientprotocol.h"
+#include "serverlistmodel.h"
 #include "connection.h"
 #include "applist.h"
 
@@ -13,6 +14,7 @@
 #include <QMessageBox>
 
 #include <memory>
+#include <vector>
 
 namespace Ui { class MainWindow; }
 namespace msgs {
@@ -21,6 +23,7 @@ namespace msgs {
     class Response;
 }
 class QModelIndex;
+
 
 class MainWindow : public QMainWindow
 {
@@ -32,17 +35,22 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent *) override;
 
+signals:
+    void connectionAdded(Connection*);
+
 private slots:
     void sendKeystroke();
     void showResponse(const msgs::KeystrokeRequest&,
                       const msgs::Response&);
+    void openConnectDialog();
 
 private:
     void updatePendingReqMsg();
 
     std::unique_ptr<Ui::MainWindow> ui_;
-    QVector<Connection> connections_;
+    std::vector<std::unique_ptr<Connection>> connections_;
     QSortFilterProxyModel proxyModel_;  
+    ServerListModel serverListModel_;
     AppList appListModel_;
     QMessageBox msgBox_;
     int numPendingReqs_;

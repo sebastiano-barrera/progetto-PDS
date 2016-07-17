@@ -34,6 +34,8 @@ public:
 
     App(Connection *conn, const msgs::Application& msg, QObject *parent = 0);
 
+    App& operator=(App&&);
+
     inline bool isValid() const { return valid_; }
     inline Id id() const { return id_; }
     inline const QString& name() const { return name_; }
@@ -61,6 +63,10 @@ class Connection : public QObject
     QTcpSocket sock_;
     ClientProtocol proto_;
 
+    // caching from sock_.peerAddr() and sock_.peerPort()
+    QHostAddress addr_;
+    quint32 port_;
+
     // using a map keeps the keys ordered, which allows us to predict
     // the order of the rows in the model (AppListModel)
     std::unordered_map<App::Id, std::unique_ptr<App>> apps_;
@@ -69,11 +75,17 @@ class Connection : public QObject
 
 public:
     explicit Connection(QObject *parent = 0);
+    virtual ~Connection();
 
     // The socket is freely accessible from the outside:
     // all events are correctly handled from within the Connection object.
-    inline QAbstractSocket& socket()      { return sock_; }
-    const QAbstractSocket& socket() const { return sock_; }
+    inline QAbstractSocket& socket() { return sock_; }
+    inline const QAbstractSocket& socket() const { return sock_; }
+
+    // Like socket().peerAddress() and socket().peerPort(), but the
+    // information isn't lost after the socket disconnects
+    inline const QHostAddress& hostAddress() const { return addr_; }
+    inline quint16 port() const { return port_; }
 
     // Return elapsed time since connection, in ms
     quint64 timeConnectedMS() const;
@@ -85,7 +97,6 @@ public:
     void sendRequest(const msgs::KeystrokeRequest&);
 
 signals:
-    void stateChanged();
     void appCreated(const App*);
 
 private slots:
@@ -95,6 +106,7 @@ private slots:
     void setFocusedApp(ClientProtocol::AppId);
     void reset();
     void resetConnectionTime();
+    void socketStateChanged();
 };
 
 #endif // CONNECTION_H

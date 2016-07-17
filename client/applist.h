@@ -68,7 +68,7 @@ public:
 public slots:
     void addApp(const App *app);
     void removeApp(const App *app);
-    void addConnection(const Connection &);
+    void addConnection(const Connection *);
 
 private slots:
     void focusTimeColumnChanged();

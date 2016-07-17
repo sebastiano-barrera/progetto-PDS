@@ -19,6 +19,20 @@ App::App(Connection *conn, const msgs::Application &msg, QObject *parent) :
     assert (id_ != INVALID_ID);
 }
 
+App& App::operator=(App&& rhs)
+{
+    std::swap(valid_, rhs.valid_);
+    std::swap(id_, rhs.id_);
+    std::swap(name_, rhs.name_);
+    if (parentConn_ != rhs.parentConn_) {
+        std::swap(parentConn_, rhs.parentConn_);
+        std::swap(focusTimer_, rhs.focusTimer_);
+        std::swap(totalFocusTime_, rhs.totalFocusTime_);
+    }
+    setFocused(rhs.focused_);
+    return *this;
+}
+
 void App::setFocused(bool focused)
 {
     if (focused_ == focused)
@@ -57,6 +71,7 @@ Connection::Connection(QObject *parent) :
 
     connect(&sock_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
     connect(&sock_, &QTcpSocket::connected, this, &Connection::resetConnectionTime);
+    connect(&sock_, &QTcpSocket::stateChanged, this, &Connection::socketStateChanged);
 
     connect(&proto_, &ClientProtocol::appCreated, this, &Connection::createApp);
     connect(&proto_, &ClientProtocol::appDestroyed, this, &Connection::destroyApp);
@@ -68,6 +83,11 @@ Connection::Connection(QObject *parent) :
 //    // need to do this to disambiguate with the `error()` getter
 //    auto sig_error = static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error);
 //    connect(sock_, sig_error, this, &Connection::error);
+}
+
+Connection::~Connection()
+{
+    qWarning() << "Connection deleted";
 }
 
 void Connection::resetConnectionTime()
@@ -90,13 +110,20 @@ void Connection::setAppList(const std::vector<const msgs::Application *> &appMsg
 
 void Connection::createApp(const msgs::Application &msg)
 {
-    // NOTE: The `App` must be created with parent = NULL
-    // The unordered_map & unique_ptr classes will perform the destruction
-    // correctly without Qt's object hierarchy information.
-    // If parent was != NULL, the object could potentially be destroyed twice
-    // (once by unique_ptr and once by destructor we inherit by QObject)
-    auto app = std::make_unique<App>(this, msg);
-    apps_.insert({ app->id(), std::move(app) });
+    auto iter = apps_.find(msg.id());
+    if (iter == apps_.end()) {
+        // NOTE: The `App` must be created with parent = NULL
+        // The unordered_map & unique_ptr classes will perform the destruction
+        // correctly without Qt's object hierarchy information.
+        // If parent was != NULL, the object could potentially be destroyed twice
+        // (once by unique_ptr and once by destructor we inherit by QObject)
+        auto app = std::make_unique<App>(this, msg);
+        auto appId = app->id();
+        apps_.emplace(appId, std::move(app));
+        emit appCreated(apps_[appId].get());
+    } else {
+        *iter->second = App {this, msg};
+    }
 }
 
 void Connection::destroyApp(ClientProtocol::AppId appId)
@@ -148,4 +175,13 @@ quint64 Connection::timeConnectedMS() const
 void Connection::sendRequest(const msgs::KeystrokeRequest &req)
 {
     proto_.sendRequest(req);
+}
+
+void Connection::socketStateChanged()
+{
+    // cache peer address and port, so we don't lose that information after disconnecting
+    if (sock_.state() == QAbstractSocket::ConnectedState) {
+        addr_ = sock_.peerAddress();
+        port_ = sock_.peerPort();
+    }
 }
