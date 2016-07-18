@@ -1,13 +1,14 @@
 // pds_server.cpp : definisce il punto di ingresso dell'applicazione console.
 //
 
+
+
+#include "stdafx.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-
-#include "stdafx.h"
 #include <WinSock2.h>
-//#include <Windows.h>
+#include <Windows.h>
 #include "Windows_List.h"
 #include <iostream>
 #include <thread>
@@ -24,6 +25,7 @@ Windows_List w_list;
 std::condition_variable pendingClients;
 ClientList pending;
 SOCKET sockInit();
+
 int main()
 {
 	SOCKET connected, s = sockInit();
@@ -56,7 +58,7 @@ void serveClient() {
 		else {
 			//serve un lock qui ma sembra poco rappresentativo, ci sono da valutare soluzioni
 			//alternative
-			pendingClients.wait();
+			//pendingClients.wait();
 		}
 	}
 }
@@ -74,7 +76,6 @@ void checkWindowsEvents() {
 
 SOCKET sockInit() {
 	WSADATA wsadata;
-	struct servent *pse;
 	struct sockaddr_in sin;
 	SOCKET temp_sock;
 

@@ -10,10 +10,10 @@ public:
 	Client();
 	~Client();
 	Client(SOCKET s);
-	void serve(Windows_List list);
+	void serve(Windows_List& list);
 private:
-	bool sendProcessList(Windows_List list);
-	void readMessage(Windows_List list);
+	bool sendProcessList(Windows_List& list);
+	void readMessage(Windows_List& list);
 	void sendMessage(Process_Window wnd, status s);
 
 };

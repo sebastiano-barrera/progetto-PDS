@@ -85,7 +85,11 @@ bool Process_Window::SendKeyStroke(msgs::KeystrokeRequest req)
 	}
 	ip[i++] = PressKey(0);
 	n = i;
+
+
 	BringWindowToTop(window);
+	//oppure
+	SetForegroundWindow(window);
 	if (SendInput(n, ip, sizeof(INPUT))) {
 		while (i > 0) {
 			ip[--i].ki.dwFlags = KEYEVENTF_KEYUP;

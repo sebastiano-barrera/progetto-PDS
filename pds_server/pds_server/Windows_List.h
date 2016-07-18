@@ -21,6 +21,5 @@ public:
 	void printProcessList();
 	void Update();
 	Process_Window getWindow(uint32_t);
-protected:
 };
 

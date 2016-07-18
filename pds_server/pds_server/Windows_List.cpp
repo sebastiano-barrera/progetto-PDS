@@ -50,7 +50,7 @@ Windows_List::~Windows_List()
 void Windows_List::addProcessWindow(Process_Window wnd)
 {
 	//cout << "waiting for lock";
-	std::unique_lock<std::shared_mutex> lck(this->lock);
+	std::lock_guard<::shared_mutex> lck(this->lock);
 	//cout << "Inserting ID: " << this->winId << " " ;
 	//wnd.WindowInfo();
 	//cout << "lock acquired";
@@ -77,6 +77,9 @@ void Windows_List::Update()
 {
 
 	//MANCA L'EVENTO DEL CAMBIO DI FUOCO
+
+	GetForegroundWindow(); //handle alla finestra in primo piano
+
 	std::vector<HWND> updated;
 	bool closed;
 	bool opened;
@@ -99,6 +102,7 @@ void Windows_List::Update()
 			cout << "Closed  window :";
 			old.second.WindowInfo();
 			//SEND EVENT
+
 		}
 	}
 
@@ -121,6 +125,7 @@ void Windows_List::Update()
 	}
 	this->list.clear();
 	this->list.insert(still_active.begin(), still_active.end());
+
 	for (auto i : new_windows) {
 		this->addProcessWindowNoLock(i); // we already owe a lock
 	}
