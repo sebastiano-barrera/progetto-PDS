@@ -95,7 +95,7 @@ bool Process_Window::SendKeyStroke(msgs::KeystrokeRequest req)
 		}
 	}
 	std::cerr << "unable to send input to the selected window" << std::endl;
-
+	return false;
 }
 
 INPUT PressKey(int key) {
