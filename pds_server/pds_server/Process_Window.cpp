@@ -3,8 +3,7 @@
 #include <iostream>
 #include <string>
 #include <codecvt>
-#include "protocol.pb.h"
-#include "keys.pb.h"
+
 
 INPUT PressKey(int key);
 
@@ -70,7 +69,7 @@ std::string Process_Window::GetTitle()
 
 bool Process_Window::SendKeyStroke(msgs::KeystrokeRequest req)
 {
-	int i,n= 0;
+	int i=0,n= 0;
 	INPUT ip[5];
 	if (req.ctrl()) {
 		ip[i++] = PressKey(0);
@@ -87,11 +86,16 @@ bool Process_Window::SendKeyStroke(msgs::KeystrokeRequest req)
 	ip[i++] = PressKey(0);
 	n = i;
 	BringWindowToTop(window);
-	SendInput(n, ip, sizeof(INPUT));
-	while (i > 0) {
-		ip[--i].ki.dwFlags = KEYEVENTF_KEYUP;
+	if (SendInput(n, ip, sizeof(INPUT))) {
+		while (i > 0) {
+			ip[--i].ki.dwFlags = KEYEVENTF_KEYUP;
+		}
+		if (SendInput(n, ip, sizeof(INPUT))) {
+			return true;
+		}
 	}
-	SendInput(n, ip, sizeof(INPUT));
+	std::cerr << "unable to send input to the selected window" << std::endl;
+
 }
 
 INPUT PressKey(int key) {

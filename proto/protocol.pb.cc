@@ -3,7 +3,6 @@
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "protocol.pb.h"
-
 #include <algorithm>
 
 #include <google/protobuf/stubs/common.h>

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <Windows.h>
+#include "protocol.pb.h"
+#include "keys.pb.h"
 class Process_Window
 {
 	std::wstring title;
