@@ -4,12 +4,17 @@
 class Client
 {
 	SOCKET sck;
+
 public:
 	enum status {W_CLOSED, W_OPENED, W_ONFOCUS};
 	Client();
 	~Client();
-	Client(Windows_List list);
+	Client(SOCKET s);
+	void serve(Windows_List list);
+private:
+	bool sendProcessList(Windows_List list);
 	void readMessage();
-	void sendMessage(Process_Window wnd,status s);
+	void sendMessage(Process_Window wnd, status s);
+
 };
 

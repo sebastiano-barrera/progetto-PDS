@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientList.h" />
     <ClInclude Include="Process_Window.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -160,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ClientList.cpp" />
     <ClCompile Include="pds_server.cpp" />
     <ClCompile Include="Process_Window.cpp" />
     <ClCompile Include="stdafx.cpp">

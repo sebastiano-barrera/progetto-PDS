@@ -6,6 +6,8 @@
 #include <cstring>
 #include <atlbase.h>
 #include <atlconv.h>
+#define MAXWAIT 120
+
 Client::Client()
 {
 
@@ -16,7 +18,12 @@ Client::~Client()
 {
 }
 
-Client::Client(Windows_List list)
+Client::Client(SOCKET s)
+{
+	this->sck = s;
+}
+
+bool Client::sendProcessList(Windows_List list)
 {
 	uint32_t size=0;
 	msgs::AppList msg;
@@ -31,21 +38,66 @@ Client::Client(Windows_List list)
 	s_msg = msg.SerializeAsString();
 	std::cout <<"serialized msg size:"<<size<<std::endl<< s_msg<< std::endl;
 	size = htonl(size);
+	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
 	if (send(sck, (char*)&size, sizeof(u_long), MSG_OOB) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending message size" << std::endl;
+		return false;
 	}
 
 	if (send(sck, (char*)&s_msg, s_msg.size(), MSG_OOB) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending data" << std::endl;
+		return false;
 	}
+	return true;
 }
 
 void Client::readMessage()
 {
-	uint32_t size;
+	uint32_t size=0;
 	msgs::KeystrokeRequest msg;
 	std::string buffer;
-	if (recv(sck, (char*)&size, sizeof(uint32_t), MSG_OOB) == SOCKET_ERROR) {
+	fd_set readset;
+	struct timeval tv;
+	int res;
+	FD_ZERO(&readset);
+	FD_SET(this->sck, &readset);
+	while (true) {
+		tv.tv_sec = MAXWAIT;
+		tv.tv_usec = 0;
+		res = select(0, &readset, NULL, NULL, &tv);
+		if (res > 0) {
+			if (size == 0) {
+				res = recv(sck, (char*)&size, sizeof(uint32_t), MSG_OOB);
+			}
+			else {
+				res = recv(sck, (char*)&buffer, ntohl(size), MSG_OOB);
+				size = 0;
+			}
+			if (res == 0) {
+				//CONNECTION CLOSED BY CLIENT
+				closesocket(sck);
+				break;
+			}
+			else {
+				if (!msg.ParseFromString(buffer)) {
+					std::cerr << "an error occurred while parsing the msg" << std::endl;
+				}
+				else {
+					//devo recuperare la finestra e mandare la combinazione di tasti
+				}
+			}
+		}
+		else if (res == 0) {
+			closesocket(sck);
+			break;
+		}
+		else { //SOCKET ERROR
+			closesocket(sck);
+			break;
+		}
+	}
+	/*
+		if (recv(sck, (char*)&size, sizeof(uint32_t), MSG_OOB) == SOCKET_ERROR) {
 		std::cerr << "an error occurred while reading msg size" << std::endl;
 	}
 	if (recv(sck, (char*)&buffer, ntohl(size), MSG_OOB) == SOCKET_ERROR) {
@@ -55,6 +107,8 @@ void Client::readMessage()
 	if (!msg.ParseFromString(buffer)) {
 		std::cerr << "an error occurred while parsing the msg" << std::endl;
 	}
+	
+	*/
 }
 
 void Client::sendMessage(Process_Window wnd, status s)
@@ -94,4 +148,10 @@ void Client::sendMessage(Process_Window wnd, status s)
 		std::cerr << "an errror occurred while sending data" << std::endl;
 	}
 
+}
+
+void Client::serve(Windows_List lst)
+{
+	this->sendProcessList(lst);
+	this->readMessage();
 }

@@ -1,8 +1,10 @@
 ﻿  pds_server.cpp
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(8): warning C4627: '#include <WinSock2.h>': ignorato durante la ricerca dell'utilizzo di un'intestazione precompilata
-  c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(8): note: Aggiungere la direttiva a 'stdafx.h' o ricompilare l'intestazione precompilata
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(5): warning C4603: 'WIN32_LEAN_AND_MEAN': la macro non è definita o la definizione è diversa dopo l'utilizzo di un'intestazione precompilata
   c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(5): note: Aggiungere la macro all'intestazione precompilata anziché definirla in questa posizione
-  c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(10): note: uso dell'intestazione precompilata
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(51): warning C4101: 'pse': variabile locale senza riferimenti
-libprotobuf.lib(common.cc.obj) : fatal error LNK1112: il tipo di computer del modulo 'x64' è in conflitto con il tipo di computer di destinazione 'X86'
+  c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(8): note: uso dell'intestazione precompilata
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\pds_server.cpp(59): error C2660: 'std::condition_variable::wait': la funzione non accetta 0 argomenti
+  Windows_List.cpp
+  Client.cpp
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\client.cpp(155): error C2280: 'Windows_List::Windows_List(const Windows_List &)': tentativo di fare riferimento a una funzione eliminata
+  c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.h(24): note: il compilatore ha generato 'Windows_List::Windows_List' in questo punto
+  Generazione del codice in corso...

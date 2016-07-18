@@ -23,6 +23,7 @@ void Windows_List::addProcessWindowNoLock(Process_Window wnd)
 
 std::list<Process_Window> Windows_List::WindowsList()
 {
+	std::lock_guard<std::shared_mutex> lg(lock);
 	std::list<Process_Window> windows;
 	for (auto it = list.begin(); it != list.end(); it++) {
 		windows.push_back(it->second);
@@ -74,6 +75,8 @@ void Windows_List::printProcessList()
 
 void Windows_List::Update()
 {
+
+	//MANCA L'EVENTO DEL CAMBIO DI FUOCO
 	std::vector<HWND> updated;
 	bool closed;
 	bool opened;
