@@ -20,6 +20,7 @@ public:
 	void addProcessWindow(Process_Window wnd);
 	void printProcessList();
 	void Update();
+	Process_Window getWindow(uint32_t);
 protected:
 };
 

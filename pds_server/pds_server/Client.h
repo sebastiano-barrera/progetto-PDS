@@ -13,7 +13,7 @@ public:
 	void serve(Windows_List list);
 private:
 	bool sendProcessList(Windows_List list);
-	void readMessage();
+	void readMessage(Windows_List list);
 	void sendMessage(Process_Window wnd, status s);
 
 };

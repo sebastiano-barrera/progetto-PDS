@@ -126,6 +126,11 @@ void Windows_List::Update()
 	}
 }
 
+Process_Window Windows_List::getWindow(uint32_t id)
+{
+	return list[id];
+}
+
 
 
 BOOL CALLBACK EnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {

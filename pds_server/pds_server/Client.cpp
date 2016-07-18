@@ -51,7 +51,7 @@ bool Client::sendProcessList(Windows_List list)
 	return true;
 }
 
-void Client::readMessage()
+void Client::readMessage(Windows_List list)
 {
 	uint32_t size=0;
 	msgs::KeystrokeRequest msg;
@@ -84,6 +84,7 @@ void Client::readMessage()
 				}
 				else {
 					//devo recuperare la finestra e mandare la combinazione di tasti
+					list.getWindow(msg.app_id()).SendKeyStroke(msg);
 				}
 			}
 		}
@@ -150,8 +151,8 @@ void Client::sendMessage(Process_Window wnd, status s)
 
 }
 
-void Client::serve(Windows_List lst)
+void Client::serve(Windows_List list)
 {
-	this->sendProcessList(lst);
-	this->readMessage();
+	this->sendProcessList(list);
+	this->readMessage(list);
 }
