@@ -80,10 +80,10 @@ void Windows_List::Update()
 
 	GetForegroundWindow(); //handle alla finestra in primo piano
 
-	std::vector<HWND> updated;
 	bool closed;
 	bool opened;
-	unique_lock<shared_mutex> lck(this->lock); //the update process must be atomic
+	std::vector<HWND> updated;
+	std::lock_guard<shared_mutex> lck(this->lock); //the update process must be atomic
 	std::vector<std::pair<uint32_t, Process_Window>> still_active; //keeps track of the windows still active
 	std::vector<Process_Window> new_windows; //keeps track of the new window
 	
@@ -102,6 +102,7 @@ void Windows_List::Update()
 			cout << "Closed  window :";
 			old.second.WindowInfo();
 			//SEND EVENT
+			active.notify(old.second, Process_Window::W_CLOSED);
 
 		}
 	}
@@ -121,6 +122,7 @@ void Windows_List::Update()
 			w.WindowInfo();
 			new_windows.push_back(w);
 			//SEND EVENT
+			active.notify(w, Process_Window::W_OPENED);
 		}
 	}
 	this->list.clear();

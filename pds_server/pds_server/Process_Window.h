@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "protocol.pb.h"
 #include "keys.pb.h"
+#include "global.h"
 class Process_Window
 {
 	std::wstring title;
@@ -12,6 +13,7 @@ class Process_Window
 	HWND window;
 	//TODO: icon representation
 public:
+	enum status { W_CLOSED, W_OPENED, W_ONFOCUS };
 	Process_Window();
 	Process_Window(HWND hWnd);
 	~Process_Window();

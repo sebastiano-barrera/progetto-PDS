@@ -1,11 +1,14 @@
 #pragma once
-#include "Process_Window.h"
+
 #include <vector>
 #include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 #include <Windows.h>
 #include <atomic>
+#include "Process_Window.h"
+#include "ClientList.h"
+#include "global.h"
 class Windows_List
 {
 	static uint32_t winId;
@@ -22,4 +25,3 @@ public:
 	void Update();
 	Process_Window getWindow(uint32_t);
 };
-

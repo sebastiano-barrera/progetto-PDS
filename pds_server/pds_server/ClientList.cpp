@@ -18,6 +18,15 @@ void ClientList::addClient(Client c)
 	size++;
 }
 
+void ClientList::notify(Process_Window wnd, Process_Window::status s)
+{
+	std::lock_guard<std::mutex> lg(lock);
+	for (auto c : clients) {
+		c.sendMessage(wnd, s);
+	}
+}
+
+
 Client ClientList::getClient()
 {
 	std::lock_guard<std::mutex> lg(lock);

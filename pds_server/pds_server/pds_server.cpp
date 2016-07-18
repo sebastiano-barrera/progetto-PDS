@@ -9,22 +9,25 @@
 #endif
 #include <WinSock2.h>
 #include <Windows.h>
-#include "Windows_List.h"
+
 #include <iostream>
 #include <thread>
 #include <condition_variable>
 #include <list>
-#include "ClientList.h"
-#include "protocol.pb.h"
 
+#include "protocol.pb.h"
+#include "global.h"
 #define PORT_NO 25568
 #define MAX_CONN 5
 
-void checkWindowsEvents();
-Windows_List w_list;
-std::condition_variable pendingClients;
-ClientList pending;
+
 SOCKET sockInit();
+std::condition_variable pendingClients;
+Windows_List w_list;
+ClientList pending;
+ClientList active ;
+
+void checkWindowsEvents();
 
 int main()
 {
@@ -34,6 +37,7 @@ int main()
 		connected = accept(s, NULL, NULL);
 		pending.addClient(Client(connected));
 		pendingClients.notify_one();
+
 		//pensavo alla creazione di un oggetto di tipo client che lancia un suo thread
 		//in cui viene gestita la comunicazione col client
 
@@ -53,7 +57,8 @@ void serveClient() {
 	while (true) {
 		if (pending.getSize() > 0) {
 			Client c = pending.getClient();
-			c.serve(w_list);
+			active.addClient(c); //devo rimuoverlo dopo averlo servito
+			c.serve();
 		}
 		else {
 			//serve un lock qui ma sembra poco rappresentativo, ci sono da valutare soluzioni

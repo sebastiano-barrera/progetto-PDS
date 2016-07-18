@@ -36,6 +36,9 @@
     <ClInclude Include="ClientList.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

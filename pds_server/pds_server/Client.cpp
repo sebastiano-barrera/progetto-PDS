@@ -23,18 +23,18 @@ Client::Client(SOCKET s)
 	this->sck = s;
 }
 
-void Client::serve(Windows_List& list)
+void Client::serve()
 {
-	this->sendProcessList(list);
-	this->readMessage(list);
+	this->sendProcessList();
+	this->readMessage();
 }
 
-bool Client::sendProcessList(Windows_List& list)
+bool Client::sendProcessList()
 {
 	uint32_t size=0;
 	msgs::AppList msg;
 	std::string s_msg;
-	std::list<Process_Window> l = list.WindowsList();
+	std::list<Process_Window> l = w_list.WindowsList();
 	for (auto it = l.begin(); it != l.end(); it++) {
 		msgs::Application* app=msg.add_apps();
 		app->set_id(it->GetId());
@@ -57,7 +57,7 @@ bool Client::sendProcessList(Windows_List& list)
 	return true;
 }
 
-void Client::readMessage(Windows_List& list)
+void Client::readMessage()
 {
 	uint32_t size=0;
 	msgs::KeystrokeRequest msg;
@@ -90,7 +90,7 @@ void Client::readMessage(Windows_List& list)
 				}
 				else {
 					//devo recuperare la finestra e mandare la combinazione di tasti
-					list.getWindow(msg.app_id()).SendKeyStroke(msg);
+					w_list.getWindow(msg.app_id()).SendKeyStroke(msg);
 				}
 			}
 		}
@@ -118,7 +118,7 @@ void Client::readMessage(Windows_List& list)
 	*/
 }
 
-void Client::sendMessage(Process_Window wnd, status s)
+void Client::sendMessage(Process_Window wnd, Process_Window::status s)
 {
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
@@ -128,16 +128,16 @@ void Client::sendMessage(Process_Window wnd, status s)
 	uint32_t size;
 	
 	switch (s) {
-	case W_OPENED:
+	case Process_Window::W_OPENED:
 		opened.set_name(wnd.GetTitle());
 		opened.set_id(wnd.GetId());
 		event.set_allocated_created(&opened);
 		break;
-	case W_CLOSED:
+	case Process_Window::W_CLOSED:
 		closed.set_id(wnd.GetId());
 		event.set_allocated_destroyed(&closed);
 		break;
-	case W_ONFOCUS:
+	case Process_Window::W_ONFOCUS:
 		focus.set_id(wnd.GetId());
 		event.set_allocated_got_focus(&focus);
 		break;

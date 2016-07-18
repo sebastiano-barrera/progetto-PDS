@@ -1,7 +1,10 @@
 #pragma once
+#include "Client.h"
+#include "global.h"
+#include "Process_Window.h"
 #include <list>
 #include <mutex>
-#include "Client.h"
+
 class ClientList
 {
 	//FIFO QUEUE
@@ -13,7 +16,8 @@ public:
 	ClientList();
 	~ClientList();
 	void addClient(Client c);
-	Client getClient();
+	void notify(Process_Window wnd, Process_Window::status s);
 	unsigned int getSize();
+	Client getClient();
 };
 

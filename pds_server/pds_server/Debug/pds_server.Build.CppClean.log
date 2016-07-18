@@ -4,8 +4,14 @@ c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\vc140.idb
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\stdafx.obj
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\client.obj
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.obj
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\process_window.obj
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\windows_list.obj
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\process_window.obj
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\keys.pb.obj
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\protocol.pb.obj
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\clientlist.obj
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\cl.command.1.tlog
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\cl.read.1.tlog
 c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\cl.write.1.tlog
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\link.command.1.tlog
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\link.read.1.tlog
+c:\users\alessandro gaballo\workspace\pds_server\pds_server\debug\pds_server.tlog\link.write.1.tlog
