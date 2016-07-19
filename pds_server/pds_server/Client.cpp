@@ -84,32 +84,38 @@ void Client::readMessage()
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
 	std::cout << "--sending message--" << std::endl;
-	msgs::Application opened;
-	msgs::AppDestroyed closed;
-	msgs::AppGotFocus focus;
 	msgs::Event event;
 	std::string msg;
 	uint32_t size_;
 	
-	std::unique_ptr<msgs::Icon> icon_ptr;
-
+	// Note: the `set_allocated_*` methods take ownership of the passed pointer,
+	// and will `delete` them at the exit of the scope.
 	switch (s) {
-	case ProcessWindow::W_OPENED:
-		opened.set_name(wnd.title());
-		opened.set_id((uint64_t) wnd.handle());
-		icon_ptr = wnd.encodeIcon();
-		opened.set_allocated_icon(icon_ptr.get());
-		event.set_allocated_created(&opened);
-		break;
-	case ProcessWindow::W_CLOSED:
-		closed.set_id((uint64_t) wnd.handle());
-		event.set_allocated_destroyed(&closed);
-		break;
-	case ProcessWindow::W_ONFOCUS:
-		focus.set_id((uint64_t) wnd.handle());
-		event.set_allocated_got_focus(&focus);
-		break;
+		case ProcessWindow::W_OPENED: {
+			auto opened = new msgs::Application();
+
+			opened->set_name(wnd.title());
+			opened->set_id((uint64_t)wnd.handle());
+			auto icon_uniq_ptr = wnd.encodeIcon();
+			opened->set_allocated_icon(icon_uniq_ptr.release());
+			event.set_allocated_created(opened);
+			break; 
+		}
+		case ProcessWindow::W_CLOSED: {
+			auto closed = new msgs::AppDestroyed();
+
+			closed->set_id((uint64_t)wnd.handle());
+			event.set_allocated_destroyed(closed);
+			break;
+		}
+		case ProcessWindow::W_ONFOCUS: {
+			auto focus = new msgs::AppGotFocus();
+			focus->set_id((uint64_t)wnd.handle());
+			event.set_allocated_got_focus(focus);
+			break;
+		}
 	}
+
 	size_ = event.ByteSize();
 	msg = event.SerializeAsString();
 	std::cout << "Serialized msg size: " << size_ << std::endl << msg << std::endl;

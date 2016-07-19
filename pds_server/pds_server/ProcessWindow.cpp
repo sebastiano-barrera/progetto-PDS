@@ -63,7 +63,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 
 	// Allocate memory for the header (should also make space for the color table,
 	// but we're not using it, so no need for that)
-	BITMAPINFOHEADER *hdr = (BITMAPINFOHEADER*)GlobalAlloc(GMEM_FIXED, sizeof(hdr));
+	BITMAPINFOHEADER *hdr = (BITMAPINFOHEADER*) std::malloc(sizeof(*hdr));
 	hdr->biSize = sizeof(BITMAPINFOHEADER);
 	hdr->biWidth = bmp.bmWidth;
 	hdr->biHeight = bmp.bmHeight;
@@ -90,16 +90,14 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	}
 
 	// Make space for the image pixels data
-	HANDLE realloc = GlobalReAlloc((HANDLE) hdr,
-		sizeof(BITMAPINFOHEADER) + hdr->biSizeImage,
-		GMEM_MOVEABLE);
-	if (!realloc) {
-		GlobalFree((HANDLE)hdr);
+	void *new_hdr = std::realloc(hdr, sizeof(BITMAPINFOHEADER) + hdr->biSizeImage);
+	if (!new_hdr) {
+		std::free(hdr);
 		ReleaseDC(NULL, hdc);
 		return nullptr;
 	}
+	hdr = (BITMAPINFOHEADER*)new_hdr;
 
-	hdr = (BITMAPINFOHEADER*)realloc;
 	void *pixels = ((uint8_t*) hdr) + sizeof(BITMAPINFOHEADER);
 	BOOL got_bits = GetDIBits(hdc, icon_info.hbmColor, 
 		0L, bmp.bmHeight,
@@ -111,7 +109,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	
 	if (!got_bits) {
 		// Well, damn.
-		GlobalFree(hdr);
+		std::free(hdr);
 		return nullptr;
 	}
 
@@ -123,7 +121,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	
 	std::cerr << icon->DebugString() << '\n';
 
-	GlobalFree(hdr);
+	std::free(hdr);
 	return icon;
 }
 
