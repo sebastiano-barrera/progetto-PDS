@@ -27,13 +27,16 @@
     <ClInclude Include="Client.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Process_Window.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="ClientList.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsList.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessWindow.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="WindowsList.h">
@@ -50,9 +53,6 @@
     <ClCompile Include="Client.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Process_Window.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\proto\protocol.pb.cc">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -63,6 +63,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="WindowsList.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessWindow.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

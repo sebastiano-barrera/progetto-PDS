@@ -13,6 +13,7 @@ using namespace std;
 
 WindowsList::WindowsList()
 {
+	onFocus_ = GetForegroundWindow();
 	MyEnumWindows(&winHandles_);
 }
 
@@ -37,19 +38,16 @@ void WindowsList::printProcessList()
 
 void WindowsList::update()
 {
-	// TODO: MANCA L'EVENTO DEL CAMBIO DI FUOCO
-	// GetForegroundWindow(); // handle alla finestra in primo piano
-
 	// Elenco delle finestre aggiornato
 	std::set<HWND> updated;
 	std::lock_guard<mutex> lck(lock_); // the update process must be atomic
 	
 	MyEnumWindows(&updated);
+	HWND currentFocus = GetForegroundWindow(); //getting foreground window handle
 
 	// looking for the old windows --> EVENT: WINDOW CLOSED
 	std::vector<HWND> closed_wins;
-	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(),
-		std::inserter(closed_wins, closed_wins.begin()));
+	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
 		cout << "Closed window :";
@@ -59,17 +57,27 @@ void WindowsList::update()
 	}
 
 	std::vector<HWND> new_wins;
-	std::set_difference(updated.begin(), updated.end(), winHandles_.begin(), winHandles_.end(), 
-		std::inserter(new_wins, new_wins.begin()));
+	std::set_difference(updated.begin(), updated.end(), winHandles_.begin(), winHandles_.end(), std::inserter(new_wins, new_wins.begin()));
 	//looking for new windows --> EVENT: NEW WINDOW CREATED
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);
-		cout << "Opened window : ";
+		std::cout << "Opened window : ";
 		pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);
 	}
-
+	/*
+	//potrebbe capitare che la finestra in foreground non sia tra quelle recuperate da MyEnumWindows, in questo caso
+	//l'evento del cambio di fuoco non viene notificato e si aspetta il controllo successivo
+	if (onFocus_ != currentFocus && updated.find(currentFocus) != updated.end()) {
+		onFocus_ = currentFocus;
+		auto pw = ProcessWindow(onFocus_);
+		std::cout << "Focus changed" << std::endl;
+		pw.windowInfo();
+		//SEND EVENT
+		active.notify(pw, ProcessWindow::W_ONFOCUS);
+	}
+	*/
 	std::swap(winHandles_, updated);
 }
 
