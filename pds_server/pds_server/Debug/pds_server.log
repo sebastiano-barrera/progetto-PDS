@@ -1,13 +1,2 @@
-﻿  Windows_List.cpp
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\client.h(16): error C2061: errore di sintassi: identificatore 'Process_Window'
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\clientlist.h(19): error C2061: errore di sintassi: identificatore 'Process_Window'
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\global.h(5): error C4430: identificatore di tipo mancante, verrà utilizzato int. Nota: default-int non è più supportato in C++
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\global.h(5): error C2146: errore di sintassi: ';' mancante prima dell'identificatore 'w_list'
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(105): error C2660: 'ClientList::notify': la funzione non accetta 2 argomenti
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(125): error C2660: 'ClientList::notify': la funzione non accetta 2 argomenti
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(144): error C2065: 'w': identificatore non dichiarato
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(144): error C2061: errore di sintassi: identificatore 'Windows_List'
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(146): error C2065: 'w': identificatore non dichiarato
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(146): error C2227: l'elemento a sinistra di '->addProcessWindow' deve puntare a un tipo classe, struttura, unione o generico
-  c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(146): note: il tipo è 'unknown-type'
-c:\users\alessandro gaballo\workspace\pds_server\pds_server\windows_list.cpp(148): error C2065: 'w': identificatore non dichiarato
+﻿  WindowsList.cpp
+  pds_server.vcxproj -> C:\Users\Sebastiano\Documents\Code\progetto\pds_server\Debug\pds_server.exe

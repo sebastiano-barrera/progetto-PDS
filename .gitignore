@@ -35,6 +35,12 @@ extern/
 #visual studio files
  *.VC.opendb
 *.VC.db
+pds_server/*.sdf
+pds_server/*.suo
+pds_server/*.vcxproj.filters
+pds_server/*.vcxproj.user
+pds_server/Debug
+pds_server/x64
 
 # Qt's generated files
 moc_*.cpp
