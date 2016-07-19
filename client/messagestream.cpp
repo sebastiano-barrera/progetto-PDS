@@ -1,6 +1,6 @@
 #include "messagestream.h"
 #include <cassert>
-
+#include <QtEndian>
 
 MessageStream::MessageStream(QIODevice *device, QObject *parent) :
     QObject(parent),
@@ -51,6 +51,7 @@ void MessageStream::readyRead()
         if (ret == -1)
             goto err;
 
+        msg_len = qFromBigEndian(msg_len);
         msgbuf_ = std::unique_ptr<QByteArray> { new QByteArray() };
         remaining_ = msg_len;
     }
@@ -83,7 +84,7 @@ err:
 void MessageStream::sendMessage(const char* data, size_t len)
 {
     std::unique_lock<std::mutex> lock(mutex_);
-    quint32 len_u32 = len;  // just to be sure about size
-    dev_->write((char*) &len_u32, sizeof(len_u32));
+    quint32 len_n = qToBigEndian(len);
+    dev_->write((char*) &len_n, sizeof(len_n));
     dev_->write(data, len);
 }
