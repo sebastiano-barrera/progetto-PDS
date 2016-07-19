@@ -110,12 +110,12 @@ class KeystrokeRequest : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint32 app_id = 1;
+  // required uint64 app_id = 1;
   bool has_app_id() const;
   void clear_app_id();
   static const int kAppIdFieldNumber = 1;
-  ::google::protobuf::uint32 app_id() const;
-  void set_app_id(::google::protobuf::uint32 value);
+  ::google::protobuf::uint64 app_id() const;
+  void set_app_id(::google::protobuf::uint64 value);
 
   // required bool ctrl = 2;
   bool has_ctrl() const;
@@ -173,7 +173,7 @@ class KeystrokeRequest : public ::google::protobuf::Message {
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::uint32 app_id_;
+  ::google::protobuf::uint64 app_id_;
   bool ctrl_;
   bool alt_;
   bool shift_;
@@ -344,12 +344,12 @@ class Application : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   bool has_id() const;
   void clear_id();
   static const int kIdFieldNumber = 1;
-  ::google::protobuf::uint32 id() const;
-  void set_id(::google::protobuf::uint32 value);
+  ::google::protobuf::uint64 id() const;
+  void set_id(::google::protobuf::uint64 value);
 
   // required string name = 2;
   bool has_name() const;
@@ -376,8 +376,8 @@ class Application : public ::google::protobuf::Message {
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
+  ::google::protobuf::uint64 id_;
   ::google::protobuf::internal::ArenaStringPtr name_;
-  ::google::protobuf::uint32 id_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
   friend void protobuf_ShutdownFile_protocol_2eproto();
@@ -451,12 +451,12 @@ class AppDestroyed : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   bool has_id() const;
   void clear_id();
   static const int kIdFieldNumber = 1;
-  ::google::protobuf::uint32 id() const;
-  void set_id(::google::protobuf::uint32 value);
+  ::google::protobuf::uint64 id() const;
+  void set_id(::google::protobuf::uint64 value);
 
   // @@protoc_insertion_point(class_scope:msgs.AppDestroyed)
  private:
@@ -466,7 +466,7 @@ class AppDestroyed : public ::google::protobuf::Message {
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::uint32 id_;
+  ::google::protobuf::uint64 id_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
   friend void protobuf_ShutdownFile_protocol_2eproto();
@@ -540,12 +540,12 @@ class AppGotFocus : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   bool has_id() const;
   void clear_id();
   static const int kIdFieldNumber = 1;
-  ::google::protobuf::uint32 id() const;
-  void set_id(::google::protobuf::uint32 value);
+  ::google::protobuf::uint64 id() const;
+  void set_id(::google::protobuf::uint64 value);
 
   // @@protoc_insertion_point(class_scope:msgs.AppGotFocus)
  private:
@@ -555,7 +555,7 @@ class AppGotFocus : public ::google::protobuf::Message {
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::uint32 id_;
+  ::google::protobuf::uint64 id_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
   friend void protobuf_ShutdownFile_protocol_2eproto();
@@ -686,7 +686,7 @@ class Event : public ::google::protobuf::Message {
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // KeystrokeRequest
 
-// required uint32 app_id = 1;
+// required uint64 app_id = 1;
 inline bool KeystrokeRequest::has_app_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -697,14 +697,14 @@ inline void KeystrokeRequest::clear_has_app_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void KeystrokeRequest::clear_app_id() {
-  app_id_ = 0u;
+  app_id_ = GOOGLE_ULONGLONG(0);
   clear_has_app_id();
 }
-inline ::google::protobuf::uint32 KeystrokeRequest::app_id() const {
+inline ::google::protobuf::uint64 KeystrokeRequest::app_id() const {
   // @@protoc_insertion_point(field_get:msgs.KeystrokeRequest.app_id)
   return app_id_;
 }
-inline void KeystrokeRequest::set_app_id(::google::protobuf::uint32 value) {
+inline void KeystrokeRequest::set_app_id(::google::protobuf::uint64 value) {
   set_has_app_id();
   app_id_ = value;
   // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.app_id)
@@ -869,7 +869,7 @@ AppList::apps() const {
 
 // Application
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 inline bool Application::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -880,14 +880,14 @@ inline void Application::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void Application::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
-inline ::google::protobuf::uint32 Application::id() const {
+inline ::google::protobuf::uint64 Application::id() const {
   // @@protoc_insertion_point(field_get:msgs.Application.id)
   return id_;
 }
-inline void Application::set_id(::google::protobuf::uint32 value) {
+inline void Application::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.Application.id)
@@ -951,7 +951,7 @@ inline void Application::set_allocated_name(::std::string* name) {
 
 // AppDestroyed
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 inline bool AppDestroyed::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -962,14 +962,14 @@ inline void AppDestroyed::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void AppDestroyed::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
-inline ::google::protobuf::uint32 AppDestroyed::id() const {
+inline ::google::protobuf::uint64 AppDestroyed::id() const {
   // @@protoc_insertion_point(field_get:msgs.AppDestroyed.id)
   return id_;
 }
-inline void AppDestroyed::set_id(::google::protobuf::uint32 value) {
+inline void AppDestroyed::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.AppDestroyed.id)
@@ -979,7 +979,7 @@ inline void AppDestroyed::set_id(::google::protobuf::uint32 value) {
 
 // AppGotFocus
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 inline bool AppGotFocus::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -990,14 +990,14 @@ inline void AppGotFocus::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void AppGotFocus::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
-inline ::google::protobuf::uint32 AppGotFocus::id() const {
+inline ::google::protobuf::uint64 AppGotFocus::id() const {
   // @@protoc_insertion_point(field_get:msgs.AppGotFocus.id)
   return id_;
 }
-inline void AppGotFocus::set_id(::google::protobuf::uint32 value) {
+inline void AppGotFocus::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.AppGotFocus.id)

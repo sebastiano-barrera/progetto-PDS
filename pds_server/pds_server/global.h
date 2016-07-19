@@ -1,7 +1,7 @@
 #pragma once
 #include "ClientList.h"
-#include "Windows_List.h"
+#include "WindowsList.h"
 
-extern Windows_List w_list;
+extern WindowsList windows_list;
 extern ClientList pending;
 extern ClientList active;

@@ -1,27 +1,27 @@
 #pragma once
-#include <string>
 #include <Windows.h>
+
+#include <string>
+
 #include "protocol.pb.h"
 #include "keys.pb.h"
-#include "global.h"
-class Process_Window
+
+class ProcessWindow
 {
-	std::wstring title;
-	unsigned int id;
-	DWORD tid;
-	HICON icon;
-	HWND window;
+	std::wstring title_;
+	HWND window_;
+	HICON icon_;
 	//TODO: icon representation
+
 public:
-	enum status { W_CLOSED, W_OPENED, W_ONFOCUS };
-	Process_Window();
-	Process_Window(HWND hWnd);
-	~Process_Window();
-	void WindowInfo();
-	HWND GetHandle();
-	DWORD GetId();
-	//std::wstring GetTitle();
-	std::string GetTitle();
-	bool SendKeyStroke(msgs::KeystrokeRequest req);
+	enum Status { W_CLOSED, W_OPENED, W_ONFOCUS };
+
+	ProcessWindow(HWND hWnd);
+	
+	void windowInfo() const;
+	HWND handle() const;
+	//std::wstring title();
+	std::string title() const;
+	bool sendKeystroke(msgs::KeystrokeRequest req);
 };
 

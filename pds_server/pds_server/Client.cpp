@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "Client.h"
+#include "global.h"
 #include "protocol.pb.h"
+
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <atlbase.h>
 #include <atlconv.h>
+
 #define MAXWAIT 120
 
 Client::Client()
@@ -31,26 +34,28 @@ void Client::serve()
 
 bool Client::sendProcessList()
 {
-	uint32_t size=0;
+	uint32_t size_=0;
 	msgs::AppList msg;
 	std::string s_msg;
-	std::list<Process_Window> l = w_list.WindowsList();
-	for (auto it = l.begin(); it != l.end(); it++) {
-		msgs::Application* app=msg.add_apps();
-		app->set_id(it->GetId());
-		app->set_name(it->GetTitle());
+
+	auto windows = windows_list.windows();
+	for (auto it = windows.begin(); it != windows.end(); it++) {
+		msgs::Application* app = msg.add_apps();
+		app->set_id((uint64_t) it->handle());
+		app->set_name(it->title());
 	}
-	size = msg.ByteSize();
+	
+	size_ = msg.ByteSize();
 	s_msg = msg.SerializeAsString();
-	std::cout <<"serialized msg size:"<<size<<std::endl<< s_msg<< std::endl;
-	size = htonl(size);
+	std::cout <<"serialized msg size:"<<size_<<std::endl<< s_msg<< std::endl;
+	size_ = htonl(size_);
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
-	if (send(sck, (char*)&size, sizeof(u_long), MSG_OOB) == SOCKET_ERROR) {
+	if (send(sck, (char*)&size_, sizeof(u_long), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending message size" << std::endl;
 		return false;
 	}
 
-	if (send(sck, (char*)&s_msg, s_msg.size(), MSG_OOB) == SOCKET_ERROR) {
+	if (send(sck, (char*)&s_msg, s_msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending data" << std::endl;
 		return false;
 	}
@@ -59,7 +64,7 @@ bool Client::sendProcessList()
 
 void Client::readMessage()
 {
-	uint32_t size=0;
+	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
 	std::string buffer;
 	fd_set readset;
@@ -72,12 +77,12 @@ void Client::readMessage()
 		tv.tv_usec = 0;
 		res = select(0, &readset, NULL, NULL, &tv);
 		if (res > 0) {
-			if (size == 0) {
-				res = recv(sck, (char*)&size, sizeof(uint32_t), MSG_OOB);
+			if (size_ == 0) {
+				res = recv(sck, (char*)&size_, sizeof(uint32_t), 0);
 			}
 			else {
-				res = recv(sck, (char*)&buffer, ntohl(size), MSG_OOB);
-				size = 0;
+				res = recv(sck, (char*)&buffer, ntohl(size_), 0);
+				size_ = 0;
 			}
 			if (res == 0) {
 				//CONNECTION CLOSED BY CLIENT
@@ -90,7 +95,7 @@ void Client::readMessage()
 				}
 				else {
 					//devo recuperare la finestra e mandare la combinazione di tasti
-					w_list.getWindow(msg.app_id()).SendKeyStroke(msg);
+					ProcessWindow((HWND) msg.app_id()).sendKeystroke(msg);
 				}
 			}
 		}
@@ -104,10 +109,10 @@ void Client::readMessage()
 		}
 	}
 	/*
-		if (recv(sck, (char*)&size, sizeof(uint32_t), MSG_OOB) == SOCKET_ERROR) {
-		std::cerr << "an error occurred while reading msg size" << std::endl;
+		if (recv(sck, (char*)&size_, sizeof(uint32_t), MSG_OOB) == SOCKET_ERROR) {
+		std::cerr << "an error occurred while reading msg size_" << std::endl;
 	}
-	if (recv(sck, (char*)&buffer, ntohl(size), MSG_OOB) == SOCKET_ERROR) {
+	if (recv(sck, (char*)&buffer, ntohl(size_), MSG_OOB) == SOCKET_ERROR) {
 		std::cerr << "an error occurred while reading msg" << std::endl;
 	}
 
@@ -118,42 +123,41 @@ void Client::readMessage()
 	*/
 }
 
-void Client::sendMessage(Process_Window wnd, Process_Window::status s)
+void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
 	msgs::AppGotFocus focus;
 	msgs::Event event;
 	std::string msg;
-	uint32_t size;
+	uint32_t size_;
 	
 	switch (s) {
-	case Process_Window::W_OPENED:
-		opened.set_name(wnd.GetTitle());
-		opened.set_id(wnd.GetId());
+	case ProcessWindow::W_OPENED:
+		opened.set_name(wnd.title());
+		opened.set_id((uint64_t) wnd.handle());
 		event.set_allocated_created(&opened);
 		break;
-	case Process_Window::W_CLOSED:
-		closed.set_id(wnd.GetId());
+	case ProcessWindow::W_CLOSED:
+		closed.set_id((uint64_t) wnd.handle());
 		event.set_allocated_destroyed(&closed);
 		break;
-	case Process_Window::W_ONFOCUS:
-		focus.set_id(wnd.GetId());
+	case ProcessWindow::W_ONFOCUS:
+		focus.set_id((uint64_t) wnd.handle());
 		event.set_allocated_got_focus(&focus);
 		break;
 	}
-	size = event.ByteSize();
+	size_ = event.ByteSize();
 	msg = event.SerializeAsString();
-	std::cout << "Serialized msg size: " << size << std::endl << msg << std::endl;
+	std::cout << "Serialized msg size: " << size_ << std::endl << msg << std::endl;
 	
-	size = htonl(size);
-	if (send(sck, (char*)&size, sizeof(u_long), MSG_OOB) == SOCKET_ERROR) {
+	size_ = htonl(size_);
+	if (send(sck, (char*)&size_, sizeof(u_long), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending message size" << std::endl;
 	}
 
-	if (send(sck, (char*)&msg, msg.size(), MSG_OOB) == SOCKET_ERROR) {
+	if (send(sck, (char*)&msg, msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending data" << std::endl;
 	}
-
 }
 

@@ -3,6 +3,7 @@
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "protocol.pb.h"
+
 #include <algorithm>
 
 #include <google/protobuf/stubs/common.h>
@@ -198,13 +199,13 @@ void protobuf_AddDesc_protocol_2eproto() {
   ::msgs::protobuf_AddDesc_keys_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\016protocol.proto\022\004msgs\032\nkeys.proto\"v\n\020Ke"
-    "ystrokeRequest\022\016\n\006app_id\030\001 \002(\r\022\014\n\004ctrl\030\002"
+    "ystrokeRequest\022\016\n\006app_id\030\001 \002(\004\022\014\n\004ctrl\030\002"
     " \002(\010\022\013\n\003alt\030\003 \002(\010\022\r\n\005shift\030\004 \002(\010\022\014\n\004meta"
     "\030\005 \002(\010\022\032\n\003key\030\006 \002(\0162\r.msgs.Keycode\"*\n\007Ap"
     "pList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Application\"\'"
-    "\n\013Application\022\n\n\002id\030\001 \002(\r\022\014\n\004name\030\002 \002(\t\""
-    "\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\r\"\031\n\013AppGotFoc"
-    "us\022\n\n\002id\030\001 \002(\r\"x\n\005Event\022%\n\tdestroyed\030\001 \001"
+    "\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\""
+    "\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013AppGotFoc"
+    "us\022\n\n\002id\030\001 \002(\004\"x\n\005Event\022%\n\tdestroyed\030\001 \001"
     "(\0132\022.msgs.AppDestroyed\022\"\n\007created\030\002 \001(\0132"
     "\021.msgs.Application\022$\n\tgot_focus\030\003 \001(\0132\021."
     "msgs.AppGotFocus", 416);
@@ -272,7 +273,7 @@ KeystrokeRequest::KeystrokeRequest(const KeystrokeRequest& from)
 
 void KeystrokeRequest::SharedCtor() {
   _cached_size_ = 0;
-  app_id_ = 0u;
+  app_id_ = GOOGLE_ULONGLONG(0);
   ctrl_ = false;
   alt_ = false;
   shift_ = false;
@@ -357,11 +358,11 @@ bool KeystrokeRequest::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 app_id = 1;
+      // required uint64 app_id = 1;
       case 1: {
         if (tag == 8) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &app_id_)));
           set_has_app_id();
         } else {
@@ -476,9 +477,9 @@ failure:
 void KeystrokeRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:msgs.KeystrokeRequest)
-  // required uint32 app_id = 1;
+  // required uint64 app_id = 1;
   if (has_app_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->app_id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->app_id(), output);
   }
 
   // required bool ctrl = 2;
@@ -517,9 +518,9 @@ void KeystrokeRequest::SerializeWithCachedSizes(
 ::google::protobuf::uint8* KeystrokeRequest::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:msgs.KeystrokeRequest)
-  // required uint32 app_id = 1;
+  // required uint64 app_id = 1;
   if (has_app_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->app_id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->app_id(), target);
   }
 
   // required bool ctrl = 2;
@@ -561,9 +562,9 @@ int KeystrokeRequest::RequiredFieldsByteSizeFallback() const {
   int total_size = 0;
 
   if (has_app_id()) {
-    // required uint32 app_id = 1;
+    // required uint64 app_id = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->app_id());
   }
 
@@ -600,9 +601,9 @@ int KeystrokeRequest::ByteSize() const {
   int total_size = 0;
 
   if (((_has_bits_[0] & 0x0000003f) ^ 0x0000003f) == 0) {  // All required fields are present.
-    // required uint32 app_id = 1;
+    // required uint64 app_id = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->app_id());
 
     // required bool ctrl = 2;
@@ -725,7 +726,7 @@ void KeystrokeRequest::InternalSwap(KeystrokeRequest* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // KeystrokeRequest
 
-// required uint32 app_id = 1;
+// required uint64 app_id = 1;
 bool KeystrokeRequest::has_app_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -736,14 +737,14 @@ void KeystrokeRequest::clear_has_app_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 void KeystrokeRequest::clear_app_id() {
-  app_id_ = 0u;
+  app_id_ = GOOGLE_ULONGLONG(0);
   clear_has_app_id();
 }
- ::google::protobuf::uint32 KeystrokeRequest::app_id() const {
+ ::google::protobuf::uint64 KeystrokeRequest::app_id() const {
   // @@protoc_insertion_point(field_get:msgs.KeystrokeRequest.app_id)
   return app_id_;
 }
- void KeystrokeRequest::set_app_id(::google::protobuf::uint32 value) {
+ void KeystrokeRequest::set_app_id(::google::protobuf::uint64 value) {
   set_has_app_id();
   app_id_ = value;
   // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.app_id)
@@ -1174,7 +1175,7 @@ Application::Application(const Application& from)
 void Application::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -1218,7 +1219,7 @@ Application* Application::New(::google::protobuf::Arena* arena) const {
 void Application::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.Application)
   if (_has_bits_[0 / 32] & 3u) {
-    id_ = 0u;
+    id_ = GOOGLE_ULONGLONG(0);
     if (has_name()) {
       name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
@@ -1239,11 +1240,11 @@ bool Application::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 id = 1;
+      // required uint64 id = 1;
       case 1: {
         if (tag == 8) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &id_)));
           set_has_id();
         } else {
@@ -1295,9 +1296,9 @@ failure:
 void Application::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:msgs.Application)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->id(), output);
   }
 
   // required string name = 2;
@@ -1320,9 +1321,9 @@ void Application::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Application::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:msgs.Application)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->id(), target);
   }
 
   // required string name = 2;
@@ -1349,9 +1350,9 @@ int Application::RequiredFieldsByteSizeFallback() const {
   int total_size = 0;
 
   if (has_id()) {
-    // required uint32 id = 1;
+    // required uint64 id = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->id());
   }
 
@@ -1369,9 +1370,9 @@ int Application::ByteSize() const {
   int total_size = 0;
 
   if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required uint32 id = 1;
+    // required uint64 id = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->id());
 
     // required string name = 2;
@@ -1468,7 +1469,7 @@ void Application::InternalSwap(Application* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // Application
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 bool Application::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1479,14 +1480,14 @@ void Application::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 void Application::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
- ::google::protobuf::uint32 Application::id() const {
+ ::google::protobuf::uint64 Application::id() const {
   // @@protoc_insertion_point(field_get:msgs.Application.id)
   return id_;
 }
- void Application::set_id(::google::protobuf::uint32 value) {
+ void Application::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.Application.id)
@@ -1573,7 +1574,7 @@ AppDestroyed::AppDestroyed(const AppDestroyed& from)
 
 void AppDestroyed::SharedCtor() {
   _cached_size_ = 0;
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1614,7 +1615,7 @@ AppDestroyed* AppDestroyed::New(::google::protobuf::Arena* arena) const {
 
 void AppDestroyed::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.AppDestroyed)
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
@@ -1631,11 +1632,11 @@ bool AppDestroyed::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 id = 1;
+      // required uint64 id = 1;
       case 1: {
         if (tag == 8) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &id_)));
           set_has_id();
         } else {
@@ -1670,9 +1671,9 @@ failure:
 void AppDestroyed::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:msgs.AppDestroyed)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->id(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1685,9 +1686,9 @@ void AppDestroyed::SerializeWithCachedSizes(
 ::google::protobuf::uint8* AppDestroyed::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:msgs.AppDestroyed)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->id(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1702,10 +1703,10 @@ int AppDestroyed::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:msgs.AppDestroyed)
   int total_size = 0;
 
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->id());
   }
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1789,7 +1790,7 @@ void AppDestroyed::InternalSwap(AppDestroyed* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // AppDestroyed
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 bool AppDestroyed::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1800,14 +1801,14 @@ void AppDestroyed::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 void AppDestroyed::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
- ::google::protobuf::uint32 AppDestroyed::id() const {
+ ::google::protobuf::uint64 AppDestroyed::id() const {
   // @@protoc_insertion_point(field_get:msgs.AppDestroyed.id)
   return id_;
 }
- void AppDestroyed::set_id(::google::protobuf::uint32 value) {
+ void AppDestroyed::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.AppDestroyed.id)
@@ -1840,7 +1841,7 @@ AppGotFocus::AppGotFocus(const AppGotFocus& from)
 
 void AppGotFocus::SharedCtor() {
   _cached_size_ = 0;
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1881,7 +1882,7 @@ AppGotFocus* AppGotFocus::New(::google::protobuf::Arena* arena) const {
 
 void AppGotFocus::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.AppGotFocus)
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
@@ -1898,11 +1899,11 @@ bool AppGotFocus::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 id = 1;
+      // required uint64 id = 1;
       case 1: {
         if (tag == 8) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &id_)));
           set_has_id();
         } else {
@@ -1937,9 +1938,9 @@ failure:
 void AppGotFocus::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:msgs.AppGotFocus)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->id(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1952,9 +1953,9 @@ void AppGotFocus::SerializeWithCachedSizes(
 ::google::protobuf::uint8* AppGotFocus::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:msgs.AppGotFocus)
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->id(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1969,10 +1970,10 @@ int AppGotFocus::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:msgs.AppGotFocus)
   int total_size = 0;
 
-  // required uint32 id = 1;
+  // required uint64 id = 1;
   if (has_id()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->id());
   }
   if (_internal_metadata_.have_unknown_fields()) {
@@ -2056,7 +2057,7 @@ void AppGotFocus::InternalSwap(AppGotFocus* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // AppGotFocus
 
-// required uint32 id = 1;
+// required uint64 id = 1;
 bool AppGotFocus::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -2067,14 +2068,14 @@ void AppGotFocus::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 void AppGotFocus::clear_id() {
-  id_ = 0u;
+  id_ = GOOGLE_ULONGLONG(0);
   clear_has_id();
 }
- ::google::protobuf::uint32 AppGotFocus::id() const {
+ ::google::protobuf::uint64 AppGotFocus::id() const {
   // @@protoc_insertion_point(field_get:msgs.AppGotFocus.id)
   return id_;
 }
- void AppGotFocus::set_id(::google::protobuf::uint32 value) {
+ void AppGotFocus::set_id(::google::protobuf::uint64 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:msgs.AppGotFocus.id)

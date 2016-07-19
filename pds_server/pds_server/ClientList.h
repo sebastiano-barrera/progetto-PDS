@@ -1,6 +1,5 @@
 #pragma once
 #include "Client.h"
-#include "global.h"
 #include "Process_Window.h"
 #include <list>
 #include <mutex>
@@ -8,16 +7,17 @@
 class ClientList
 {
 	//FIFO QUEUE
+	std::condition_variable cv_;
 	std::list<Client> clients;
-	std::mutex lock;
-	unsigned int size;
+	mutable std::mutex lock_;
+	unsigned int size_;
 
 public:
 	ClientList();
-	~ClientList();
-	void addClient(Client c);
-	void notify(Process_Window wnd, Process_Window::status s);
-	unsigned int getSize();
+	Client& addClient(Client c);
+	void notify(ProcessWindow wnd, ProcessWindow::Status s);
+	unsigned int size() const;
 	Client getClient();
+	void cleanup();
 };
 

@@ -4,7 +4,7 @@ package msgs;
 import "keys.proto";
 
 message KeystrokeRequest {
-  required uint32 app_id = 1;
+  required uint64 app_id = 1;
   required bool ctrl  = 2;
   required bool alt   = 3;
   required bool shift = 4;
@@ -17,17 +17,17 @@ message AppList {
 }
 
 message Application {
-    required uint32 id = 1;
+    required uint64 id = 1;
     required string name = 2;
     // TODO: Window icon
 }
 
 message AppDestroyed {
-    required uint32 id = 1;
+    required uint64 id = 1;
 }
 
 message AppGotFocus {
-    required uint32 id = 1;
+    required uint64 id = 1;
 }
 
 // in a case like this, one would normally use a `tagged union', also known as
