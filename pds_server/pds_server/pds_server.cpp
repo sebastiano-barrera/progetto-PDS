@@ -58,7 +58,6 @@ void serveClient() {
 	}
 }
 
-
 void checkWindowsEvents() {
 	std::cout << "Lanciato thread per controllare gli eventi" << std::endl;
 	while (true) {

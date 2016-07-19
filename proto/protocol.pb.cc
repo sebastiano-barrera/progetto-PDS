@@ -30,6 +30,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* Application_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Application_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Icon_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Icon_reflection_ = NULL;
 const ::google::protobuf::Descriptor* AppDestroyed_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   AppDestroyed_reflection_ = NULL;
@@ -85,9 +88,10 @@ void protobuf_AssignDesc_protocol_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppList, _internal_metadata_),
       -1);
   Application_descriptor_ = file->message_type(2);
-  static const int Application_offsets_[2] = {
+  static const int Application_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, icon_),
   };
   Application_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -100,7 +104,24 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(Application),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, _internal_metadata_),
       -1);
-  AppDestroyed_descriptor_ = file->message_type(3);
+  Icon_descriptor_ = file->message_type(3);
+  static const int Icon_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, width_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, height_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, pixels_),
+  };
+  Icon_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      Icon_descriptor_,
+      Icon::default_instance_,
+      Icon_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, _has_bits_[0]),
+      -1,
+      -1,
+      sizeof(Icon),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, _internal_metadata_),
+      -1);
+  AppDestroyed_descriptor_ = file->message_type(4);
   static const int AppDestroyed_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppDestroyed, id_),
   };
@@ -115,7 +136,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(AppDestroyed),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppDestroyed, _internal_metadata_),
       -1);
-  AppGotFocus_descriptor_ = file->message_type(4);
+  AppGotFocus_descriptor_ = file->message_type(5);
   static const int AppGotFocus_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppGotFocus, id_),
   };
@@ -130,7 +151,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(AppGotFocus),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppGotFocus, _internal_metadata_),
       -1);
-  Event_descriptor_ = file->message_type(5);
+  Event_descriptor_ = file->message_type(6);
   static const int Event_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, destroyed_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, created_),
@@ -166,6 +187,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       Application_descriptor_, &Application::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      Icon_descriptor_, &Icon::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       AppDestroyed_descriptor_, &AppDestroyed::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       AppGotFocus_descriptor_, &AppGotFocus::default_instance());
@@ -182,6 +205,8 @@ void protobuf_ShutdownFile_protocol_2eproto() {
   delete AppList_reflection_;
   delete Application::default_instance_;
   delete Application_reflection_;
+  delete Icon::default_instance_;
+  delete Icon_reflection_;
   delete AppDestroyed::default_instance_;
   delete AppDestroyed_reflection_;
   delete AppGotFocus::default_instance_;
@@ -202,24 +227,28 @@ void protobuf_AddDesc_protocol_2eproto() {
     "ystrokeRequest\022\016\n\006app_id\030\001 \002(\004\022\014\n\004ctrl\030\002"
     " \002(\010\022\013\n\003alt\030\003 \002(\010\022\r\n\005shift\030\004 \002(\010\022\014\n\004meta"
     "\030\005 \002(\010\022\032\n\003key\030\006 \002(\0162\r.msgs.Keycode\"*\n\007Ap"
-    "pList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Application\"\'"
-    "\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\""
-    "\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013AppGotFoc"
-    "us\022\n\n\002id\030\001 \002(\004\"x\n\005Event\022%\n\tdestroyed\030\001 \001"
-    "(\0132\022.msgs.AppDestroyed\022\"\n\007created\030\002 \001(\0132"
-    "\021.msgs.Application\022$\n\tgot_focus\030\003 \001(\0132\021."
-    "msgs.AppGotFocus", 416);
+    "pList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Application\"A"
+    "\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\022"
+    "\030\n\004icon\030\003 \001(\0132\n.msgs.Icon\"5\n\004Icon\022\r\n\005wid"
+    "th\030\001 \002(\r\022\016\n\006height\030\002 \002(\r\022\016\n\006pixels\030\003 \002(\014"
+    "\"\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013AppGotFo"
+    "cus\022\n\n\002id\030\001 \002(\004\"x\n\005Event\022%\n\tdestroyed\030\001 "
+    "\001(\0132\022.msgs.AppDestroyed\022\"\n\007created\030\002 \001(\013"
+    "2\021.msgs.Application\022$\n\tgot_focus\030\003 \001(\0132\021"
+    ".msgs.AppGotFocus", 497);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   KeystrokeRequest::default_instance_ = new KeystrokeRequest();
   AppList::default_instance_ = new AppList();
   Application::default_instance_ = new Application();
+  Icon::default_instance_ = new Icon();
   AppDestroyed::default_instance_ = new AppDestroyed();
   AppGotFocus::default_instance_ = new AppGotFocus();
   Event::default_instance_ = new Event();
   KeystrokeRequest::default_instance_->InitAsDefaultInstance();
   AppList::default_instance_->InitAsDefaultInstance();
   Application::default_instance_->InitAsDefaultInstance();
+  Icon::default_instance_->InitAsDefaultInstance();
   AppDestroyed::default_instance_->InitAsDefaultInstance();
   AppGotFocus::default_instance_->InitAsDefaultInstance();
   Event::default_instance_->InitAsDefaultInstance();
@@ -1153,6 +1182,7 @@ AppList::apps() const {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Application::kIdFieldNumber;
 const int Application::kNameFieldNumber;
+const int Application::kIconFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Application::Application()
@@ -1162,6 +1192,7 @@ Application::Application()
 }
 
 void Application::InitAsDefaultInstance() {
+  icon_ = const_cast< ::msgs::Icon*>(&::msgs::Icon::default_instance());
 }
 
 Application::Application(const Application& from)
@@ -1177,6 +1208,7 @@ void Application::SharedCtor() {
   _cached_size_ = 0;
   id_ = GOOGLE_ULONGLONG(0);
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  icon_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1188,6 +1220,7 @@ Application::~Application() {
 void Application::SharedDtor() {
   name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
+    delete icon_;
   }
 }
 
@@ -1218,10 +1251,13 @@ Application* Application::New(::google::protobuf::Arena* arena) const {
 
 void Application::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.Application)
-  if (_has_bits_[0 / 32] & 3u) {
+  if (_has_bits_[0 / 32] & 7u) {
     id_ = GOOGLE_ULONGLONG(0);
     if (has_name()) {
       name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    }
+    if (has_icon()) {
+      if (icon_ != NULL) icon_->::msgs::Icon::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1264,6 +1300,19 @@ bool Application::MergePartialFromCodedStream(
             this->name().data(), this->name().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
             "msgs.Application.name");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_icon;
+        break;
+      }
+
+      // optional .msgs.Icon icon = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_icon:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_icon()));
         } else {
           goto handle_unusual;
         }
@@ -1311,6 +1360,12 @@ void Application::SerializeWithCachedSizes(
       2, this->name(), output);
   }
 
+  // optional .msgs.Icon icon = 3;
+  if (has_icon()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, *this->icon_, output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1335,6 +1390,13 @@ void Application::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         2, this->name(), target);
+  }
+
+  // optional .msgs.Icon icon = 3;
+  if (has_icon()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, *this->icon_, target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1383,6 +1445,13 @@ int Application::ByteSize() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
+  // optional .msgs.Icon icon = 3;
+  if (has_icon()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->icon_);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1420,6 +1489,9 @@ void Application::MergeFrom(const Application& from) {
       set_has_name();
       name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
     }
+    if (from.has_icon()) {
+      mutable_icon()->::msgs::Icon::MergeFrom(from.icon());
+    }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -1443,6 +1515,9 @@ void Application::CopyFrom(const Application& from) {
 bool Application::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
+  if (has_icon()) {
+    if (!this->icon_->IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -1453,6 +1528,7 @@ void Application::Swap(Application* other) {
 void Application::InternalSwap(Application* other) {
   std::swap(id_, other->id_);
   name_.Swap(&other->name_);
+  std::swap(icon_, other->icon_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -1545,6 +1621,526 @@ void Application::clear_name() {
   }
   name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
   // @@protoc_insertion_point(field_set_allocated:msgs.Application.name)
+}
+
+// optional .msgs.Icon icon = 3;
+bool Application::has_icon() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void Application::set_has_icon() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void Application::clear_has_icon() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void Application::clear_icon() {
+  if (icon_ != NULL) icon_->::msgs::Icon::Clear();
+  clear_has_icon();
+}
+const ::msgs::Icon& Application::icon() const {
+  // @@protoc_insertion_point(field_get:msgs.Application.icon)
+  return icon_ != NULL ? *icon_ : *default_instance_->icon_;
+}
+::msgs::Icon* Application::mutable_icon() {
+  set_has_icon();
+  if (icon_ == NULL) {
+    icon_ = new ::msgs::Icon;
+  }
+  // @@protoc_insertion_point(field_mutable:msgs.Application.icon)
+  return icon_;
+}
+::msgs::Icon* Application::release_icon() {
+  // @@protoc_insertion_point(field_release:msgs.Application.icon)
+  clear_has_icon();
+  ::msgs::Icon* temp = icon_;
+  icon_ = NULL;
+  return temp;
+}
+void Application::set_allocated_icon(::msgs::Icon* icon) {
+  delete icon_;
+  icon_ = icon;
+  if (icon) {
+    set_has_icon();
+  } else {
+    clear_has_icon();
+  }
+  // @@protoc_insertion_point(field_set_allocated:msgs.Application.icon)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int Icon::kWidthFieldNumber;
+const int Icon::kHeightFieldNumber;
+const int Icon::kPixelsFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+Icon::Icon()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:msgs.Icon)
+}
+
+void Icon::InitAsDefaultInstance() {
+}
+
+Icon::Icon(const Icon& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:msgs.Icon)
+}
+
+void Icon::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  width_ = 0u;
+  height_ = 0u;
+  pixels_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Icon::~Icon() {
+  // @@protoc_insertion_point(destructor:msgs.Icon)
+  SharedDtor();
+}
+
+void Icon::SharedDtor() {
+  pixels_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
+}
+
+void Icon::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Icon::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Icon_descriptor_;
+}
+
+const Icon& Icon::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_protocol_2eproto();
+  return *default_instance_;
+}
+
+Icon* Icon::default_instance_ = NULL;
+
+Icon* Icon::New(::google::protobuf::Arena* arena) const {
+  Icon* n = new Icon;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void Icon::Clear() {
+// @@protoc_insertion_point(message_clear_start:msgs.Icon)
+#if defined(__clang__)
+#define ZR_HELPER_(f) \
+  _Pragma("clang diagnostic push") \
+  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
+  __builtin_offsetof(Icon, f) \
+  _Pragma("clang diagnostic pop")
+#else
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<Icon*>(16)->f)
+#endif
+
+#define ZR_(first, last) do {\
+  ::memset(&first, 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
+
+  if (_has_bits_[0 / 32] & 7u) {
+    ZR_(width_, height_);
+    if (has_pixels()) {
+      pixels_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    }
+  }
+
+#undef ZR_HELPER_
+#undef ZR_
+
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  if (_internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->Clear();
+  }
+}
+
+bool Icon::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:msgs.Icon)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 width = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &width_)));
+          set_has_width();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_height;
+        break;
+      }
+
+      // required uint32 height = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_height:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &height_)));
+          set_has_height();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_pixels;
+        break;
+      }
+
+      // required bytes pixels = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_pixels:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_pixels()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:msgs.Icon)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:msgs.Icon)
+  return false;
+#undef DO_
+}
+
+void Icon::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:msgs.Icon)
+  // required uint32 width = 1;
+  if (has_width()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->width(), output);
+  }
+
+  // required uint32 height = 2;
+  if (has_height()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->height(), output);
+  }
+
+  // required bytes pixels = 3;
+  if (has_pixels()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      3, this->pixels(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:msgs.Icon)
+}
+
+::google::protobuf::uint8* Icon::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:msgs.Icon)
+  // required uint32 width = 1;
+  if (has_width()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->width(), target);
+  }
+
+  // required uint32 height = 2;
+  if (has_height()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->height(), target);
+  }
+
+  // required bytes pixels = 3;
+  if (has_pixels()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        3, this->pixels(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:msgs.Icon)
+  return target;
+}
+
+int Icon::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:msgs.Icon)
+  int total_size = 0;
+
+  if (has_width()) {
+    // required uint32 width = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->width());
+  }
+
+  if (has_height()) {
+    // required uint32 height = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->height());
+  }
+
+  if (has_pixels()) {
+    // required bytes pixels = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
+        this->pixels());
+  }
+
+  return total_size;
+}
+int Icon::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:msgs.Icon)
+  int total_size = 0;
+
+  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
+    // required uint32 width = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->width());
+
+    // required uint32 height = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->height());
+
+    // required bytes pixels = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
+        this->pixels());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Icon::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:msgs.Icon)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const Icon* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const Icon>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:msgs.Icon)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:msgs.Icon)
+    MergeFrom(*source);
+  }
+}
+
+void Icon::MergeFrom(const Icon& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:msgs.Icon)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_width()) {
+      set_width(from.width());
+    }
+    if (from.has_height()) {
+      set_height(from.height());
+    }
+    if (from.has_pixels()) {
+      set_has_pixels();
+      pixels_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.pixels_);
+    }
+  }
+  if (from._internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+  }
+}
+
+void Icon::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:msgs.Icon)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Icon::CopyFrom(const Icon& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:msgs.Icon)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Icon::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+
+  return true;
+}
+
+void Icon::Swap(Icon* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void Icon::InternalSwap(Icon* other) {
+  std::swap(width_, other->width_);
+  std::swap(height_, other->height_);
+  pixels_.Swap(&other->pixels_);
+  std::swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata Icon::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Icon_descriptor_;
+  metadata.reflection = Icon_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// Icon
+
+// required uint32 width = 1;
+bool Icon::has_width() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void Icon::set_has_width() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void Icon::clear_has_width() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void Icon::clear_width() {
+  width_ = 0u;
+  clear_has_width();
+}
+ ::google::protobuf::uint32 Icon::width() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.width)
+  return width_;
+}
+ void Icon::set_width(::google::protobuf::uint32 value) {
+  set_has_width();
+  width_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Icon.width)
+}
+
+// required uint32 height = 2;
+bool Icon::has_height() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void Icon::set_has_height() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void Icon::clear_has_height() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void Icon::clear_height() {
+  height_ = 0u;
+  clear_has_height();
+}
+ ::google::protobuf::uint32 Icon::height() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.height)
+  return height_;
+}
+ void Icon::set_height(::google::protobuf::uint32 value) {
+  set_has_height();
+  height_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Icon.height)
+}
+
+// required bytes pixels = 3;
+bool Icon::has_pixels() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void Icon::set_has_pixels() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void Icon::clear_has_pixels() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void Icon::clear_pixels() {
+  pixels_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_pixels();
+}
+ const ::std::string& Icon::pixels() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.pixels)
+  return pixels_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Icon::set_pixels(const ::std::string& value) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:msgs.Icon.pixels)
+}
+ void Icon::set_pixels(const char* value) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:msgs.Icon.pixels)
+}
+ void Icon::set_pixels(const void* value, size_t size) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:msgs.Icon.pixels)
+}
+ ::std::string* Icon::mutable_pixels() {
+  set_has_pixels();
+  // @@protoc_insertion_point(field_mutable:msgs.Icon.pixels)
+  return pixels_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* Icon::release_pixels() {
+  // @@protoc_insertion_point(field_release:msgs.Icon.pixels)
+  clear_has_pixels();
+  return pixels_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Icon::set_allocated_pixels(::std::string* pixels) {
+  if (pixels != NULL) {
+    set_has_pixels();
+  } else {
+    clear_has_pixels();
+  }
+  pixels_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), pixels);
+  // @@protoc_insertion_point(field_set_allocated:msgs.Icon.pixels)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

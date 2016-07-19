@@ -29,8 +29,8 @@ std::vector<ProcessWindow> WindowsList::windows() const
 
 void WindowsList::printProcessList()
 {	
-	std::lock_guard<std::mutex> lck(this->lock_);
 	auto procWins = this->windows();
+	std::lock_guard<std::mutex> lck(this->lock_);
 	for (const auto& pw : procWins)
 		pw.windowInfo();
 }
@@ -48,7 +48,8 @@ void WindowsList::update()
 
 	// looking for the old windows --> EVENT: WINDOW CLOSED
 	std::vector<HWND> closed_wins;
-	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), closed_wins.begin());
+	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(),
+		std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
 		cout << "Closed window :";
@@ -58,7 +59,8 @@ void WindowsList::update()
 	}
 
 	std::vector<HWND> new_wins;
-	std::set_difference(updated.begin(), updated.end(), winHandles_.begin(), winHandles_.end(), new_wins.begin());
+	std::set_difference(updated.begin(), updated.end(), winHandles_.begin(), winHandles_.end(), 
+		std::inserter(new_wins, new_wins.begin()));
 	//looking for new windows --> EVENT: NEW WINDOW CREATED
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);

@@ -132,10 +132,14 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	std::string msg;
 	uint32_t size_;
 	
+	std::unique_ptr<msgs::Icon> icon_ptr;
+
 	switch (s) {
 	case ProcessWindow::W_OPENED:
 		opened.set_name(wnd.title());
 		opened.set_id((uint64_t) wnd.handle());
+		icon_ptr = wnd.encodeIcon();
+		opened.set_allocated_icon(icon_ptr.get());
 		event.set_allocated_created(&opened);
 		break;
 	case ProcessWindow::W_CLOSED:

@@ -42,6 +42,7 @@ class AppGotFocus;
 class AppList;
 class Application;
 class Event;
+class Icon;
 class KeystrokeRequest;
 
 // ===================================================================
@@ -363,12 +364,23 @@ class Application : public ::google::protobuf::Message {
   ::std::string* release_name();
   void set_allocated_name(::std::string* name);
 
+  // optional .msgs.Icon icon = 3;
+  bool has_icon() const;
+  void clear_icon();
+  static const int kIconFieldNumber = 3;
+  const ::msgs::Icon& icon() const;
+  ::msgs::Icon* mutable_icon();
+  ::msgs::Icon* release_icon();
+  void set_allocated_icon(::msgs::Icon* icon);
+
   // @@protoc_insertion_point(class_scope:msgs.Application)
  private:
   inline void set_has_id();
   inline void clear_has_id();
   inline void set_has_name();
   inline void clear_has_name();
+  inline void set_has_icon();
+  inline void clear_has_icon();
 
   // helper for ByteSize()
   int RequiredFieldsByteSizeFallback() const;
@@ -378,12 +390,130 @@ class Application : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint64 id_;
   ::google::protobuf::internal::ArenaStringPtr name_;
+  ::msgs::Icon* icon_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
   friend void protobuf_ShutdownFile_protocol_2eproto();
 
   void InitAsDefaultInstance();
   static Application* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Icon : public ::google::protobuf::Message {
+ public:
+  Icon();
+  virtual ~Icon();
+
+  Icon(const Icon& from);
+
+  inline Icon& operator=(const Icon& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Icon& default_instance();
+
+  void Swap(Icon* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Icon* New() const { return New(NULL); }
+
+  Icon* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Icon& from);
+  void MergeFrom(const Icon& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Icon* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required uint32 width = 1;
+  bool has_width() const;
+  void clear_width();
+  static const int kWidthFieldNumber = 1;
+  ::google::protobuf::uint32 width() const;
+  void set_width(::google::protobuf::uint32 value);
+
+  // required uint32 height = 2;
+  bool has_height() const;
+  void clear_height();
+  static const int kHeightFieldNumber = 2;
+  ::google::protobuf::uint32 height() const;
+  void set_height(::google::protobuf::uint32 value);
+
+  // required bytes pixels = 3;
+  bool has_pixels() const;
+  void clear_pixels();
+  static const int kPixelsFieldNumber = 3;
+  const ::std::string& pixels() const;
+  void set_pixels(const ::std::string& value);
+  void set_pixels(const char* value);
+  void set_pixels(const void* value, size_t size);
+  ::std::string* mutable_pixels();
+  ::std::string* release_pixels();
+  void set_allocated_pixels(::std::string* pixels);
+
+  // @@protoc_insertion_point(class_scope:msgs.Icon)
+ private:
+  inline void set_has_width();
+  inline void clear_has_width();
+  inline void set_has_height();
+  inline void clear_has_height();
+  inline void set_has_pixels();
+  inline void clear_has_pixels();
+
+  // helper for ByteSize()
+  int RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 width_;
+  ::google::protobuf::uint32 height_;
+  ::google::protobuf::internal::ArenaStringPtr pixels_;
+  friend void  protobuf_AddDesc_protocol_2eproto();
+  friend void protobuf_AssignDesc_protocol_2eproto();
+  friend void protobuf_ShutdownFile_protocol_2eproto();
+
+  void InitAsDefaultInstance();
+  static Icon* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -947,6 +1077,156 @@ inline void Application::set_allocated_name(::std::string* name) {
   // @@protoc_insertion_point(field_set_allocated:msgs.Application.name)
 }
 
+// optional .msgs.Icon icon = 3;
+inline bool Application::has_icon() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Application::set_has_icon() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Application::clear_has_icon() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Application::clear_icon() {
+  if (icon_ != NULL) icon_->::msgs::Icon::Clear();
+  clear_has_icon();
+}
+inline const ::msgs::Icon& Application::icon() const {
+  // @@protoc_insertion_point(field_get:msgs.Application.icon)
+  return icon_ != NULL ? *icon_ : *default_instance_->icon_;
+}
+inline ::msgs::Icon* Application::mutable_icon() {
+  set_has_icon();
+  if (icon_ == NULL) {
+    icon_ = new ::msgs::Icon;
+  }
+  // @@protoc_insertion_point(field_mutable:msgs.Application.icon)
+  return icon_;
+}
+inline ::msgs::Icon* Application::release_icon() {
+  // @@protoc_insertion_point(field_release:msgs.Application.icon)
+  clear_has_icon();
+  ::msgs::Icon* temp = icon_;
+  icon_ = NULL;
+  return temp;
+}
+inline void Application::set_allocated_icon(::msgs::Icon* icon) {
+  delete icon_;
+  icon_ = icon;
+  if (icon) {
+    set_has_icon();
+  } else {
+    clear_has_icon();
+  }
+  // @@protoc_insertion_point(field_set_allocated:msgs.Application.icon)
+}
+
+// -------------------------------------------------------------------
+
+// Icon
+
+// required uint32 width = 1;
+inline bool Icon::has_width() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Icon::set_has_width() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Icon::clear_has_width() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Icon::clear_width() {
+  width_ = 0u;
+  clear_has_width();
+}
+inline ::google::protobuf::uint32 Icon::width() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.width)
+  return width_;
+}
+inline void Icon::set_width(::google::protobuf::uint32 value) {
+  set_has_width();
+  width_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Icon.width)
+}
+
+// required uint32 height = 2;
+inline bool Icon::has_height() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Icon::set_has_height() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Icon::clear_has_height() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Icon::clear_height() {
+  height_ = 0u;
+  clear_has_height();
+}
+inline ::google::protobuf::uint32 Icon::height() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.height)
+  return height_;
+}
+inline void Icon::set_height(::google::protobuf::uint32 value) {
+  set_has_height();
+  height_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Icon.height)
+}
+
+// required bytes pixels = 3;
+inline bool Icon::has_pixels() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Icon::set_has_pixels() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Icon::clear_has_pixels() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Icon::clear_pixels() {
+  pixels_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_pixels();
+}
+inline const ::std::string& Icon::pixels() const {
+  // @@protoc_insertion_point(field_get:msgs.Icon.pixels)
+  return pixels_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Icon::set_pixels(const ::std::string& value) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:msgs.Icon.pixels)
+}
+inline void Icon::set_pixels(const char* value) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:msgs.Icon.pixels)
+}
+inline void Icon::set_pixels(const void* value, size_t size) {
+  set_has_pixels();
+  pixels_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:msgs.Icon.pixels)
+}
+inline ::std::string* Icon::mutable_pixels() {
+  set_has_pixels();
+  // @@protoc_insertion_point(field_mutable:msgs.Icon.pixels)
+  return pixels_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Icon::release_pixels() {
+  // @@protoc_insertion_point(field_release:msgs.Icon.pixels)
+  clear_has_pixels();
+  return pixels_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Icon::set_allocated_pixels(::std::string* pixels) {
+  if (pixels != NULL) {
+    set_has_pixels();
+  } else {
+    clear_has_pixels();
+  }
+  pixels_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), pixels);
+  // @@protoc_insertion_point(field_set_allocated:msgs.Icon.pixels)
+}
+
 // -------------------------------------------------------------------
 
 // AppDestroyed
@@ -1140,6 +1420,8 @@ inline void Event::set_allocated_got_focus(::msgs::AppGotFocus* got_focus) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

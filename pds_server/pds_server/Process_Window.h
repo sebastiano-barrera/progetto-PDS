@@ -10,7 +10,9 @@ class ProcessWindow
 {
 	std::wstring title_;
 	HWND window_;
+	HANDLE process_;
 	HICON icon_;
+	std::wstring moduleFileName_;
 	//TODO: icon representation
 
 public:
@@ -23,5 +25,6 @@ public:
 	//std::wstring title();
 	std::string title() const;
 	bool sendKeystroke(msgs::KeystrokeRequest req);
+	std::unique_ptr<msgs::Icon> encodeIcon() const;
 };
 

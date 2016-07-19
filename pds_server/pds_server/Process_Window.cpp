@@ -11,34 +11,120 @@ INPUT PressKey(int key);
 ProcessWindow::ProcessWindow(HWND hWnd) :
 	window_(hWnd)
 {
-	LPTSTR title = new WCHAR[256];
-	HICON hicon;
-	PICONINFO icon_info=nullptr;
-	
-	if (GetWindowText(hWnd, title, 256) > 0)
-		title_ = std::wstring(title);
+	WCHAR wbuf[1024];
 
-	// Getting the handle to window_ icon_
-	hicon = reinterpret_cast<HICON>(SendMessage(hWnd, WM_GETICON, ICON_SMALL2, NULL));
-	if (hicon != NULL)
-		icon_ = hicon;
+	if (GetWindowText(hWnd, wbuf, 256) > 0)
+		title_ = std::wstring(wbuf);
 
-	//CURRENTLY NOT WORKING
-	/* 
-		if (!GetIconInfo(hicon, icon_info)) {
-		std::cout << "geticoninfo() failed\n" << std::endl;
-	}
-	*/
+	DWORD proc_id;
+	GetWindowThreadProcessId(window_, &proc_id);
+	process_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, proc_id);
+	DWORD wbuf_size = sizeof(wbuf);
+	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0)
+		moduleFileName_ = std::wstring(wbuf);
 
-	//TODO: icon_ retrieval
-	//this->windowInfo();
-	delete[] title;
+	icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);
+	if (icon_ == 0)
+		icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL, 0);
+	if (icon_ == 0)
+		icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_BIG, 0);
+	if (icon_ == 0)
+		icon_ = (HICON) GetClassLongPtr(window_, GCL_HICON);
+	if (icon_ == 0)
+		icon_ = (HICON) GetClassLongPtr(window_, GCL_HICONSM);
+
 }
-
 
 void ProcessWindow::windowInfo() const
 {
-	std::wcout << "Window: Title:" << title_ << " handle: " << window_ << std::endl;
+	std::wcout << "Window: Title:" << title_ << " (" << moduleFileName_ << ", icon: " << icon_ << ")" << std::endl;
+}
+
+std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
+{
+	// NOTE: The following code does not make any effort to support
+	// paletted (aka color-indexed) formats, since we don't make use
+	// of them whatsoever, and it makes the code less readable and more
+	// complex.
+
+	ICONINFO icon_info;
+
+	if (GetIconInfo(icon_, &icon_info) == FALSE)
+		return nullptr;
+	
+	BITMAP bmp;
+	if (!icon_info.hbmColor) {
+		std::wcerr << "warning: required icon is black/white (not yet implemented)";
+		return nullptr;
+	}
+
+	if (GetObject(icon_info.hbmColor, sizeof(bmp), &bmp) <= 0)
+		return nullptr;
+
+	// Allocate memory for the header (should also make space for the color table,
+	// but we're not using it, so no need for that)
+	BITMAPINFOHEADER *hdr = (BITMAPINFOHEADER*)GlobalAlloc(GMEM_FIXED, sizeof(hdr));
+	hdr->biSize = sizeof(BITMAPINFOHEADER);
+	hdr->biWidth = bmp.bmWidth;
+	hdr->biHeight = bmp.bmHeight;
+	hdr->biPlanes = 1;
+	hdr->biBitCount = bmp.bmPlanes * bmp.bmBitsPixel;
+	hdr->biCompression = BI_RGB;
+	hdr->biSizeImage = 0;
+	hdr->biXPelsPerMeter = 0;  // just not using these
+	hdr->biYPelsPerMeter = 0;
+	hdr->biClrUsed = 0;
+	hdr->biClrImportant = 0;
+
+	HDC hdc = GetDC(NULL);
+
+	// Make the device driver calculate thei image data size (biSizeImage)
+	GetDIBits(hdc, icon_info.hbmColor, 0L, bmp.bmHeight,
+		NULL, (BITMAPINFO*) hdr, DIB_RGB_COLORS);
+
+	if (hdr->biSizeImage == 0) {
+		// Well, that didn't work out. Calculate biSizeImage ourselves.
+		// The form ((x + n) & ~n) is a trick to round x up to a multiple of n+1.
+		// In this case, a multiple of 32 (== sizeof DWORD)
+		hdr->biSizeImage = (((hdr->biWidth * hdr->biBitCount) + 31) & ~31) / 8 * hdr->biHeight;
+	}
+
+	// Make space for the image pixels data
+	HANDLE realloc = GlobalReAlloc((HANDLE) hdr,
+		sizeof(BITMAPINFOHEADER) + hdr->biSizeImage,
+		GMEM_MOVEABLE);
+	if (!realloc) {
+		GlobalFree((HANDLE)hdr);
+		ReleaseDC(NULL, hdc);
+		return nullptr;
+	}
+
+	hdr = (BITMAPINFOHEADER*)realloc;
+	void *pixels = ((uint8_t*) hdr) + sizeof(BITMAPINFOHEADER);
+	BOOL got_bits = GetDIBits(hdc, icon_info.hbmColor, 
+		0L, bmp.bmHeight,
+		(LPBYTE) pixels, 
+		(BITMAPINFO*)hdr,
+		DIB_RGB_COLORS);
+
+	ReleaseDC(NULL, hdc);
+	
+	if (!got_bits) {
+		// Well, damn.
+		GlobalFree(hdr);
+		return nullptr;
+	}
+
+	// Got the bitmap data! Finally!
+	auto icon = std::make_unique<msgs::Icon>();
+	icon->set_width(hdr->biWidth);
+	icon->set_height(hdr->biHeight);
+	icon->set_pixels(pixels, hdr->biSizeImage);
+	
+	std::cerr << icon->DebugString() << '\n';
+
+	GlobalFree(hdr);
+	return icon;
 }
 
 HWND ProcessWindow::handle() const
@@ -99,3 +185,13 @@ INPUT PressKey(int key) {
 	input.ki.wVk = key;
 	return input;
 }
+#if 0
+
+Pseudo-code for icon data extraction:
+
+Starting from icon_ (HICON).
+
+if ()1
+
+
+#endif
