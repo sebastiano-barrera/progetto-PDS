@@ -1,6 +1,6 @@
 #pragma once
 #include "Client.h"
-#include "Process_Window.h"
+#include "ProcessWindow.h"
 #include <list>
 #include <mutex>
 

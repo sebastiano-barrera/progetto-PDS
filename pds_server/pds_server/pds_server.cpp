@@ -7,7 +7,7 @@
 #endif
 #include <WinSock2.h>
 #include <Windows.h>
-
+#include <WS2tcpip.h>
 #include <iostream>
 #include <thread>
 #include <condition_variable>
@@ -20,7 +20,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 
-#define PORT_NO 25568
+#define PORT_NO 3000
 #define MAX_CONN 5
 
 
@@ -34,13 +34,21 @@ ClientList active;
 
 
 void checkWindowsEvents();
+void threadPoolInit(int n);
 
 int main()
 {
 	SOCKET connected, s = sockInit();
 	std::thread(checkWindowsEvents).detach();
+	threadPoolInit(8);
 	while (true) {
-		connected = accept(s, NULL, NULL);
+		struct sockaddr_in caddress;
+		int length = sizeof(struct sockaddr_in);
+		connected = accept(s, (struct sockaddr*)&caddress, &length);
+		std::string address;
+
+		//InetNtop(AF_INET, &caddress, (PWSTR)&address, 32);
+		std::cout << "New connection established "<<std::endl;
 		pending.addClient(Client(connected));
 	}
 	closesocket(s);
@@ -60,11 +68,18 @@ void serveClient() {
 
 
 void checkWindowsEvents() {
-	std::cout << "Lanciato thread per controllare gli eventi" << std::endl;
+	//std::cout << "Lanciato thread per controllare gli eventi" << std::endl;
 	while (true) {
-		windows_list.printProcessList();
+		//windows_list.printProcessList();
 		windows_list.update();
-		Sleep(250);
+		Sleep(2500);
+	}
+}
+
+void threadPoolInit(int n)
+{
+	for (int i = 0; i < n; i++) {
+		std::thread(serveClient).detach();
 	}
 }
 

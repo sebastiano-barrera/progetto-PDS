@@ -27,16 +27,16 @@
     <ClInclude Include="Client.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Process_Window.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="Windows_List.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="ClientList.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsList.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessWindow.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,12 +50,6 @@
     <ClCompile Include="Client.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Process_Window.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Windows_List.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\proto\protocol.pb.cc">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -65,11 +59,12 @@
     <ClCompile Include="ClientList.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\extern\install\lib\libprotobuf.lib">
+    <ClCompile Include="WindowsList.cpp">
       <Filter>File di origine</Filter>
-    </Library>
+    </ClCompile>
+    <ClCompile Include="ProcessWindow.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

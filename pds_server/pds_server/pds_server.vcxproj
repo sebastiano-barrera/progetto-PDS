@@ -160,7 +160,7 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientList.h" />
     <ClInclude Include="global.h" />
-    <ClInclude Include="Process_Window.h" />
+    <ClInclude Include="ProcessWindow.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsList.h" />
@@ -175,7 +175,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientList.cpp" />
     <ClCompile Include="pds_server.cpp" />
-    <ClCompile Include="Process_Window.cpp" />
+    <ClCompile Include="ProcessWindow.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

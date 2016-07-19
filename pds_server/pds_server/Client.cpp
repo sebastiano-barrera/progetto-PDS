@@ -10,7 +10,9 @@
 #include <atlconv.h>
 
 #define MAXWAIT 120
+#define BUFFSIZE 1024
 
+bool readN(SOCKET s, int size, char* buffer);
 Client::Client()
 {
 
@@ -34,6 +36,7 @@ void Client::serve()
 
 bool Client::sendProcessList()
 {
+	std::cout << "--sending process list--" << std::endl;
 	uint32_t size_=0;
 	msgs::AppList msg;
 	std::string s_msg;
@@ -47,15 +50,15 @@ bool Client::sendProcessList()
 	
 	size_ = msg.ByteSize();
 	s_msg = msg.SerializeAsString();
-	std::cout <<"serialized msg size:"<<size_<<std::endl<< s_msg<< std::endl;
+	//std::cout <<"serialized msg size:"<<size_<<std::endl<< s_msg<< std::endl;
 	size_ = htonl(size_);
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
-	if (send(sck, (char*)&size_, sizeof(u_long), 0) == SOCKET_ERROR) {
+	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending message size" << std::endl;
 		return false;
 	}
 
-	if (send(sck, (char*)&s_msg, s_msg.size(), 0) == SOCKET_ERROR) {
+	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending data" << std::endl;
 		return false;
 	}
@@ -64,67 +67,23 @@ bool Client::sendProcessList()
 
 void Client::readMessage()
 {
+	std::cout << "--reading message--" << std::endl;
 	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
-	std::string buffer;
-	fd_set readset;
-	struct timeval tv;
-	int res;
-	FD_ZERO(&readset);
-	FD_SET(this->sck, &readset);
-	while (true) {
-		tv.tv_sec = MAXWAIT;
-		tv.tv_usec = 0;
-		res = select(0, &readset, NULL, NULL, &tv);
-		if (res > 0) {
-			if (size_ == 0) {
-				res = recv(sck, (char*)&size_, sizeof(uint32_t), 0);
-			}
-			else {
-				res = recv(sck, (char*)&buffer, ntohl(size_), 0);
-				size_ = 0;
-			}
-			if (res == 0) {
-				//CONNECTION CLOSED BY CLIENT
-				closesocket(sck);
-				break;
-			}
-			else {
-				if (!msg.ParseFromString(buffer)) {
-					std::cerr << "an error occurred while parsing the msg" << std::endl;
-				}
-				else {
-					//devo recuperare la finestra e mandare la combinazione di tasti
-					ProcessWindow((HWND) msg.app_id()).sendKeystroke(msg);
-				}
-			}
-		}
-		else if (res == 0) {
-			closesocket(sck);
-			break;
-		}
-		else { //SOCKET ERROR
-			closesocket(sck);
-			break;
+	if (readN(sck, 4, (char*)&size_)){
+		std::cout << "---read size---" << std::endl;
+		size_ = ntohl(size_);
+		std::unique_ptr<char[]> buffer(new char[size_]);
+		if (readN(sck, size_, buffer.get())) {
+			std::wcout << "----read message----" << std::endl;
+			msg.ParseFromArray(buffer.get(), size_);
 		}
 	}
-	/*
-		if (recv(sck, (char*)&size_, sizeof(uint32_t), MSG_OOB) == SOCKET_ERROR) {
-		std::cerr << "an error occurred while reading msg size_" << std::endl;
-	}
-	if (recv(sck, (char*)&buffer, ntohl(size_), MSG_OOB) == SOCKET_ERROR) {
-		std::cerr << "an error occurred while reading msg" << std::endl;
-	}
-
-	if (!msg.ParseFromString(buffer)) {
-		std::cerr << "an error occurred while parsing the msg" << std::endl;
-	}
-	
-	*/
 }
 
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
+	std::cout << "--sending message--" << std::endl;
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
 	msgs::AppGotFocus focus;
@@ -156,8 +115,38 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 		std::cerr << "an errror occurred while sending message size" << std::endl;
 	}
 
-	if (send(sck, (char*)&msg, msg.size(), 0) == SOCKET_ERROR) {
+	if (send(sck, msg.c_str(), msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending data" << std::endl;
 	}
 }
 
+//reads exactly size byte
+bool readN(SOCKET s, int size, char* buffer){
+	fd_set readset;
+	struct timeval tv;
+	int left,res, received;
+	FD_ZERO(&readset);
+	FD_SET(s, &readset);
+	left = size;
+	while (left > 0) {
+		tv.tv_sec = MAXWAIT;
+		tv.tv_usec = 0;
+		res = select(0, &readset, NULL, NULL, &tv);
+		if (res > 0) {
+			res = recv(s, buffer, left, 0);
+			if (res == 0) {//connection closed by client
+				return false;
+			}
+
+			left -= res;
+			buffer += res;
+		}
+		else if (res == 0) { //timer expired
+			return false;
+		}
+		else { //socket error
+			return false;
+		}
+	}
+	return true;
+}
