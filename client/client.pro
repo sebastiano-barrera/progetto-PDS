@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = client
 TEMPLATE = app
 
-INCLUDEPATH += ../proto ../extern/include
+INCLUDEPATH += ../proto/cpp ../extern/include
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -22,8 +22,8 @@ SOURCES += main.cpp\
     applist.cpp \
     keyconv.cpp
 
-SOURCES += ../proto/protocol.pb.cc \
-    ../proto/keys.pb.cc
+SOURCES += ../proto/cpp/protocol.pb.cc \
+    ../proto/cpp/keys.pb.cc
 
 HEADERS  += mainwindow.h \
     connectionwidget.h \

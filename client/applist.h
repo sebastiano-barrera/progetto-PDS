@@ -15,7 +15,7 @@ namespace msgs {
 class App {
     // TODO: extract icon data
 public:
-    typedef quint64 Id;
+    typedef quint32 Id;
     enum {
         INVALID_ID = (Id) -1
     };
