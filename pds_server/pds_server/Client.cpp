@@ -21,10 +21,10 @@ Client::~Client()
 	}
 }
 
-Client::Client(SOCKET s):isClosed_(false)
-{
-	this->sck = s;
-}
+Client::Client(SOCKET s) :
+	isClosed_(false),
+	sck(s)
+{ }
 
 void Client::serve()
 {
@@ -54,7 +54,7 @@ Client::Client(Client && src)
 bool Client::sendProcessList()
 {
 	std::cout << "-sending process list" << std::endl;
-	uint32_t size_=0;
+	uint32_t size_ = 0;
 	msgs::AppGotFocus focus;
 	msgs::AppList msg;
 	std::string s_msg;
@@ -65,6 +65,7 @@ bool Client::sendProcessList()
 		msgs::Application* app = msg.add_apps();
 		app->set_id((uint64_t) it->handle());
 		app->set_name(it->title());
+		app->set_allocated_icon(it->encodeIcon().release());
 	}
 	
 	size_ = msg.ByteSize();
@@ -108,52 +109,47 @@ void Client::readMessage()
 	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
 	msgs::Event response;
-	msgs::Response *rsp = new msgs::Response();
 	std::string serialized_response;
 	uint32_t size;
 	while (true) {
-		if (readN(sck, 4, (char*)&size_)) {
-			std::cout << "---read size" << std::endl;
-			size_ = ntohl(size_);
-			std::cout << "keystroke size = " << size_ << std::endl;
-			std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
-			if (readN(sck, size_, buffer.get())) {
-				std::cout << "----read message" << std::endl;
-				std::cout << "\t" << buffer.get() << std::endl;
-				msg.ParseFromArray(buffer.get(), size_);
-				//controllo che la finestra richiesta sia quella onfocus, 
-				//in caso positivo mando l'input
-				HWND target = (HWND)msg.app_id();
-				if (target == windows_list.onFocus()) {
-					ProcessWindow(target).sendKeystroke(msg);
-					rsp->set_req_id(msg.req_id());
-					rsp->set_status(msgs::Response::Status::Response_Status_Success);
-				}
-				else {
-					//send error msg
-					rsp->set_req_id(msg.req_id());
-					rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
-				}
-				response.set_allocated_response(rsp);
-				size = response.ByteSize();
-				size = htonl(size);
-				serialized_response = response.SerializeAsString();
+		if (!readN(sck, 4, (char*)&size_))
+			break;
+		std::cout << "---read size" << std::endl;
+		
+		size_ = ntohl(size_);
+		std::cout << "keystroke size = " << size_ << std::endl;
+		
+		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
+		if (!readN(sck, size_, buffer.get()))
+			break;
+		std::cout << "----read message" << std::endl;
+		std::cout << "\t" << buffer.get() << std::endl;
+		msg.ParseFromArray(buffer.get(), size_);
 
-				if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
-					std::cerr << "an error occurred while sending response size" << std::endl;
-				}
-
-				if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR) {
-					std::cerr << "an error occurred while response data" << std::endl;
-				}
-			}
-			else {
-				break;
-			}
+		msgs::Response *rsp = new msgs::Response();
+		//controllo che la finestra richiesta sia quella onfocus, 
+		//in caso positivo mando l'input
+		HWND target = (HWND)msg.app_id();
+		if (target == windows_list.onFocus()) {
+			ProcessWindow(target).sendKeystroke(msg);
+			rsp->set_req_id(msg.req_id());
+			rsp->set_status(msgs::Response::Status::Response_Status_Success);
 		}
 		else {
-			break;
+			//send error msg
+			rsp->set_req_id(msg.req_id());
+			rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
 		}
+		response.set_allocated_response(rsp);
+		
+		size = htonl(response.ByteSize());
+		serialized_response = response.SerializeAsString();
+
+		if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR)
+			std::cerr << "an error occurred while sending response size" << std::endl;
+
+		if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR)
+			std::cerr << "an error occurred while response data" << std::endl;
 	}
 }
 
@@ -183,8 +179,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 
 			opened->set_name(wnd.title());
 			opened->set_id((uint64_t)wnd.handle());
-			auto icon_uniq_ptr = wnd.encodeIcon();
-			opened->set_allocated_icon(icon_uniq_ptr.release());
+			opened->set_allocated_icon(wnd.encodeIcon().release());
 			event.set_allocated_created(opened);
 			break; 
 		}
