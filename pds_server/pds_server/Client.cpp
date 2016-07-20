@@ -16,7 +16,6 @@ bool readN(SOCKET s, int size, char* buffer);
 
 Client::~Client()
 {
-	//POTREBBE IN QUALCHE MODO FARCI MALE? IN PRESENZA DI COPIE MOMENTANEE CHE VENGONO DISTRUTTE AD ESEMPIO
 	if (sck != INVALID_SOCKET) {
 		closeConnection();
 	}
@@ -33,6 +32,23 @@ void Client::serve()
 		this->readMessage();
 	}
 	closeConnection();
+}
+
+bool Client::isClosed() const
+{
+	return isClosed_;
+}
+
+void swap(Client &c1, Client &c2) {
+	std::swap(c1.sck, c2.sck);
+	std::swap(c1.isClosed_, c2.isClosed_);
+}
+
+Client::Client(Client && src)
+{
+	sck = INVALID_SOCKET;
+	isClosed_ = true;
+	swap(*this, src);
 }
 
 bool Client::sendProcessList()
@@ -57,12 +73,12 @@ bool Client::sendProcessList()
 
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending message size" << std::endl;
+		std::cerr << "an error occurred while sending message size" << std::endl;
 		return false;
 	}
 
 	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending data" << std::endl;
+		std::cerr << "an error occurred while sending data" << std::endl;
 		return false;
 	}
 
@@ -74,12 +90,12 @@ bool Client::sendProcessList()
 
 
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending message size" << std::endl;
+		std::cerr << "an error occurred while sending message size" << std::endl;
 		return false;
 	}
 
 	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending data" << std::endl;
+		std::cerr << "an error occurred while sending data" << std::endl;
 		return false;
 	}
 

@@ -12,15 +12,15 @@ public:
 	Client(SOCKET s);
 	void serve();
 	void sendMessage(ProcessWindow wnd, ProcessWindow::Status s);
-
-	inline bool isClosed() const {
-		throw std::logic_error("not yet implemented");
-	}
+	friend void swap(Client &c1, Client &c2);
+	bool isClosed() const;
+	Client(Client&& src);
 
 private:
 	bool sendProcessList();
 	void readMessage();
 	void closeConnection();
+	Client(const Client& src);
 
 };
 

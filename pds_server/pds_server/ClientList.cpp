@@ -7,7 +7,7 @@ ClientList::ClientList() : size_(0) { }
 Client& ClientList::addClient(Client c)
 {
 	std::lock_guard<std::mutex> lg(lock_);
-	clients.push_back(c);
+	clients.push_back(std::move(c));
 	auto& last_ref = clients.back();
 	size_++;
 	cv_.notify_all();
@@ -17,7 +17,7 @@ Client& ClientList::addClient(Client c)
 void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status s)
 {
 	std::lock_guard<std::mutex> lg(lock_);
-	for (auto c : clients) {
+	for (auto &c : clients) {
 		c.sendMessage(wnd, s);
 	}
 }
@@ -26,7 +26,7 @@ Client ClientList::getClient()
 {
 	std::unique_lock<std::mutex> lg(lock_);
 	cv_.wait(lg, [this]() { return size_ > 0; });
-	Client c = clients.front();
+	Client c = std::move(clients.front());
 	clients.pop_front();
 	size_--;
 	return c;
@@ -40,12 +40,6 @@ unsigned int ClientList::size() const
 
 void ClientList::cleanup()
 {
-	/// TODO
-	/// STUB
 	std::lock_guard<std::mutex> lg(lock_);
-	for (auto client = clients.begin(); client != clients.end(); client++) {
-		if (client->isClosed()) {
-			clients.erase(client);
-		}
-	}
+	clients.remove_if([](const Client &c) {return c.isClosed(); }); //rimuovo i client non più attivi
 }

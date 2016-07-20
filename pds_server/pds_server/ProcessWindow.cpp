@@ -164,21 +164,17 @@ bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
 		ip[num_mods++] = PressKey(VK_CONTROL);
 	}
 	if (req.alt()) {
-		ip[num_mods++] = PressKey(0);
+		ip[num_mods++] = PressKey(VK_MENU);
 	}
 	if (req.shift()) {
-		ip[num_mods++] = PressKey(0);
+		ip[num_mods++] = PressKey(VK_SHIFT);
 	}
 	if (req.meta()) {
-		ip[num_mods++] = PressKey(0);
+		ip[num_mods++] = PressKey(VK_LWIN);
 	}
 	
 	// TODO: convertire da tasto di protocollo
 	ip[num_mods++] = PressKey(0);
-	
-	BringWindowToTop(window_);
-	//oppure
-	SetForegroundWindow(window_);
 	if (SendInput(num_mods, ip, sizeof(INPUT))) {
 		for (int i = 0; i < num_mods; i++) {
 			ip[i].ki.dwFlags = KEYEVENTF_KEYUP;
