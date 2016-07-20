@@ -52,7 +52,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	if (GetIconInfo(icon_, &icon_info) == FALSE)
 		return nullptr;
 	
-	BITMAP bmp, alpha;
+	BITMAP bmp;
 	if (!icon_info.hbmColor) {
 		std::wcerr << "warning: required icon is black/white (not yet implemented)";
 		return nullptr;
@@ -61,29 +61,27 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	if (GetObject(icon_info.hbmColor, sizeof(bmp), &bmp) <= 0)
 		return nullptr;
 
-	if (GetObject(icon_info.hbmMask, sizeof(alpha), &alpha) <= 0)
-		return nullptr;
-
-	std::cerr << "Alpha mask:\n"
-		<< "\tplanes: " << alpha.bmPlanes << '\n'
-		<< "\tbits per pixel: " << alpha.bmBitsPixel << '\n'
-		<< "\twidth: " << alpha.bmWidth << '\n'
-		<< "\theight: " << alpha.bmHeight << '\n';
-
 	// Allocate memory for the header (should also make space for the color table,
 	// but we're not using it, so no need for that)
-	BITMAPINFOHEADER *hdr = (BITMAPINFOHEADER*) std::malloc(sizeof(*hdr));
-	hdr->biSize = sizeof(BITMAPINFOHEADER);
-	hdr->biWidth = bmp.bmWidth;
-	hdr->biHeight = bmp.bmHeight;
-	hdr->biPlanes = 1;
-	hdr->biBitCount = 24; // bmp.bmPlanes * bmp.bmBitsPixel;
-	hdr->biCompression = BI_RGB;
-	hdr->biSizeImage = 0;
-	hdr->biXPelsPerMeter = 0;  // just not using these
-	hdr->biYPelsPerMeter = 0;
-	hdr->biClrUsed = 0;
-	hdr->biClrImportant = 0;
+	BITMAPV5HEADER *hdr = (BITMAPV5HEADER*) std::malloc(sizeof(*hdr));
+	hdr->bV5Size = sizeof(BITMAPV5HEADER);
+	hdr->bV5Width = bmp.bmWidth;
+	hdr->bV5Height = bmp.bmHeight;
+	hdr->bV5Planes = 1;
+	// 4 bytes per pixel: (hi) ARGB (lo)
+	hdr->bV5BitCount = 32;
+	hdr->bV5Compression = BI_BITFIELDS;
+	hdr->bV5RedMask   = 0x00FF0000;
+	hdr->bV5GreenMask = 0x0000FF00;
+	hdr->bV5BlueMask  = 0x000000FF;
+	hdr->bV5AlphaMask = 0xFF000000;
+	// will compute this one later
+	hdr->bV5SizeImage = 0;
+	// this means: don't use/store a palette
+	hdr->bV5XPelsPerMeter = 0;  
+	hdr->bV5YPelsPerMeter = 0;
+	hdr->bV5ClrUsed = 0;
+	hdr->bV5ClrImportant = 0;
 
 	HDC hdc = GetDC(NULL);
 
@@ -91,27 +89,27 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	GetDIBits(hdc, icon_info.hbmColor, 0L, bmp.bmHeight,
 		NULL, (BITMAPINFO*) hdr, DIB_RGB_COLORS);
 
-	const size_t scanline_bytes = (((hdr->biWidth * hdr->biBitCount) + 31) & ~31) / 8;
-	if (hdr->biSizeImage == 0) {
-		// Well, that didn't work out. Calculate biSizeImage ourselves.
+	const size_t scanline_bytes = (((hdr->bV5Width * hdr->bV5BitCount) + 31) & ~31) / 8;
+	if (hdr->bV5SizeImage == 0) {
+		// Well, that didn't work out. Calculate bV5SizeImage ourselves.
 		// The form ((x + n) & ~n) is a trick to round x up to a multiple of n+1.
-		// In this case, a multiple of 32 (== sizeof DWORD)
-		hdr->biSizeImage = scanline_bytes * hdr->biHeight;
+		// In this case, a multiple of 32 (DWORD-aligned)
+		hdr->bV5SizeImage = scanline_bytes * hdr->bV5Height;
 	}
 
 	// Make space for the image pixels data
-	void *new_hdr = std::realloc(hdr, sizeof(BITMAPINFOHEADER) + hdr->biSizeImage);
+	void *new_hdr = std::realloc(hdr, sizeof(BITMAPV5HEADER) + hdr->bV5SizeImage);
 	if (!new_hdr) {
 		std::free(hdr);
 		ReleaseDC(NULL, hdc);
 		return nullptr;
 	}
-	hdr = (BITMAPINFOHEADER*)new_hdr;
+	hdr = (BITMAPV5HEADER*)new_hdr;
 
-	void *pixels = ((uint8_t*) hdr) + sizeof(BITMAPINFOHEADER);
+	void *pixels = ((uint8_t*) hdr) + sizeof(BITMAPV5HEADER);
 	BOOL got_bits = GetDIBits(hdc, icon_info.hbmColor, 
 		0L, bmp.bmHeight,
-		(LPBYTE) pixels, 
+		(LPBYTE) pixels,
 		(BITMAPINFO*)hdr,
 		DIB_RGB_COLORS);
 
@@ -127,28 +125,20 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	// The following adapts the data we have to the format we want (24 bits per pixel, uncompressed RGB).
 	// This code won't work after changing either format.
 
-	// Invert order of channels (BGR -> RGB)
-	typedef unsigned char color_t[3];
-	for (int y = 0; y < hdr->biHeight; y++) {
-		for (int x = 0; x < hdr->biWidth; x++) {
-			char *pixel = (char*)pixels + y * scanline_bytes + x * 3;
-			std::swap(pixel[0], pixel[2]);
-		}
-	}
-
+	// Invert order of channels (BGRA -> ARGB)
 	// Turn image upside down
-	for (int y = 0; y < hdr->biHeight/2; y++) {
-		for (int x = 0; x < hdr->biWidth; x++) {
-			color_t *scanline_top = (color_t*) ((char*)pixels + y * scanline_bytes + x * 3);
-			color_t *scanline_bot = (color_t*) ((char*)pixels + (hdr->biHeight - y - 1) * scanline_bytes + x * 3);
-			std::swap(*scanline_top, *scanline_bot);
-		}
+	typedef unsigned char color_t[4];
+	for (int y = 0; y < hdr->bV5Height/2; y++) {
+		color_t *scanline_top = (color_t*)((char*)pixels + y * scanline_bytes);
+		color_t *scanline_bot = (color_t*)((char*)pixels + (hdr->bV5Height - y - 1) * scanline_bytes);
+		for (int x = 0; x < hdr->bV5Width; x++)
+			std::swap(scanline_top[x], scanline_bot[x]);
 	}
 
 	auto icon = std::make_unique<msgs::Icon>();
-	icon->set_width(hdr->biWidth);
-	icon->set_height(hdr->biHeight);
-	icon->set_pixels(pixels, hdr->biSizeImage);
+	icon->set_width(hdr->bV5Width);
+	icon->set_height(hdr->bV5Height);
+	icon->set_pixels(pixels, hdr->bV5SizeImage);
 	
 	std::free(hdr);  // also frees pixels
 	return icon;

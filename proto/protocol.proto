@@ -19,15 +19,15 @@ message AppList {
 message Application {
     required uint64 id = 1;
     required string name = 2;
-	optional Icon icon = 3;
+    optional Icon icon = 3;
 }
 
 message Icon {
 	// Size in pixels
 	required uint32 width = 1;
 	required uint32 height = 2;
-	// Raw image data, in packed RGBA32 format
-	// < r: u8, g: u8, b: u8, a: u8 >
+	// Raw image data, in packed ARGB32 format
+	// < a: u8, r: u8, g: u8, b: u8 >
 	// `pixels` should be (width * height * 4) bytes
 	required bytes pixels = 3;
 }

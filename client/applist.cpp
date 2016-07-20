@@ -23,11 +23,8 @@ App::App(const msgs::Application &msg) :
         auto& icon = msg.icon();
         QImage image(reinterpret_cast<const uchar*>(icon.pixels().data()),
                      icon.width(), icon.height(),
-                     QImage::Format_RGB888);
-        image = image.scaledToHeight(16);
-        QImage alpha = image.createMaskFromColor(qRgb(0, 0, 0), Qt::MaskOutColor);
-        image.setAlphaChannel(alpha);
-        icon_ = QPixmap::fromImage(image);
+                     QImage::Format_ARGB32);
+        icon_ = QPixmap::fromImage(image.scaledToHeight(16));
     }
 }
 
@@ -122,7 +119,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     if (col == 0) {
         if (role == Qt::DisplayRole)
-            return QString("%1 - %2").arg(app->id()).arg(app->name());
+            return app->name();
         if (role == Qt::DecorationRole)
             return app->icon();
     } else if (col == 1) {
