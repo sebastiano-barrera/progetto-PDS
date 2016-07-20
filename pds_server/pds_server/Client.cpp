@@ -111,41 +111,48 @@ void Client::readMessage()
 	msgs::Response *rsp = new msgs::Response();
 	std::string serialized_response;
 	uint32_t size;
+	while (true) {
+		if (readN(sck, 4, (char*)&size_)) {
+			std::cout << "---read size" << std::endl;
+			size_ = ntohl(size_);
+			std::cout << "keystroke size = " << size_ << std::endl;
+			std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
+			if (readN(sck, size_, buffer.get())) {
+				std::cout << "----read message" << std::endl;
+				std::cout << "\t" << buffer.get() << std::endl;
+				msg.ParseFromArray(buffer.get(), size_);
+				//controllo che la finestra richiesta sia quella onfocus, 
+				//in caso positivo mando l'input
+				HWND target = (HWND)msg.app_id();
+				if (target == windows_list.onFocus()) {
+					ProcessWindow(target).sendKeystroke(msg);
+					rsp->set_req_id(msg.req_id());
+					rsp->set_status(msgs::Response::Status::Response_Status_Success);
+				}
+				else {
+					//send error msg
+					rsp->set_req_id(msg.req_id());
+					rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
+				}
+				response.set_allocated_response(rsp);
+				size = response.ByteSize();
+				size = htonl(size);
+				serialized_response = response.SerializeAsString();
 
-	if (readN(sck, 4, (char*)&size_)){
-		std::cout << "---read size" << std::endl;
-		size_ = ntohl(size_);
-		std::cout << "keystroke size = " << size_ << std::endl;
-		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
-		if (readN(sck, size_, buffer.get())) {
-			std::cout << "----read message" << std::endl;
-			std::cout <<"\t"<< buffer.get()<< std::endl;
-			msg.ParseFromArray(buffer.get(), size_);
-			//controllo che la finestra richiesta sia quella onfocus, 
-			//in caso positivo mando l'input
-			HWND target = (HWND)msg.app_id();
-			if (target == windows_list.onFocus()) {
-				ProcessWindow(target).sendKeystroke(msg);
-				rsp->set_req_id(msg.req_id());
-				rsp->set_status(msgs::Response::Status::Response_Status_Success);
+				if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
+					std::cerr << "an error occurred while sending response size" << std::endl;
+				}
+
+				if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR) {
+					std::cerr << "an error occurred while response data" << std::endl;
+				}
 			}
 			else {
-				//send error msg
-				rsp->set_req_id(msg.req_id());
-				rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
+				break;
 			}
-			response.set_allocated_response(rsp);
-			size = response.ByteSize();
-			size = htonl(size);
-			serialized_response = response.SerializeAsString();
-
-			if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
-				std::cerr << "an error occurred while sending response size" << std::endl;
-			}
-
-			if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR) {
-				std::cerr << "an error occurred while response data" << std::endl;
-			}
+		}
+		else {
+			break;
 		}
 	}
 }
