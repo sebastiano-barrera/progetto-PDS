@@ -3,13 +3,13 @@
 
 #include <QObject>
 #include <QIODevice>
-#include <QByteArray>
 
 #include <memory>
 #include <mutex>
 
 /// Wraps a QIODevice and allows to send and receive messages (typically
 /// protobuf-made). It implements a simple wire protocol to delimit messages.
+/// The advantage over a QDataStream is that this performs asynchronous I/O.
 class MessageStream : public QObject
 {
     Q_OBJECT

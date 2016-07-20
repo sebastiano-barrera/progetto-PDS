@@ -1,6 +1,10 @@
 #include "messagestream.h"
+
 #include <cassert>
+
 #include <QtEndian>
+#include <QByteArray>
+
 
 MessageStream::MessageStream(QIODevice *device, QObject *parent) :
     QObject(parent),
@@ -44,6 +48,11 @@ void MessageStream::readyRead()
     //        give the message to whoever wants it through the signal,
     //
 
+    // Note: this slot is called when there is *new* data available.
+    // If we don't read all of the available data immediately, some
+    // of it will remain in dev_'s buffer. This function will
+    // be called again only when *more* data arrives.
+
     if (!msgbuf_) {
         // No message
         quint32 msg_len;
@@ -56,10 +65,14 @@ void MessageStream::readyRead()
         remaining_ = msg_len;
     }
 
-    {
-        static const quint32 MAX_READ = 1024;
-        char buf[MAX_READ];
-        int nbytesread = dev_->read(buf, std::min(remaining_, MAX_READ));
+    static const quint32 MAX_READ = 1024;
+    char buf[MAX_READ];
+
+    while(dev_->bytesAvailable() > 0) {
+        qint32 nbytesread = dev_->read(buf, std::min(remaining_, MAX_READ));
+        if (nbytesread == 0 && remaining_ > 0)
+            qWarning("Message ended prematurely (%u < %d)",
+                     msgbuf_->size(), msgbuf_->size() + remaining_);
         if (nbytesread == -1)
             goto err;
 
