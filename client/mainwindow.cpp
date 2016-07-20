@@ -31,8 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
     connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);
     connect(&proto_, &ClientProtocol::appGotFocus, &appListModel_, &AppList::setFocusedApp);
+    connect(&proto_, &ClientProtocol::responseReceived, this, &MainWindow::showResponse);
 
-    connect(&msgBox_, &QMessageBox::accepted, this, [this](){ msgBox_.setText(""); });
+    connect(&msgBox_, &QMessageBox::finished, this, [this](int result){
+        msgBox_.setText("");
+    });
 
     updatePendingReqMsg();
     connect(&proto_, &ClientProtocol::stopped, this, [this]() {
