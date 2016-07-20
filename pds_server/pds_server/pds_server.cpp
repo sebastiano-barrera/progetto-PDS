@@ -20,7 +20,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 
-#define PORT_NO 3000
+
 #define MAX_CONN 5
 
 
@@ -31,15 +31,23 @@ std::condition_variable cv;
 WindowsList windows_list;
 ClientList pending;
 ClientList active;
-
+USHORT PORT_NO;
 
 void checkWindowsEvents();
 void threadPoolInit(int n);
 
 
-int main()
+int main(int argc, char**argv)
 {
-	
+	std::string path(argv[0]);
+	std::string delimiter("\\");
+	std::string prog_name = path.substr(path.find_last_of("\\"), path.length());
+	if (argc != 2) {
+		std::cerr << "invalid arguments, try ." << prog_name << " <port#>" << std::endl;
+		exit(1);
+	}
+
+	PORT_NO = atoi(argv[1]);
 	SOCKET connected, s = sockInit();
 	std::thread(checkWindowsEvents).detach();
 	threadPoolInit(8);
@@ -117,6 +125,6 @@ SOCKET sockInit() {
 		exit(1);
 	}
 	
-	std::cout << "waiting for connections..." << std::endl;
+	std::cout << "waiting for connections on port: " << PORT_NO << " . . ." << std::endl;
 	return temp_sock;
 }
