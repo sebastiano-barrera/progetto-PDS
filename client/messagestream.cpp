@@ -53,22 +53,22 @@ void MessageStream::readyRead()
     // of it will remain in dev_'s buffer. This function will
     // be called again only when *more* data arrives.
 
-    if (!msgbuf_) {
-        // No message
-        quint32 msg_len;
-        int ret = dev_->read((char*) &msg_len, sizeof(msg_len));
-        if (ret == -1)
-            goto err;
-
-        msg_len = qFromBigEndian(msg_len);
-        msgbuf_ = std::unique_ptr<QByteArray> { new QByteArray() };
-        remaining_ = msg_len;
-    }
-
-    static const quint32 MAX_READ = 1024;
-    char buf[MAX_READ];
-
     while(dev_->bytesAvailable() > 0) {
+        if (!msgbuf_) {
+            // No message
+            quint32 msg_len;
+            int ret = dev_->read((char*) &msg_len, sizeof(msg_len));
+            if (ret == -1)
+                goto err;
+
+            msg_len = qFromBigEndian(msg_len);
+            msgbuf_ = std::unique_ptr<QByteArray> { new QByteArray() };
+            remaining_ = msg_len;
+        }
+
+        static const quint32 MAX_READ = 1024;
+        char buf[MAX_READ];
+
         qint32 nbytesread = dev_->read(buf, std::min(remaining_, MAX_READ));
         if (nbytesread == 0 && remaining_ > 0)
             qWarning("Message ended prematurely (%u < %d)",

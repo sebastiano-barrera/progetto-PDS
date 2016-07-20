@@ -10,7 +10,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui_(new Ui::MainWindow)
+    ui_(new Ui::MainWindow),
+    numPendingReqs_(0)
 {
     ui_->setupUi(this);
     ui_->appListView->setModel(&appListModel_);
@@ -30,6 +31,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
     connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);
     connect(&proto_, &ClientProtocol::appGotFocus, &appListModel_, &AppList::setFocusedApp);
+
+    connect(&msgBox_, &QMessageBox::accepted, this, [this](){ msgBox_.setText(""); });
+
+    updatePendingReqMsg();
+    connect(&proto_, &ClientProtocol::stopped, this, [this]() {
+        numPendingReqs_ = 0;
+        updatePendingReqMsg();
+    });
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -63,12 +73,60 @@ void MainWindow::sendKeystroke()
     qDebug() << "sending keystroke for "
              << selIndices.size()
              << " selected items";
+    // copy a new request for each selected window
     for (QModelIndex index : selIndices) {
         const App* app = appListModel_.atIndex(index);
         if (app == nullptr)
             continue;
 
         req.set_app_id(app->id());
-        proto_.sendRequest(req);
+        proto_.sendRequest(std::make_unique<msgs::KeystrokeRequest>(req));
+        numPendingReqs_++;
     }
+
+    updatePendingReqMsg();
+}
+
+const char* statusMessage(msgs::Response::Status status)
+{
+    switch(status) {
+    case msgs::Response::Success:
+        return "Success";
+    case msgs::Response::WindowLostFocus:
+        return "Window lost focus in the meantime";
+    }
+    return "Unknown status";
+}
+
+void MainWindow::updatePendingReqMsg()
+{
+    if (proto_.isStarted())
+        statusBar()->showMessage(QString("%1 requests pending").arg(numPendingReqs_));
+    else
+        statusBar()->showMessage("Disconnected");
+}
+
+void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
+                              const msgs::Response &res)
+{
+    numPendingReqs_--;
+    updatePendingReqMsg();
+
+    if (res.status() == msgs::Response::Success)
+        return;
+
+    auto dialogText = msgBox_.text();
+    if (dialogText.size() == 0)
+        dialogText = "The following requests failed:\n";
+
+    auto iter = appListModel_.apps().find(req.app_id());
+    if (iter != appListModel_.apps().end()) {
+        const auto& app = *iter;
+        dialogText += QString("- %1: %2\n")
+                .arg(app.name())
+                .arg(statusMessage(res.status()));
+    }
+
+    msgBox_.setText(dialogText);
+    msgBox_.show();
 }
