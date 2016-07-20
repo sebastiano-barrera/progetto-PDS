@@ -35,6 +35,13 @@ extern/
 #visual studio files
  *.VC.opendb
 *.VC.db
+*.suo
+*.ilk
+*.pdb
+*.tlog
+*.log
+*.idb
+*.pdb
 
 # Qt's generated files
 moc_*.cpp

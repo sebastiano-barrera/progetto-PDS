@@ -39,9 +39,11 @@ bool Client::sendProcessList()
 {
 	std::cout << "-sending process list" << std::endl;
 	uint32_t size_=0;
+	msgs::AppGotFocus focus;
 	msgs::AppList msg;
 	std::string s_msg;
 
+	focus.set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
 	auto windows = windows_list.windows();
 	for (auto it = windows.begin(); it != windows.end(); it++) {
 		msgs::Application* app = msg.add_apps();
@@ -50,8 +52,9 @@ bool Client::sendProcessList()
 	}
 	
 	size_ = msg.ByteSize();
-	s_msg = msg.SerializeAsString();
 	size_ = htonl(size_);
+	s_msg = msg.SerializeAsString();
+
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
 		std::cerr << "an errror occurred while sending message size" << std::endl;
@@ -62,6 +65,24 @@ bool Client::sendProcessList()
 		std::cerr << "an errror occurred while sending data" << std::endl;
 		return false;
 	}
+
+
+	//sending on focus window
+	size_ = focus.ByteSize();
+	size_ = htonl(size_);
+	s_msg = focus.SerializeAsString();
+
+
+	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
+		std::cerr << "an errror occurred while sending message size" << std::endl;
+		return false;
+	}
+
+	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
+		std::cerr << "an errror occurred while sending data" << std::endl;
+		return false;
+	}
+
 	return true;
 }
 

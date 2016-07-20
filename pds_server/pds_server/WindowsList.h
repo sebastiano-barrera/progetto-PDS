@@ -21,4 +21,5 @@ public:
 	std::vector<ProcessWindow> windows() const;
 	void printProcessList();
 	void update();
+	HWND onFocus();
 };

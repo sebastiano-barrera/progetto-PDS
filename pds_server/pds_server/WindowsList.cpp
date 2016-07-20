@@ -81,6 +81,11 @@ void WindowsList::update()
 	std::swap(winHandles_, updated);
 }
 
+HWND WindowsList::onFocus()
+{
+	return onFocus_;
+}
+
 void MyEnumWindows(std::set<HWND> *win_handles) {
 	if (EnumWindows(MyEnumWindowsProc, reinterpret_cast<LPARAM>(win_handles))) {
 		//std::cout << "Windows windows_ created" << std::endl;
