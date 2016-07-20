@@ -52,14 +52,23 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	if (GetIconInfo(icon_, &icon_info) == FALSE)
 		return nullptr;
 	
-	BITMAP bmp;
+	BITMAP bmp, alpha;
 	if (!icon_info.hbmColor) {
 		std::wcerr << "warning: required icon is black/white (not yet implemented)";
 		return nullptr;
 	}
-
+	
 	if (GetObject(icon_info.hbmColor, sizeof(bmp), &bmp) <= 0)
 		return nullptr;
+
+	if (GetObject(icon_info.hbmMask, sizeof(alpha), &alpha) <= 0)
+		return nullptr;
+
+	std::cerr << "Alpha mask:\n"
+		<< "\tplanes: " << alpha.bmPlanes << '\n'
+		<< "\tbits per pixel: " << alpha.bmBitsPixel << '\n'
+		<< "\twidth: " << alpha.bmWidth << '\n'
+		<< "\theight: " << alpha.bmHeight << '\n';
 
 	// Allocate memory for the header (should also make space for the color table,
 	// but we're not using it, so no need for that)
@@ -68,7 +77,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	hdr->biWidth = bmp.bmWidth;
 	hdr->biHeight = bmp.bmHeight;
 	hdr->biPlanes = 1;
-	hdr->biBitCount = bmp.bmPlanes * bmp.bmBitsPixel;
+	hdr->biBitCount = 24; // bmp.bmPlanes * bmp.bmBitsPixel;
 	hdr->biCompression = BI_RGB;
 	hdr->biSizeImage = 0;
 	hdr->biXPelsPerMeter = 0;  // just not using these
@@ -78,15 +87,16 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 
 	HDC hdc = GetDC(NULL);
 
-	// Make the device driver calculate thei image data size (biSizeImage)
+	// Make the device driver calculate the image data size (biSizeImage)
 	GetDIBits(hdc, icon_info.hbmColor, 0L, bmp.bmHeight,
 		NULL, (BITMAPINFO*) hdr, DIB_RGB_COLORS);
 
+	const size_t scanline_bytes = (((hdr->biWidth * hdr->biBitCount) + 31) & ~31) / 8;
 	if (hdr->biSizeImage == 0) {
 		// Well, that didn't work out. Calculate biSizeImage ourselves.
 		// The form ((x + n) & ~n) is a trick to round x up to a multiple of n+1.
 		// In this case, a multiple of 32 (== sizeof DWORD)
-		hdr->biSizeImage = (((hdr->biWidth * hdr->biBitCount) + 31) & ~31) / 8 * hdr->biHeight;
+		hdr->biSizeImage = scanline_bytes * hdr->biHeight;
 	}
 
 	// Make space for the image pixels data
@@ -107,21 +117,40 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 
 	ReleaseDC(NULL, hdc);
 	
-	if (!got_bits) {
+	if (got_bits == FALSE) {
 		// Well, damn.
 		std::free(hdr);
 		return nullptr;
 	}
 
-	// Got the bitmap data! Finally!
+	// Got the bitmap data ... upside down and with channels inverted (BGR).
+	// The following adapts the data we have to the format we want (24 bits per pixel, uncompressed RGB).
+	// This code won't work after changing either format.
+
+	// Invert order of channels (BGR -> RGB)
+	typedef unsigned char color_t[3];
+	for (int y = 0; y < hdr->biHeight; y++) {
+		for (int x = 0; x < hdr->biWidth; x++) {
+			char *pixel = (char*)pixels + y * scanline_bytes + x * 3;
+			std::swap(pixel[0], pixel[2]);
+		}
+	}
+
+	// Turn image upside down
+	for (int y = 0; y < hdr->biHeight/2; y++) {
+		for (int x = 0; x < hdr->biWidth; x++) {
+			color_t *scanline_top = (color_t*) ((char*)pixels + y * scanline_bytes + x * 3);
+			color_t *scanline_bot = (color_t*) ((char*)pixels + (hdr->biHeight - y - 1) * scanline_bytes + x * 3);
+			std::swap(*scanline_top, *scanline_bot);
+		}
+	}
+
 	auto icon = std::make_unique<msgs::Icon>();
 	icon->set_width(hdr->biWidth);
 	icon->set_height(hdr->biHeight);
 	icon->set_pixels(pixels, hdr->biSizeImage);
 	
-	std::cerr << icon->DebugString() << '\n';
-
-	std::free(hdr);
+	std::free(hdr);  // also frees pixels
 	return icon;
 }
 
@@ -183,13 +212,3 @@ INPUT PressKey(int key) {
 	input.ki.wVk = key;
 	return input;
 }
-#if 0
-
-Pseudo-code for icon data extraction:
-
-Starting from icon_ (HICON).
-
-if ()1
-
-
-#endif

@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QElapsedTimer>
 #include <QTimer>
+#include <QPixmap>
 
 namespace msgs {
     class Application;
@@ -28,6 +29,7 @@ public:
     inline bool isValid() const { return valid_; }
     inline Id id() const { return id_; }
     inline const QString& name() const { return name_; }
+    inline const QPixmap& icon() const { return icon_; }
 
     void setFocused(bool focused);
     inline bool isFocused() const { return focused_; }
@@ -37,6 +39,7 @@ private:
     bool valid_;
     Id id_;
     QString name_;
+    QPixmap icon_;
 
     bool focused_;
     QElapsedTimer focusTimer_;

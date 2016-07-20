@@ -1,6 +1,8 @@
 #include "applist.h"
 #include "protocol.pb.h"
 
+#include <QPixmap>
+#include <QImage>
 #include <QDebug>
 
 
@@ -16,6 +18,17 @@ App::App(const msgs::Application &msg) :
     totalFocusTime_(0)
 {
     assert (id_ != INVALID_ID);
+
+    if (msg.has_icon()) {
+        auto& icon = msg.icon();
+        QImage image(reinterpret_cast<const uchar*>(icon.pixels().data()),
+                     icon.width(), icon.height(),
+                     QImage::Format_RGB888);
+        image = image.scaledToHeight(16);
+        QImage alpha = image.createMaskFromColor(qRgb(0, 0, 0), Qt::MaskOutColor);
+        image.setAlphaChannel(alpha);
+        icon_ = QPixmap::fromImage(image);
+    }
 }
 
 void App::setFocused(bool focused)
@@ -110,7 +123,8 @@ QVariant AppList::data(const QModelIndex &index, int role) const
     if (col == 0) {
         if (role == Qt::DisplayRole)
             return QString("%1 - %2").arg(app->id()).arg(app->name());
-
+        if (role == Qt::DecorationRole)
+            return app->icon();
     } else if (col == 1) {
         if (role == Qt::CheckStateRole)
             return app->isFocused();
