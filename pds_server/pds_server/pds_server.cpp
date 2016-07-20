@@ -24,14 +24,13 @@
 #define MAX_CONN 5
 
 
-SOCKET sockInit();
+SOCKET sockInit(SHORT port);
 
 
 std::condition_variable cv;
 WindowsList windows_list;
 ClientList pending;
 ClientList active;
-USHORT PORT_NO;
 
 void checkWindowsEvents();
 void threadPoolInit(int n);
@@ -47,8 +46,8 @@ int main(int argc, char**argv)
 		exit(1);
 	}
 
-	PORT_NO = atoi(argv[1]);
-	SOCKET connected, s = sockInit();
+	short port = atoi(argv[1]);
+	SOCKET connected, s = sockInit(port);
 	std::thread(checkWindowsEvents).detach();
 	threadPoolInit(8);
 	while (true) {
@@ -90,7 +89,7 @@ void threadPoolInit(int n)
 	}
 }
 
-SOCKET sockInit() {
+SOCKET sockInit(SHORT port) {
 	WSADATA wsadata;
 	struct sockaddr_in sin;
 	SOCKET temp_sock;
@@ -109,7 +108,7 @@ SOCKET sockInit() {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = INADDR_ANY;
 
-	if ((sin.sin_port = htons(PORT_NO)) == 0) {
+	if ((sin.sin_port = htons(port)) == 0) {
 		std::cerr << "port assignment failed" << std::endl;
 		exit(1);
 	}
@@ -125,6 +124,6 @@ SOCKET sockInit() {
 		exit(1);
 	}
 	
-	std::cout << "waiting for connections on port: " << PORT_NO << " . . ." << std::endl;
+	std::cout << "waiting for connections on port: " << port << " . . ." << std::endl;
 	return temp_sock;
 }

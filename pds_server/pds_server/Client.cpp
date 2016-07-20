@@ -99,7 +99,7 @@ bool Client::sendProcessList()
 		std::cerr << "an error occurred while sending onfocus data" << std::endl;
 		return false;
 	}
-
+	std::cout << "-PROCESS LIST SENT" << std::endl;
 	return true;
 }
 
@@ -151,11 +151,12 @@ void Client::readMessage()
 		if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR)
 			std::cerr << "an error occurred while response data" << std::endl;
 	}
+	std::cout << "--MESSAGE READ" << std::endl;
 }
 
 void Client::closeConnection()
 {
-	std::cout << "----CLOSING CONNECTION" << std::endl;
+	std::cout << "CLOSING CONNECTION" << std::endl;
 	closesocket(sck);
 	sck = INVALID_SOCKET;
 	isClosed_ = true;
@@ -200,7 +201,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 
 	size = event.ByteSize();
 	msg = event.SerializeAsString();
-	std::cout << "Serialized msg size: " << size << std::endl << msg << std::endl;
+	//std::cout << "Serialized msg size: " << size << std::endl << msg << std::endl;
 	
 	size = htonl(size);
 	if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
@@ -210,6 +211,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	if (send(sck, msg.c_str(), msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an error occurred while sending data" << std::endl;
 	}
+	std::cout << "--MESSAGE SENT" << std::endl;
 }
 
 //reads exactly size byte
@@ -248,6 +250,6 @@ bool readN(SOCKET s, int size, char* buffer){
 			return false;
 		}
 	}
-	std::cout << "\t" << buffer << std::endl;
+	std::cout << "-----READ " << size << " byte" << std::endl;
 	return true;
 }
