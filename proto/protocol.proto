@@ -4,12 +4,26 @@ package msgs;
 import "keys.proto";
 
 message KeystrokeRequest {
+  // The `request id` is decided by the client, and can be any value.
+  // The server's only concern is to use the same id in the corresponding
+  // response
+  required uint32 req_id = 7;
   required uint64 app_id = 1;
   required bool ctrl  = 2;
   required bool alt   = 3;
   required bool shift = 4;
   required bool meta  = 5;
   required Keycode key = 6;
+}
+
+message Response {
+	enum Status {
+		Success = 1;		// input delivered successfully
+		WindowLostFocus = 2;	// window lost focus between request and service time
+	}
+	
+	required uint32 req_id = 1;
+	required Status status = 2;
 }
 
 message AppList {
