@@ -63,4 +63,5 @@ message Event {
     optional AppDestroyed destroyed = 1;
     optional Application  created = 2;
     optional AppGotFocus  got_focus = 3;
+    optional Response     response = 4;
 }
