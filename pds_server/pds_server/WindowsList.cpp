@@ -31,7 +31,7 @@ std::vector<ProcessWindow> WindowsList::windows() const
 void WindowsList::printProcessList()
 {	
 	auto procWins = this->windows();
-	std::lock_guard<std::mutex> lck(this->lock_);
+	std::lock_guard<std::mutex> lck(this->lock_); //LOCK_USELESS(?)
 	for (const auto& pw : procWins)
 		pw.windowInfo();
 }
@@ -66,7 +66,7 @@ void WindowsList::update()
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);
 	}
-	/*
+	
 	//potrebbe capitare che la finestra in foreground non sia tra quelle recuperate da MyEnumWindows, in questo caso
 	//l'evento del cambio di fuoco non viene notificato e si aspetta il controllo successivo
 	if (onFocus_ != currentFocus && updated.find(currentFocus) != updated.end()) {
@@ -77,7 +77,7 @@ void WindowsList::update()
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_ONFOCUS);
 	}
-	*/
+	
 	std::swap(winHandles_, updated);
 }
 

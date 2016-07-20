@@ -47,7 +47,9 @@ int main()
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
 		connected = accept(s, (struct sockaddr*)&caddress, &length);
-		std::cout << "New connection established "<<std::endl;
+		char address[64];
+		std::string s((char*) inet_ntop(AF_INET, &caddress, address, 32));
+		std::cout << "New connection established\nclient port: " << ntohs(caddress.sin_port) << " address: "<<s<<std::endl;
 		pending.addClient(Client(connected));
 	}
 	closesocket(s);

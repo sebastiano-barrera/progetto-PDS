@@ -24,6 +24,10 @@ namespace {
 const ::google::protobuf::Descriptor* KeystrokeRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   KeystrokeRequest_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Response_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Response_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* Response_Status_descriptor_ = NULL;
 const ::google::protobuf::Descriptor* AppList_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   AppList_reflection_ = NULL;
@@ -53,7 +57,8 @@ void protobuf_AssignDesc_protocol_2eproto() {
       "protocol.proto");
   GOOGLE_CHECK(file != NULL);
   KeystrokeRequest_descriptor_ = file->message_type(0);
-  static const int KeystrokeRequest_offsets_[6] = {
+  static const int KeystrokeRequest_offsets_[7] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KeystrokeRequest, req_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KeystrokeRequest, app_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KeystrokeRequest, ctrl_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KeystrokeRequest, alt_),
@@ -72,7 +77,24 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(KeystrokeRequest),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KeystrokeRequest, _internal_metadata_),
       -1);
-  AppList_descriptor_ = file->message_type(1);
+  Response_descriptor_ = file->message_type(1);
+  static const int Response_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, req_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, status_),
+  };
+  Response_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      Response_descriptor_,
+      Response::default_instance_,
+      Response_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, _has_bits_[0]),
+      -1,
+      -1,
+      sizeof(Response),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, _internal_metadata_),
+      -1);
+  Response_Status_descriptor_ = Response_descriptor_->enum_type(0);
+  AppList_descriptor_ = file->message_type(2);
   static const int AppList_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppList, apps_),
   };
@@ -87,7 +109,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(AppList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppList, _internal_metadata_),
       -1);
-  Application_descriptor_ = file->message_type(2);
+  Application_descriptor_ = file->message_type(3);
   static const int Application_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, name_),
@@ -104,7 +126,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(Application),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, _internal_metadata_),
       -1);
-  Icon_descriptor_ = file->message_type(3);
+  Icon_descriptor_ = file->message_type(4);
   static const int Icon_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, width_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, height_),
@@ -121,7 +143,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(Icon),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Icon, _internal_metadata_),
       -1);
-  AppDestroyed_descriptor_ = file->message_type(4);
+  AppDestroyed_descriptor_ = file->message_type(5);
   static const int AppDestroyed_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppDestroyed, id_),
   };
@@ -136,7 +158,7 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(AppDestroyed),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppDestroyed, _internal_metadata_),
       -1);
-  AppGotFocus_descriptor_ = file->message_type(5);
+  AppGotFocus_descriptor_ = file->message_type(6);
   static const int AppGotFocus_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppGotFocus, id_),
   };
@@ -151,11 +173,12 @@ void protobuf_AssignDesc_protocol_2eproto() {
       sizeof(AppGotFocus),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppGotFocus, _internal_metadata_),
       -1);
-  Event_descriptor_ = file->message_type(6);
-  static const int Event_offsets_[3] = {
+  Event_descriptor_ = file->message_type(7);
+  static const int Event_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, destroyed_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, created_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, got_focus_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Event, response_),
   };
   Event_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -183,6 +206,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       KeystrokeRequest_descriptor_, &KeystrokeRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      Response_descriptor_, &Response::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       AppList_descriptor_, &AppList::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       Application_descriptor_, &Application::default_instance());
@@ -201,6 +226,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_protocol_2eproto() {
   delete KeystrokeRequest::default_instance_;
   delete KeystrokeRequest_reflection_;
+  delete Response::default_instance_;
+  delete Response_reflection_;
   delete AppList::default_instance_;
   delete AppList_reflection_;
   delete Application::default_instance_;
@@ -223,22 +250,27 @@ void protobuf_AddDesc_protocol_2eproto() {
 
   ::msgs::protobuf_AddDesc_keys_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\016protocol.proto\022\004msgs\032\nkeys.proto\"v\n\020Ke"
-    "ystrokeRequest\022\016\n\006app_id\030\001 \002(\004\022\014\n\004ctrl\030\002"
-    " \002(\010\022\013\n\003alt\030\003 \002(\010\022\r\n\005shift\030\004 \002(\010\022\014\n\004meta"
-    "\030\005 \002(\010\022\032\n\003key\030\006 \002(\0162\r.msgs.Keycode\"*\n\007Ap"
-    "pList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Application\"A"
-    "\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\022"
-    "\030\n\004icon\030\003 \001(\0132\n.msgs.Icon\"5\n\004Icon\022\r\n\005wid"
-    "th\030\001 \002(\r\022\016\n\006height\030\002 \002(\r\022\016\n\006pixels\030\003 \002(\014"
-    "\"\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013AppGotFo"
-    "cus\022\n\n\002id\030\001 \002(\004\"x\n\005Event\022%\n\tdestroyed\030\001 "
-    "\001(\0132\022.msgs.AppDestroyed\022\"\n\007created\030\002 \001(\013"
-    "2\021.msgs.Application\022$\n\tgot_focus\030\003 \001(\0132\021"
-    ".msgs.AppGotFocus", 497);
+    "\n\016protocol.proto\022\004msgs\032\nkeys.proto\"\206\001\n\020K"
+    "eystrokeRequest\022\016\n\006req_id\030\007 \002(\r\022\016\n\006app_i"
+    "d\030\001 \002(\004\022\014\n\004ctrl\030\002 \002(\010\022\013\n\003alt\030\003 \002(\010\022\r\n\005sh"
+    "ift\030\004 \002(\010\022\014\n\004meta\030\005 \002(\010\022\032\n\003key\030\006 \002(\0162\r.m"
+    "sgs.Keycode\"m\n\010Response\022\016\n\006req_id\030\001 \002(\r\022"
+    "%\n\006status\030\002 \002(\0162\025.msgs.Response.Status\"*"
+    "\n\006Status\022\013\n\007Success\020\001\022\023\n\017WindowLostFocus"
+    "\020\002\"*\n\007AppList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Appli"
+    "cation\"A\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004nam"
+    "e\030\002 \002(\t\022\030\n\004icon\030\003 \001(\0132\n.msgs.Icon\"5\n\004Ico"
+    "n\022\r\n\005width\030\001 \002(\r\022\016\n\006height\030\002 \002(\r\022\016\n\006pixe"
+    "ls\030\003 \002(\014\"\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013"
+    "AppGotFocus\022\n\n\002id\030\001 \002(\004\"\232\001\n\005Event\022%\n\tdes"
+    "troyed\030\001 \001(\0132\022.msgs.AppDestroyed\022\"\n\007crea"
+    "ted\030\002 \001(\0132\021.msgs.Application\022$\n\tgot_focu"
+    "s\030\003 \001(\0132\021.msgs.AppGotFocus\022 \n\010response\030\004"
+    " \001(\0132\016.msgs.Response", 660);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   KeystrokeRequest::default_instance_ = new KeystrokeRequest();
+  Response::default_instance_ = new Response();
   AppList::default_instance_ = new AppList();
   Application::default_instance_ = new Application();
   Icon::default_instance_ = new Icon();
@@ -246,6 +278,7 @@ void protobuf_AddDesc_protocol_2eproto() {
   AppGotFocus::default_instance_ = new AppGotFocus();
   Event::default_instance_ = new Event();
   KeystrokeRequest::default_instance_->InitAsDefaultInstance();
+  Response::default_instance_->InitAsDefaultInstance();
   AppList::default_instance_->InitAsDefaultInstance();
   Application::default_instance_->InitAsDefaultInstance();
   Icon::default_instance_->InitAsDefaultInstance();
@@ -275,6 +308,7 @@ static void MergeFromFail(int line) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int KeystrokeRequest::kReqIdFieldNumber;
 const int KeystrokeRequest::kAppIdFieldNumber;
 const int KeystrokeRequest::kCtrlFieldNumber;
 const int KeystrokeRequest::kAltFieldNumber;
@@ -302,6 +336,7 @@ KeystrokeRequest::KeystrokeRequest(const KeystrokeRequest& from)
 
 void KeystrokeRequest::SharedCtor() {
   _cached_size_ = 0;
+  req_id_ = 0u;
   app_id_ = GOOGLE_ULONGLONG(0);
   ctrl_ = false;
   alt_ = false;
@@ -364,7 +399,7 @@ void KeystrokeRequest::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-  if (_has_bits_[0 / 32] & 63u) {
+  if (_has_bits_[0 / 32] & 127u) {
     ZR_(app_id_, key_);
   }
 
@@ -477,6 +512,21 @@ bool KeystrokeRequest::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(56)) goto parse_req_id;
+        break;
+      }
+
+      // required uint32 req_id = 7;
+      case 7: {
+        if (tag == 56) {
+         parse_req_id:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &req_id_)));
+          set_has_req_id();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -537,6 +587,11 @@ void KeystrokeRequest::SerializeWithCachedSizes(
       6, this->key(), output);
   }
 
+  // required uint32 req_id = 7;
+  if (has_req_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->req_id(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -578,6 +633,11 @@ void KeystrokeRequest::SerializeWithCachedSizes(
       6, this->key(), target);
   }
 
+  // required uint32 req_id = 7;
+  if (has_req_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->req_id(), target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -589,6 +649,13 @@ void KeystrokeRequest::SerializeWithCachedSizes(
 int KeystrokeRequest::RequiredFieldsByteSizeFallback() const {
 // @@protoc_insertion_point(required_fields_byte_size_fallback_start:msgs.KeystrokeRequest)
   int total_size = 0;
+
+  if (has_req_id()) {
+    // required uint32 req_id = 7;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->req_id());
+  }
 
   if (has_app_id()) {
     // required uint64 app_id = 1;
@@ -629,7 +696,12 @@ int KeystrokeRequest::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:msgs.KeystrokeRequest)
   int total_size = 0;
 
-  if (((_has_bits_[0] & 0x0000003f) ^ 0x0000003f) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000007f) ^ 0x0000007f) == 0) {  // All required fields are present.
+    // required uint32 req_id = 7;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->req_id());
+
     // required uint64 app_id = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt64Size(
@@ -684,6 +756,9 @@ void KeystrokeRequest::MergeFrom(const KeystrokeRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:msgs.KeystrokeRequest)
   if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_req_id()) {
+      set_req_id(from.req_id());
+    }
     if (from.has_app_id()) {
       set_app_id(from.app_id());
     }
@@ -723,7 +798,7 @@ void KeystrokeRequest::CopyFrom(const KeystrokeRequest& from) {
 }
 
 bool KeystrokeRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000003f) != 0x0000003f) return false;
+  if ((_has_bits_[0] & 0x0000007f) != 0x0000007f) return false;
 
   return true;
 }
@@ -733,6 +808,7 @@ void KeystrokeRequest::Swap(KeystrokeRequest* other) {
   InternalSwap(other);
 }
 void KeystrokeRequest::InternalSwap(KeystrokeRequest* other) {
+  std::swap(req_id_, other->req_id_);
   std::swap(app_id_, other->app_id_);
   std::swap(ctrl_, other->ctrl_);
   std::swap(alt_, other->alt_);
@@ -755,15 +831,39 @@ void KeystrokeRequest::InternalSwap(KeystrokeRequest* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // KeystrokeRequest
 
-// required uint64 app_id = 1;
-bool KeystrokeRequest::has_app_id() const {
+// required uint32 req_id = 7;
+bool KeystrokeRequest::has_req_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-void KeystrokeRequest::set_has_app_id() {
+void KeystrokeRequest::set_has_req_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-void KeystrokeRequest::clear_has_app_id() {
+void KeystrokeRequest::clear_has_req_id() {
   _has_bits_[0] &= ~0x00000001u;
+}
+void KeystrokeRequest::clear_req_id() {
+  req_id_ = 0u;
+  clear_has_req_id();
+}
+ ::google::protobuf::uint32 KeystrokeRequest::req_id() const {
+  // @@protoc_insertion_point(field_get:msgs.KeystrokeRequest.req_id)
+  return req_id_;
+}
+ void KeystrokeRequest::set_req_id(::google::protobuf::uint32 value) {
+  set_has_req_id();
+  req_id_ = value;
+  // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.req_id)
+}
+
+// required uint64 app_id = 1;
+bool KeystrokeRequest::has_app_id() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void KeystrokeRequest::set_has_app_id() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void KeystrokeRequest::clear_has_app_id() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 void KeystrokeRequest::clear_app_id() {
   app_id_ = GOOGLE_ULONGLONG(0);
@@ -781,13 +881,13 @@ void KeystrokeRequest::clear_app_id() {
 
 // required bool ctrl = 2;
 bool KeystrokeRequest::has_ctrl() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 void KeystrokeRequest::set_has_ctrl() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 void KeystrokeRequest::clear_has_ctrl() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 void KeystrokeRequest::clear_ctrl() {
   ctrl_ = false;
@@ -805,13 +905,13 @@ void KeystrokeRequest::clear_ctrl() {
 
 // required bool alt = 3;
 bool KeystrokeRequest::has_alt() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 void KeystrokeRequest::set_has_alt() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 void KeystrokeRequest::clear_has_alt() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 void KeystrokeRequest::clear_alt() {
   alt_ = false;
@@ -829,13 +929,13 @@ void KeystrokeRequest::clear_alt() {
 
 // required bool shift = 4;
 bool KeystrokeRequest::has_shift() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 void KeystrokeRequest::set_has_shift() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 void KeystrokeRequest::clear_has_shift() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 void KeystrokeRequest::clear_shift() {
   shift_ = false;
@@ -853,13 +953,13 @@ void KeystrokeRequest::clear_shift() {
 
 // required bool meta = 5;
 bool KeystrokeRequest::has_meta() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 void KeystrokeRequest::set_has_meta() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 void KeystrokeRequest::clear_has_meta() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 void KeystrokeRequest::clear_meta() {
   meta_ = false;
@@ -877,13 +977,13 @@ void KeystrokeRequest::clear_meta() {
 
 // required .msgs.Keycode key = 6;
 bool KeystrokeRequest::has_key() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 void KeystrokeRequest::set_has_key() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 void KeystrokeRequest::clear_has_key() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 void KeystrokeRequest::clear_key() {
   key_ = 0;
@@ -898,6 +998,386 @@ void KeystrokeRequest::clear_key() {
   set_has_key();
   key_ = value;
   // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.key)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+const ::google::protobuf::EnumDescriptor* Response_Status_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Response_Status_descriptor_;
+}
+bool Response_Status_IsValid(int value) {
+  switch(value) {
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const Response_Status Response::Success;
+const Response_Status Response::WindowLostFocus;
+const Response_Status Response::Status_MIN;
+const Response_Status Response::Status_MAX;
+const int Response::Status_ARRAYSIZE;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int Response::kReqIdFieldNumber;
+const int Response::kStatusFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+Response::Response()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:msgs.Response)
+}
+
+void Response::InitAsDefaultInstance() {
+}
+
+Response::Response(const Response& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:msgs.Response)
+}
+
+void Response::SharedCtor() {
+  _cached_size_ = 0;
+  req_id_ = 0u;
+  status_ = 1;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Response::~Response() {
+  // @@protoc_insertion_point(destructor:msgs.Response)
+  SharedDtor();
+}
+
+void Response::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void Response::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Response::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Response_descriptor_;
+}
+
+const Response& Response::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_protocol_2eproto();
+  return *default_instance_;
+}
+
+Response* Response::default_instance_ = NULL;
+
+Response* Response::New(::google::protobuf::Arena* arena) const {
+  Response* n = new Response;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void Response::Clear() {
+// @@protoc_insertion_point(message_clear_start:msgs.Response)
+  if (_has_bits_[0 / 32] & 3u) {
+    req_id_ = 0u;
+    status_ = 1;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  if (_internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->Clear();
+  }
+}
+
+bool Response::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:msgs.Response)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 req_id = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &req_id_)));
+          set_has_req_id();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_status;
+        break;
+      }
+
+      // required .msgs.Response.Status status = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_status:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::msgs::Response_Status_IsValid(value)) {
+            set_status(static_cast< ::msgs::Response_Status >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(2, value);
+          }
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:msgs.Response)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:msgs.Response)
+  return false;
+#undef DO_
+}
+
+void Response::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:msgs.Response)
+  // required uint32 req_id = 1;
+  if (has_req_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->req_id(), output);
+  }
+
+  // required .msgs.Response.Status status = 2;
+  if (has_status()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      2, this->status(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:msgs.Response)
+}
+
+::google::protobuf::uint8* Response::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:msgs.Response)
+  // required uint32 req_id = 1;
+  if (has_req_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->req_id(), target);
+  }
+
+  // required .msgs.Response.Status status = 2;
+  if (has_status()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      2, this->status(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:msgs.Response)
+  return target;
+}
+
+int Response::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:msgs.Response)
+  int total_size = 0;
+
+  if (has_req_id()) {
+    // required uint32 req_id = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->req_id());
+  }
+
+  if (has_status()) {
+    // required .msgs.Response.Status status = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+  }
+
+  return total_size;
+}
+int Response::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:msgs.Response)
+  int total_size = 0;
+
+  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
+    // required uint32 req_id = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->req_id());
+
+    // required .msgs.Response.Status status = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Response::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:msgs.Response)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const Response* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const Response>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:msgs.Response)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:msgs.Response)
+    MergeFrom(*source);
+  }
+}
+
+void Response::MergeFrom(const Response& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:msgs.Response)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_req_id()) {
+      set_req_id(from.req_id());
+    }
+    if (from.has_status()) {
+      set_status(from.status());
+    }
+  }
+  if (from._internal_metadata_.have_unknown_fields()) {
+    mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+  }
+}
+
+void Response::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:msgs.Response)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Response::CopyFrom(const Response& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:msgs.Response)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Response::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+
+  return true;
+}
+
+void Response::Swap(Response* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void Response::InternalSwap(Response* other) {
+  std::swap(req_id_, other->req_id_);
+  std::swap(status_, other->status_);
+  std::swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata Response::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Response_descriptor_;
+  metadata.reflection = Response_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// Response
+
+// required uint32 req_id = 1;
+bool Response::has_req_id() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void Response::set_has_req_id() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void Response::clear_has_req_id() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void Response::clear_req_id() {
+  req_id_ = 0u;
+  clear_has_req_id();
+}
+ ::google::protobuf::uint32 Response::req_id() const {
+  // @@protoc_insertion_point(field_get:msgs.Response.req_id)
+  return req_id_;
+}
+ void Response::set_req_id(::google::protobuf::uint32 value) {
+  set_has_req_id();
+  req_id_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Response.req_id)
+}
+
+// required .msgs.Response.Status status = 2;
+bool Response::has_status() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void Response::set_has_status() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void Response::clear_has_status() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void Response::clear_status() {
+  status_ = 1;
+  clear_has_status();
+}
+ ::msgs::Response_Status Response::status() const {
+  // @@protoc_insertion_point(field_get:msgs.Response.status)
+  return static_cast< ::msgs::Response_Status >(status_);
+}
+ void Response::set_status(::msgs::Response_Status value) {
+  assert(::msgs::Response_Status_IsValid(value));
+  set_has_status();
+  status_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Response.status)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2685,6 +3165,7 @@ void AppGotFocus::clear_id() {
 const int Event::kDestroyedFieldNumber;
 const int Event::kCreatedFieldNumber;
 const int Event::kGotFocusFieldNumber;
+const int Event::kResponseFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Event::Event()
@@ -2697,6 +3178,7 @@ void Event::InitAsDefaultInstance() {
   destroyed_ = const_cast< ::msgs::AppDestroyed*>(&::msgs::AppDestroyed::default_instance());
   created_ = const_cast< ::msgs::Application*>(&::msgs::Application::default_instance());
   got_focus_ = const_cast< ::msgs::AppGotFocus*>(&::msgs::AppGotFocus::default_instance());
+  response_ = const_cast< ::msgs::Response*>(&::msgs::Response::default_instance());
 }
 
 Event::Event(const Event& from)
@@ -2712,6 +3194,7 @@ void Event::SharedCtor() {
   destroyed_ = NULL;
   created_ = NULL;
   got_focus_ = NULL;
+  response_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2725,6 +3208,7 @@ void Event::SharedDtor() {
     delete destroyed_;
     delete created_;
     delete got_focus_;
+    delete response_;
   }
 }
 
@@ -2755,7 +3239,7 @@ Event* Event::New(::google::protobuf::Arena* arena) const {
 
 void Event::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.Event)
-  if (_has_bits_[0 / 32] & 7u) {
+  if (_has_bits_[0 / 32] & 15u) {
     if (has_destroyed()) {
       if (destroyed_ != NULL) destroyed_->::msgs::AppDestroyed::Clear();
     }
@@ -2764,6 +3248,9 @@ void Event::Clear() {
     }
     if (has_got_focus()) {
       if (got_focus_ != NULL) got_focus_->::msgs::AppGotFocus::Clear();
+    }
+    if (has_response()) {
+      if (response_ != NULL) response_->::msgs::Response::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2816,6 +3303,19 @@ bool Event::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(34)) goto parse_response;
+        break;
+      }
+
+      // optional .msgs.Response response = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_response:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_response()));
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2863,6 +3363,12 @@ void Event::SerializeWithCachedSizes(
       3, *this->got_focus_, output);
   }
 
+  // optional .msgs.Response response = 4;
+  if (has_response()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, *this->response_, output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2894,6 +3400,13 @@ void Event::SerializeWithCachedSizes(
         3, *this->got_focus_, target);
   }
 
+  // optional .msgs.Response response = 4;
+  if (has_response()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, *this->response_, target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2906,7 +3419,7 @@ int Event::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:msgs.Event)
   int total_size = 0;
 
-  if (_has_bits_[0 / 32] & 7u) {
+  if (_has_bits_[0 / 32] & 15u) {
     // optional .msgs.AppDestroyed destroyed = 1;
     if (has_destroyed()) {
       total_size += 1 +
@@ -2926,6 +3439,13 @@ int Event::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *this->got_focus_);
+    }
+
+    // optional .msgs.Response response = 4;
+    if (has_response()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->response_);
     }
 
   }
@@ -2968,6 +3488,9 @@ void Event::MergeFrom(const Event& from) {
     if (from.has_got_focus()) {
       mutable_got_focus()->::msgs::AppGotFocus::MergeFrom(from.got_focus());
     }
+    if (from.has_response()) {
+      mutable_response()->::msgs::Response::MergeFrom(from.response());
+    }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -2999,6 +3522,9 @@ bool Event::IsInitialized() const {
   if (has_got_focus()) {
     if (!this->got_focus_->IsInitialized()) return false;
   }
+  if (has_response()) {
+    if (!this->response_->IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -3010,6 +3536,7 @@ void Event::InternalSwap(Event* other) {
   std::swap(destroyed_, other->destroyed_);
   std::swap(created_, other->created_);
   std::swap(got_focus_, other->got_focus_);
+  std::swap(response_, other->response_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -3156,6 +3683,50 @@ void Event::set_allocated_got_focus(::msgs::AppGotFocus* got_focus) {
     clear_has_got_focus();
   }
   // @@protoc_insertion_point(field_set_allocated:msgs.Event.got_focus)
+}
+
+// optional .msgs.Response response = 4;
+bool Event::has_response() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void Event::set_has_response() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void Event::clear_has_response() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+void Event::clear_response() {
+  if (response_ != NULL) response_->::msgs::Response::Clear();
+  clear_has_response();
+}
+const ::msgs::Response& Event::response() const {
+  // @@protoc_insertion_point(field_get:msgs.Event.response)
+  return response_ != NULL ? *response_ : *default_instance_->response_;
+}
+::msgs::Response* Event::mutable_response() {
+  set_has_response();
+  if (response_ == NULL) {
+    response_ = new ::msgs::Response;
+  }
+  // @@protoc_insertion_point(field_mutable:msgs.Event.response)
+  return response_;
+}
+::msgs::Response* Event::release_response() {
+  // @@protoc_insertion_point(field_release:msgs.Event.response)
+  clear_has_response();
+  ::msgs::Response* temp = response_;
+  response_ = NULL;
+  return temp;
+}
+void Event::set_allocated_response(::msgs::Response* response) {
+  delete response_;
+  response_ = response;
+  if (response) {
+    set_has_response();
+  } else {
+    clear_has_response();
+  }
+  // @@protoc_insertion_point(field_set_allocated:msgs.Event.response)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

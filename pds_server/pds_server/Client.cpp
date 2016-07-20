@@ -90,12 +90,12 @@ bool Client::sendProcessList()
 
 
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
-		std::cerr << "an error occurred while sending message size" << std::endl;
+		std::cerr << "an error occurred while sending onfocus message size" << std::endl;
 		return false;
 	}
 
 	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
-		std::cerr << "an error occurred while sending data" << std::endl;
+		std::cerr << "an error occurred while sending onfocus data" << std::endl;
 		return false;
 	}
 
@@ -107,6 +107,11 @@ void Client::readMessage()
 	std::cout << "--reading message" << std::endl;
 	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
+	msgs::Event response;
+	msgs::Response *rsp = new msgs::Response();
+	std::string serialized_response;
+	uint32_t size;
+
 	if (readN(sck, 4, (char*)&size_)){
 		std::cout << "---read size" << std::endl;
 		size_ = ntohl(size_);
@@ -121,9 +126,25 @@ void Client::readMessage()
 			HWND target = (HWND)msg.app_id();
 			if (target == windows_list.onFocus()) {
 				ProcessWindow(target).sendKeystroke(msg);
+				rsp->set_req_id(msg.req_id());
+				rsp->set_status(msgs::Response::Status::Response_Status_Success);
 			}
 			else {
 				//send error msg
+				rsp->set_req_id(msg.req_id());
+				rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
+			}
+			response.set_allocated_response(rsp);
+			size = response.ByteSize();
+			size = htonl(size);
+			serialized_response = response.SerializeAsString();
+
+			if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
+				std::cerr << "an error occurred while sending response size" << std::endl;
+			}
+
+			if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR) {
+				std::cerr << "an error occurred while response data" << std::endl;
 			}
 		}
 	}
@@ -145,7 +166,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	msgs::AppGotFocus focus;
 	msgs::Event event;
 	std::string msg;
-	uint32_t size_;
+	uint32_t size;
 	
 	// Note: the `set_allocated_*` methods take ownership of the passed pointer,
 	// and will `delete` them at the exit of the scope.
@@ -175,17 +196,17 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 		}
 	}
 
-	size_ = event.ByteSize();
+	size = event.ByteSize();
 	msg = event.SerializeAsString();
-	std::cout << "Serialized msg size: " << size_ << std::endl << msg << std::endl;
+	std::cout << "Serialized msg size: " << size << std::endl << msg << std::endl;
 	
-	size_ = htonl(size_);
-	if (send(sck, (char*)&size_, sizeof(u_long), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending message size" << std::endl;
+	size = htonl(size);
+	if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
+		std::cerr << "an error occurred while sending message size" << std::endl;
 	}
 
 	if (send(sck, msg.c_str(), msg.size(), 0) == SOCKET_ERROR) {
-		std::cerr << "an errror occurred while sending data" << std::endl;
+		std::cerr << "an error occurred while sending data" << std::endl;
 	}
 }
 

@@ -26,6 +26,7 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 #include "keys.pb.h"
 // @@protoc_insertion_point(includes)
@@ -44,7 +45,27 @@ class Application;
 class Event;
 class Icon;
 class KeystrokeRequest;
+class Response;
 
+enum Response_Status {
+  Response_Status_Success = 1,
+  Response_Status_WindowLostFocus = 2
+};
+bool Response_Status_IsValid(int value);
+const Response_Status Response_Status_Status_MIN = Response_Status_Success;
+const Response_Status Response_Status_Status_MAX = Response_Status_WindowLostFocus;
+const int Response_Status_Status_ARRAYSIZE = Response_Status_Status_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* Response_Status_descriptor();
+inline const ::std::string& Response_Status_Name(Response_Status value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Response_Status_descriptor(), value);
+}
+inline bool Response_Status_Parse(
+    const ::std::string& name, Response_Status* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Response_Status>(
+    Response_Status_descriptor(), name, value);
+}
 // ===================================================================
 
 class KeystrokeRequest : public ::google::protobuf::Message {
@@ -111,6 +132,13 @@ class KeystrokeRequest : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
+  // required uint32 req_id = 7;
+  bool has_req_id() const;
+  void clear_req_id();
+  static const int kReqIdFieldNumber = 7;
+  ::google::protobuf::uint32 req_id() const;
+  void set_req_id(::google::protobuf::uint32 value);
+
   // required uint64 app_id = 1;
   bool has_app_id() const;
   void clear_app_id();
@@ -155,6 +183,8 @@ class KeystrokeRequest : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:msgs.KeystrokeRequest)
  private:
+  inline void set_has_req_id();
+  inline void clear_has_req_id();
   inline void set_has_app_id();
   inline void clear_has_app_id();
   inline void set_has_ctrl();
@@ -175,6 +205,7 @@ class KeystrokeRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint64 app_id_;
+  ::google::protobuf::uint32 req_id_;
   bool ctrl_;
   bool alt_;
   bool shift_;
@@ -186,6 +217,134 @@ class KeystrokeRequest : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static KeystrokeRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Response : public ::google::protobuf::Message {
+ public:
+  Response();
+  virtual ~Response();
+
+  Response(const Response& from);
+
+  inline Response& operator=(const Response& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Response& default_instance();
+
+  void Swap(Response* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Response* New() const { return New(NULL); }
+
+  Response* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Response& from);
+  void MergeFrom(const Response& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Response* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef Response_Status Status;
+  static const Status Success =
+    Response_Status_Success;
+  static const Status WindowLostFocus =
+    Response_Status_WindowLostFocus;
+  static inline bool Status_IsValid(int value) {
+    return Response_Status_IsValid(value);
+  }
+  static const Status Status_MIN =
+    Response_Status_Status_MIN;
+  static const Status Status_MAX =
+    Response_Status_Status_MAX;
+  static const int Status_ARRAYSIZE =
+    Response_Status_Status_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Status_descriptor() {
+    return Response_Status_descriptor();
+  }
+  static inline const ::std::string& Status_Name(Status value) {
+    return Response_Status_Name(value);
+  }
+  static inline bool Status_Parse(const ::std::string& name,
+      Status* value) {
+    return Response_Status_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  // required uint32 req_id = 1;
+  bool has_req_id() const;
+  void clear_req_id();
+  static const int kReqIdFieldNumber = 1;
+  ::google::protobuf::uint32 req_id() const;
+  void set_req_id(::google::protobuf::uint32 value);
+
+  // required .msgs.Response.Status status = 2;
+  bool has_status() const;
+  void clear_status();
+  static const int kStatusFieldNumber = 2;
+  ::msgs::Response_Status status() const;
+  void set_status(::msgs::Response_Status value);
+
+  // @@protoc_insertion_point(class_scope:msgs.Response)
+ private:
+  inline void set_has_req_id();
+  inline void clear_has_req_id();
+  inline void set_has_status();
+  inline void clear_has_status();
+
+  // helper for ByteSize()
+  int RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 req_id_;
+  int status_;
+  friend void  protobuf_AddDesc_protocol_2eproto();
+  friend void protobuf_AssignDesc_protocol_2eproto();
+  friend void protobuf_ShutdownFile_protocol_2eproto();
+
+  void InitAsDefaultInstance();
+  static Response* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -786,6 +945,15 @@ class Event : public ::google::protobuf::Message {
   ::msgs::AppGotFocus* release_got_focus();
   void set_allocated_got_focus(::msgs::AppGotFocus* got_focus);
 
+  // optional .msgs.Response response = 4;
+  bool has_response() const;
+  void clear_response();
+  static const int kResponseFieldNumber = 4;
+  const ::msgs::Response& response() const;
+  ::msgs::Response* mutable_response();
+  ::msgs::Response* release_response();
+  void set_allocated_response(::msgs::Response* response);
+
   // @@protoc_insertion_point(class_scope:msgs.Event)
  private:
   inline void set_has_destroyed();
@@ -794,6 +962,8 @@ class Event : public ::google::protobuf::Message {
   inline void clear_has_created();
   inline void set_has_got_focus();
   inline void clear_has_got_focus();
+  inline void set_has_response();
+  inline void clear_has_response();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
@@ -801,6 +971,7 @@ class Event : public ::google::protobuf::Message {
   ::msgs::AppDestroyed* destroyed_;
   ::msgs::Application* created_;
   ::msgs::AppGotFocus* got_focus_;
+  ::msgs::Response* response_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
   friend void protobuf_ShutdownFile_protocol_2eproto();
@@ -816,15 +987,39 @@ class Event : public ::google::protobuf::Message {
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // KeystrokeRequest
 
-// required uint64 app_id = 1;
-inline bool KeystrokeRequest::has_app_id() const {
+// required uint32 req_id = 7;
+inline bool KeystrokeRequest::has_req_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void KeystrokeRequest::set_has_app_id() {
+inline void KeystrokeRequest::set_has_req_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void KeystrokeRequest::clear_has_app_id() {
+inline void KeystrokeRequest::clear_has_req_id() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void KeystrokeRequest::clear_req_id() {
+  req_id_ = 0u;
+  clear_has_req_id();
+}
+inline ::google::protobuf::uint32 KeystrokeRequest::req_id() const {
+  // @@protoc_insertion_point(field_get:msgs.KeystrokeRequest.req_id)
+  return req_id_;
+}
+inline void KeystrokeRequest::set_req_id(::google::protobuf::uint32 value) {
+  set_has_req_id();
+  req_id_ = value;
+  // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.req_id)
+}
+
+// required uint64 app_id = 1;
+inline bool KeystrokeRequest::has_app_id() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void KeystrokeRequest::set_has_app_id() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void KeystrokeRequest::clear_has_app_id() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void KeystrokeRequest::clear_app_id() {
   app_id_ = GOOGLE_ULONGLONG(0);
@@ -842,13 +1037,13 @@ inline void KeystrokeRequest::set_app_id(::google::protobuf::uint64 value) {
 
 // required bool ctrl = 2;
 inline bool KeystrokeRequest::has_ctrl() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void KeystrokeRequest::set_has_ctrl() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void KeystrokeRequest::clear_has_ctrl() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void KeystrokeRequest::clear_ctrl() {
   ctrl_ = false;
@@ -866,13 +1061,13 @@ inline void KeystrokeRequest::set_ctrl(bool value) {
 
 // required bool alt = 3;
 inline bool KeystrokeRequest::has_alt() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void KeystrokeRequest::set_has_alt() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void KeystrokeRequest::clear_has_alt() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void KeystrokeRequest::clear_alt() {
   alt_ = false;
@@ -890,13 +1085,13 @@ inline void KeystrokeRequest::set_alt(bool value) {
 
 // required bool shift = 4;
 inline bool KeystrokeRequest::has_shift() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void KeystrokeRequest::set_has_shift() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void KeystrokeRequest::clear_has_shift() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void KeystrokeRequest::clear_shift() {
   shift_ = false;
@@ -914,13 +1109,13 @@ inline void KeystrokeRequest::set_shift(bool value) {
 
 // required bool meta = 5;
 inline bool KeystrokeRequest::has_meta() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void KeystrokeRequest::set_has_meta() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void KeystrokeRequest::clear_has_meta() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void KeystrokeRequest::clear_meta() {
   meta_ = false;
@@ -938,13 +1133,13 @@ inline void KeystrokeRequest::set_meta(bool value) {
 
 // required .msgs.Keycode key = 6;
 inline bool KeystrokeRequest::has_key() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void KeystrokeRequest::set_has_key() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void KeystrokeRequest::clear_has_key() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void KeystrokeRequest::clear_key() {
   key_ = 0;
@@ -959,6 +1154,59 @@ inline void KeystrokeRequest::set_key(::msgs::Keycode value) {
   set_has_key();
   key_ = value;
   // @@protoc_insertion_point(field_set:msgs.KeystrokeRequest.key)
+}
+
+// -------------------------------------------------------------------
+
+// Response
+
+// required uint32 req_id = 1;
+inline bool Response::has_req_id() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Response::set_has_req_id() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Response::clear_has_req_id() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Response::clear_req_id() {
+  req_id_ = 0u;
+  clear_has_req_id();
+}
+inline ::google::protobuf::uint32 Response::req_id() const {
+  // @@protoc_insertion_point(field_get:msgs.Response.req_id)
+  return req_id_;
+}
+inline void Response::set_req_id(::google::protobuf::uint32 value) {
+  set_has_req_id();
+  req_id_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Response.req_id)
+}
+
+// required .msgs.Response.Status status = 2;
+inline bool Response::has_status() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Response::set_has_status() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Response::clear_has_status() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Response::clear_status() {
+  status_ = 1;
+  clear_has_status();
+}
+inline ::msgs::Response_Status Response::status() const {
+  // @@protoc_insertion_point(field_get:msgs.Response.status)
+  return static_cast< ::msgs::Response_Status >(status_);
+}
+inline void Response::set_status(::msgs::Response_Status value) {
+  assert(::msgs::Response_Status_IsValid(value));
+  set_has_status();
+  status_ = value;
+  // @@protoc_insertion_point(field_set:msgs.Response.status)
 }
 
 // -------------------------------------------------------------------
@@ -1419,7 +1667,53 @@ inline void Event::set_allocated_got_focus(::msgs::AppGotFocus* got_focus) {
   // @@protoc_insertion_point(field_set_allocated:msgs.Event.got_focus)
 }
 
+// optional .msgs.Response response = 4;
+inline bool Event::has_response() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Event::set_has_response() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Event::clear_has_response() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Event::clear_response() {
+  if (response_ != NULL) response_->::msgs::Response::Clear();
+  clear_has_response();
+}
+inline const ::msgs::Response& Event::response() const {
+  // @@protoc_insertion_point(field_get:msgs.Event.response)
+  return response_ != NULL ? *response_ : *default_instance_->response_;
+}
+inline ::msgs::Response* Event::mutable_response() {
+  set_has_response();
+  if (response_ == NULL) {
+    response_ = new ::msgs::Response;
+  }
+  // @@protoc_insertion_point(field_mutable:msgs.Event.response)
+  return response_;
+}
+inline ::msgs::Response* Event::release_response() {
+  // @@protoc_insertion_point(field_release:msgs.Event.response)
+  clear_has_response();
+  ::msgs::Response* temp = response_;
+  response_ = NULL;
+  return temp;
+}
+inline void Event::set_allocated_response(::msgs::Response* response) {
+  delete response_;
+  response_ = response;
+  if (response) {
+    set_has_response();
+  } else {
+    clear_has_response();
+  }
+  // @@protoc_insertion_point(field_set_allocated:msgs.Event.response)
+}
+
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -1436,6 +1730,20 @@ inline void Event::set_allocated_got_focus(::msgs::AppGotFocus* got_focus) {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace msgs
+
+#ifndef SWIG
+namespace google {
+namespace protobuf {
+
+template <> struct is_proto_enum< ::msgs::Response_Status> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::msgs::Response_Status>() {
+  return ::msgs::Response_Status_descriptor();
+}
+
+}  // namespace protobuf
+}  // namespace google
+#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

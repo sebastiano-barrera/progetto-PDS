@@ -16,7 +16,7 @@ Client& ClientList::addClient(Client c)
 
 void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status s)
 {
-	std::lock_guard<std::mutex> lg(lock_);
+	std::lock_guard<std::mutex> lg(lock_); //LOCK_USELESS(?) solo il thread che monitora le finestre chiama la funzione, dovrebbe non essere necessario il locking
 	for (auto &c : clients) {
 		c.sendMessage(wnd, s);
 	}
