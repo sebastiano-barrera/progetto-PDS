@@ -13,30 +13,31 @@
 #define BUFFSIZE 1024
 
 bool readN(SOCKET s, int size, char* buffer);
-Client::Client()
-{
-
-}
-
 
 Client::~Client()
 {
+	//POTREBBE IN QUALCHE MODO FARCI MALE? IN PRESENZA DI COPIE MOMENTANEE CHE VENGONO DISTRUTTE AD ESEMPIO
+	if (sck != INVALID_SOCKET) {
+		closeConnection();
+	}
 }
 
-Client::Client(SOCKET s)
+Client::Client(SOCKET s):isClosed_(false)
 {
 	this->sck = s;
 }
 
 void Client::serve()
 {
-	this->sendProcessList();
-	this->readMessage();
+	if (this->sendProcessList()) {
+		this->readMessage();
+	}
+	closeConnection();
 }
 
 bool Client::sendProcessList()
 {
-	std::cout << "--sending process list--" << std::endl;
+	std::cout << "-sending process list" << std::endl;
 	uint32_t size_=0;
 	msgs::AppList msg;
 	std::string s_msg;
@@ -50,7 +51,6 @@ bool Client::sendProcessList()
 	
 	size_ = msg.ByteSize();
 	s_msg = msg.SerializeAsString();
-	//std::cout <<"serialized msg size:"<<size_<<std::endl<< s_msg<< std::endl;
 	size_ = htonl(size_);
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
@@ -67,23 +67,33 @@ bool Client::sendProcessList()
 
 void Client::readMessage()
 {
-	std::cout << "--reading message--" << std::endl;
+	std::cout << "--reading message" << std::endl;
 	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
 	if (readN(sck, 4, (char*)&size_)){
-		std::cout << "---read size---" << std::endl;
+		std::cout << "---read size" << std::endl;
 		size_ = ntohl(size_);
-		std::unique_ptr<char[]> buffer(new char[size_]);
+		std::cout << "keystroke size = " << size_ << std::endl;
+		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
 		if (readN(sck, size_, buffer.get())) {
-			std::wcout << "----read message----" << std::endl;
+			std::cout << "----read message" << std::endl;
+			std::cout <<"\t"<< buffer.get()<< std::endl;
 			msg.ParseFromArray(buffer.get(), size_);
 		}
 	}
 }
 
+void Client::closeConnection()
+{
+	std::cout << "----CLOSING CONNECTION" << std::endl;
+	closesocket(sck);
+	sck = INVALID_SOCKET;
+	isClosed_ = true;
+}
+
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
-	std::cout << "--sending message--" << std::endl;
+	std::cout << "--sending message" << std::endl;
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
 	msgs::AppGotFocus focus;
@@ -124,11 +134,13 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 bool readN(SOCKET s, int size, char* buffer){
 	fd_set readset;
 	struct timeval tv;
-	int left,res, received;
-	FD_ZERO(&readset);
-	FD_SET(s, &readset);
+	int left, res;
 	left = size;
+	std::cout << "-----called readN to read " << size << " byte" << std::endl;
+	memset(buffer, 0, size);
 	while (left > 0) {
+		FD_ZERO(&readset);
+		FD_SET(s, &readset);
 		tv.tv_sec = MAXWAIT;
 		tv.tv_usec = 0;
 		res = select(0, &readset, NULL, NULL, &tv);
@@ -137,9 +149,15 @@ bool readN(SOCKET s, int size, char* buffer){
 			if (res == 0) {//connection closed by client
 				return false;
 			}
-
+			else if (res == -1) { //recv() failed;
+				return false;
+			}
 			left -= res;
-			buffer += res;
+			std::cout << "\treceived " << res << " left " << left << std::endl;
+			if (left != 0) {
+				buffer += res;
+			}
+			
 		}
 		else if (res == 0) { //timer expired
 			return false;
@@ -148,5 +166,6 @@ bool readN(SOCKET s, int size, char* buffer){
 			return false;
 		}
 	}
+	std::cout << "\t" << buffer << std::endl;
 	return true;
 }
