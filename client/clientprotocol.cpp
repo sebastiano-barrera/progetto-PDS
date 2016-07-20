@@ -25,6 +25,7 @@ void ClientProtocol::setSocket(QTcpSocket *client)
 
     client_ = client;
     msgStream_.setDevice(client_);
+    pending_reqs_.clear();
 
     if (client_) {
         connect(client_, &QTcpSocket::aboutToClose, this, &ClientProtocol::stop);
@@ -87,14 +88,38 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
                 emit appDestroyed(event.destroyed().id());
             if (event.has_got_focus())
                 emit appGotFocus(event.got_focus().id());
+            if (event.has_response()) {
+                auto iter = pending_reqs_.find(event.response().req_id());
+                if (iter != pending_reqs_.end()) {
+                    const auto& req = *iter->second;
+                    emit responseReceived(req, event.response());
+                    pending_reqs_.erase(iter);
+                }
+            }
             break;
         }
     }
 }
 
-void ClientProtocol::sendRequest(const msgs::KeystrokeRequest &req)
+ClientProtocol::RequestId ClientProtocol::nextId()
 {
-    qDebug() << req.DebugString().c_str();
-    std::string raw = req.SerializeAsString();
+    do { last_id_++; } while(last_id_ == INVALID_REQUEST);
+    return last_id_;
+}
+
+ClientProtocol::RequestId ClientProtocol::sendRequest(std::unique_ptr<msgs::KeystrokeRequest> req)
+{
+    qDebug() << req->DebugString().c_str();
+
+    if (!req)
+        return INVALID_REQUEST;
+
+    auto req_id = nextId();
+    req->set_req_id(req_id);
+
+    std::string raw = req->SerializeAsString();
     msgStream_.sendMessage(raw.data(), raw.size());
+
+    pending_reqs_.insert({ req_id, std::move(req) });
+    return req_id;
 }
