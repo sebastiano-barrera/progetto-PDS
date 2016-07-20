@@ -100,6 +100,15 @@ void Client::readMessage()
 			std::cout << "----read message" << std::endl;
 			std::cout <<"\t"<< buffer.get()<< std::endl;
 			msg.ParseFromArray(buffer.get(), size_);
+			//controllo che la finestra richiesta sia quella onfocus, 
+			//in caso positivo mando l'input
+			HWND target = (HWND)msg.app_id();
+			if (target == windows_list.onFocus()) {
+				ProcessWindow(target).sendKeystroke(msg);
+			}
+			else {
+				//send error msg
+			}
 		}
 	}
 }

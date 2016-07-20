@@ -36,56 +36,24 @@ ClientList active;
 void checkWindowsEvents();
 void threadPoolInit(int n);
 
-INPUT PressKey(WORD key);
+
 int main()
 {
-	/*
+	
 	SOCKET connected, s = sockInit();
 	std::thread(checkWindowsEvents).detach();
 	threadPoolInit(8);
 	while (true) {
 		struct sockaddr_in caddress;
-		//int length = sizeof(struct sockaddr_in);
-		//connected = accept(s, (struct sockaddr*)&caddress, &length);
+		int length = sizeof(struct sockaddr_in);
+		connected = accept(s, (struct sockaddr*)&caddress, &length);
 		std::cout << "New connection established "<<std::endl;
 		pending.addClient(Client(connected));
 	}
 	closesocket(s);
 	WSACleanup();
 
-	*/
-
-	INPUT ip[2];
-
-	ip[0] = PressKey(VK_CONTROL);
-	ip[1] = PressKey(0x41);
-	Sleep(3000);
-	HWND h = GetForegroundWindow();
-	Sleep(3000);
-	std::cout << SetForegroundWindow(h) << std::endl;
-	SendMessage(h, WM_ACTIVATEAPP, NULL, NULL);
-	if (SendInput(2, ip, sizeof(INPUT)) == 0) {
-		std::cout << "sendinput() failed\n";
-	}
-	ip[0].ki.dwFlags = KEYEVENTF_KEYUP;
-	ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
-	if (SendInput(2, ip, sizeof(INPUT)) == 0) {
-		std::cout << "sendinput() failed\n";
-	}
-	Sleep(5000);
 	return 0;
-}
-
-INPUT PressKey(WORD key) {
-	INPUT input;
-	input.type = INPUT_KEYBOARD;
-	input.ki.wVk = key;
-	input.ki.time = 0;
-	input.ki.wScan = MapVirtualKey(key, MAPVK_VK_TO_VSC);;
-	input.ki.dwFlags = 0;
-	input.ki.dwExtraInfo = 0;
-
-	return input;
 }
 
 void serveClient() {

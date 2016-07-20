@@ -56,7 +56,7 @@ bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
 {
 	int num_mods = 0;
 	INPUT ip[5];
-	/*
+	
 	if (req.ctrl()) {
 		ip[num_mods++] = PressKey(VK_CONTROL);
 	}
@@ -69,9 +69,9 @@ bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
 	if (req.meta()) {
 		ip[num_mods++] = PressKey(0);
 	}
-	*/
+	
 	// TODO: convertire da tasto di protocollo
-	//ip[num_mods++] = PressKey(0);
+	ip[num_mods++] = PressKey(0);
 	
 	BringWindowToTop(window_);
 	//oppure
@@ -89,7 +89,7 @@ bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
 	std::cerr << "unable to send input to the selected window" << std::endl;
 	return false;
 }
-/*
+
 INPUT PressKey(int key) {
 	INPUT input;
 	input.type = INPUT_KEYBOARD;
@@ -100,4 +100,3 @@ INPUT PressKey(int key) {
 	input.ki.dwExtraInfo = 0;
 	return input;
 }
-*/

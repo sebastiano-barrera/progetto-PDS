@@ -83,6 +83,7 @@ void WindowsList::update()
 
 HWND WindowsList::onFocus()
 {
+	std::lock_guard<std::mutex> lg(lock_);
 	return onFocus_;
 }
 
