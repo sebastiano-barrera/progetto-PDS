@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ProcessWindow.h"
 #include "global.h"
+#include "keyconv_vk.h"
 
 #include <iostream>
 #include <string>
@@ -173,8 +174,11 @@ bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
 		ip[num_mods++] = PressKey(VK_LWIN);
 	}
 	
-	// TODO: convertire da tasto di protocollo
-	ip[num_mods++] = PressKey(0);
+	int virtual_key = keyconv::vk_of_proto(req.key());
+	if (virtual_key == -1)  // invalid key
+		return false;
+
+	ip[num_mods++] = PressKey(virtual_key);
 	if (SendInput(num_mods, ip, sizeof(INPUT))) {
 		for (int i = 0; i < num_mods; i++) {
 			ip[i].ki.dwFlags = KEYEVENTF_KEYUP;

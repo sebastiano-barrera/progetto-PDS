@@ -1,0 +1,32 @@
+#include "keys.pb.h"
+#include <windows.h>
+
+<%
+require 'yaml'
+
+table = YAML.load STDIN
+%>
+
+namespace keyconv {
+int vk_of_proto(msgs::Keycode keycode) 
+{
+	switch(keycode) {
+<%- table.each do |e, index| -%>
+	case msgs::<%= e['proto'] %>:
+		return <%= e['win_vk'] %>;
+<%- end -%>
+	default: return -1;
+	}
+}
+
+msgs::Keycode proto_of_vk(int vk) 
+{
+	switch(vk) {
+<%- table.each do |e, index| -%>
+	case <%= e['win_vk'] %>:
+		return msgs::<%= e['proto'] %>;
+<%- end -%>
+	default: return msgs::KeyUnknown;
+	}
+}
+}
