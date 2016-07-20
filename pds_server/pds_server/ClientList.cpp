@@ -42,4 +42,10 @@ void ClientList::cleanup()
 {
 	/// TODO
 	/// STUB
+	std::lock_guard<std::mutex> lg(lock_);
+	for (auto client = clients.begin(); client != clients.end(); client++) {
+		if (client->isClosed()) {
+			clients.erase(client);
+		}
+	}
 }

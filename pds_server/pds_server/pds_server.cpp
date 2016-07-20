@@ -36,8 +36,10 @@ ClientList active;
 void checkWindowsEvents();
 void threadPoolInit(int n);
 
+
 int main()
 {
+	
 	SOCKET connected, s = sockInit();
 	std::thread(checkWindowsEvents).detach();
 	threadPoolInit(8);
@@ -45,18 +47,14 @@ int main()
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
 		connected = accept(s, (struct sockaddr*)&caddress, &length);
-		std::string address;
-
-		//InetNtop(AF_INET, &caddress, (PWSTR)&address, 32);
 		std::cout << "New connection established "<<std::endl;
 		pending.addClient(Client(connected));
 	}
 	closesocket(s);
 	WSACleanup();
+
 	return 0;
 }
-
-
 
 void serveClient() {
 	while (true) {

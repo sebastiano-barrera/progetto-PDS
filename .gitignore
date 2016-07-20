@@ -35,13 +35,18 @@ extern/
 # Visual studio files
  *.VC.opendb
 *.VC.db
-*.sdf
-*.suo
-*.vcxproj.user
 pds_server/Debug
 pds_server/x64
 */ipch/
+*.vcxproj.user
 *.sdf
+*.suo
+*.ilk
+*.pdb
+*.tlog
+*.log
+*.idb
+*.pdb
 
 # Qt's generated files
 moc_*.cpp

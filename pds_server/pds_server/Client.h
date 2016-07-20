@@ -5,10 +5,9 @@
 class Client
 {
 	SOCKET sck;
+	bool isClosed_;
 
 public:
-	//enum Status {W_CLOSED, W_OPENED, W_ONFOCUS};
-	Client();
 	~Client();
 	Client(SOCKET s);
 	void serve();
@@ -21,6 +20,7 @@ public:
 private:
 	bool sendProcessList();
 	void readMessage();
+	void closeConnection();
 
 };
 
