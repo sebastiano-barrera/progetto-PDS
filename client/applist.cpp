@@ -13,11 +13,16 @@ App::App() :
 App::App(const msgs::Application &msg) :
     valid_(true),
     id_(msg.id()),
-    name_(QString::fromStdString(msg.name())),
     focused_(false),
     totalFocusTime_(0)
 {
     assert (id_ != INVALID_ID);
+
+    if (msg.has_win_title())
+        title_ = QString::fromStdString(msg.win_title());
+
+    if (msg.has_name())
+        processPath_ = QFileInfo(QString::fromStdString(msg.name()));
 
     if (msg.has_icon()) {
         auto& icon = msg.icon();
@@ -98,7 +103,7 @@ int AppList::rowCount(const QModelIndex &parent) const
 int AppList::columnCount(const QModelIndex &parent) const
 {
     // `parent` should be the index of the invisible root
-    return parent.isValid() ? 0 : 3;
+    return parent.isValid() ? 0 : 4;
 }
 
 QVariant AppList::data(const QModelIndex &index, int role) const
@@ -111,30 +116,26 @@ QVariant AppList::data(const QModelIndex &index, int role) const
     if (app == nullptr || col >= 3)
         return QVariant();
 
-    // Only for MSVC (tested ver. 19.0):
-    //   here, the following (or similar) return statement
-    //     return app->name();
-    //   triggers a runtime exception (a write at a small memory address).
-    //   Looks like a compiler bug.
-
     if (col == 0) {
         if (role == Qt::DisplayRole)
-            return app->name();
-        if (role == Qt::DecorationRole)
+            return app->processPath().fileName();
+        else if (role == Qt::DecorationRole)
             return app->icon();
-    } else if (col == 1) {
-        if (role == Qt::CheckStateRole)
+
+    } else if (col == 1 && role == Qt::CheckStateRole) {
             return app->isFocused();
 
-    } else if (col == 2) {
-        if (role == Qt::DisplayRole) {
-            if (connectionTimer_.isValid()) {
-                double timePerc = (double) app->focusTimeMS() / connectionTimer_.elapsed() * 100;
-                return QString("%1 %").arg(timePerc, 0, 'g', 2);
-            } else {
-                return  " - ";
-            }
+    } else if (col == 2 && role == Qt::DisplayRole) {
+        if (connectionTimer_.isValid()) {
+            double timePerc = (double) app->focusTimeMS() / connectionTimer_.elapsed() * 100;
+            return QString("%1 %").arg(timePerc, 0, 'g', 2);
+        } else {
+            return  " - ";
         }
+
+    } else if (col == 3 && role == Qt::DisplayRole) {
+        auto title = app->title();
+        return title.size() == 0 ? " - " : title;
     }
 
     return QVariant();
@@ -143,9 +144,10 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 QVariant AppList::headerData(int section, Qt::Orientation orientation, int role) const
 {
     static const char* const headers[] = {
-        "Window title",
+        "Process",
         "Focused",
         "Time focused (since connection)"
+        "Window title",
     };
     static const size_t n_headers = sizeof(headers)/sizeof(headers[0]);
 
@@ -212,8 +214,9 @@ void AppList::setFocusedApp(App::Id appId)
 
 void AppList::focusTimeColumnChanged()
 {
+    QModelIndex root;
     QModelIndex topLeft = index(0, 1);
-    QModelIndex bottomRight = index(rowCount(QModelIndex()) - 1, 1);
+    QModelIndex bottomRight = index(rowCount(root) - 1,  columnCount(root) - 1);
     dataChanged(topLeft, bottomRight);
 }
 
