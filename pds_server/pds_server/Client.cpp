@@ -55,16 +55,25 @@ bool Client::sendProcessList()
 {
 	std::cout << "-sending process list" << std::endl;
 	uint32_t size_ = 0;
-	msgs::AppGotFocus focus;
+	msgs::AppGotFocus * focus = new::msgs::AppGotFocus();
 	msgs::AppList msg;
+	msgs::Event focus_event;
 	std::string s_msg;
 
-	focus.set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
+	focus->set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
+	focus_event.set_allocated_got_focus(focus);
 	auto windows = windows_list.windows();
 	for (auto it = windows.begin(); it != windows.end(); it++) {
 		msgs::Application* app = msg.add_apps();
 		app->set_id((uint64_t) it->handle());
-		app->set_name(it->title());
+		std::string title = it->title();
+		std::string moduleFileName = it->moduleFileName();
+		if (!title.empty()) {
+			app->set_name(moduleFileName);
+		}
+		if (!moduleFileName.empty()) {
+			app->set_win_title(title);
+		}
 		app->set_allocated_icon(it->encodeIcon().release());
 	}
 	
@@ -85,9 +94,9 @@ bool Client::sendProcessList()
 
 
 	//sending on focus window
-	size_ = focus.ByteSize();
+	size_ = focus_event.ByteSize();
 	size_ = htonl(size_);
-	s_msg = focus.SerializeAsString();
+	s_msg = focus_event.SerializeAsString();
 
 
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
@@ -123,7 +132,6 @@ void Client::readMessage()
 		if (!readN(sck, size_, buffer.get()))
 			break;
 		std::cout << "----read message" << std::endl;
-		std::cout << "\t" << buffer.get() << std::endl;
 		msg.ParseFromArray(buffer.get(), size_);
 
 		msgs::Response *rsp = new msgs::Response();
@@ -177,8 +185,14 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	switch (s) {
 		case ProcessWindow::W_OPENED: {
 			auto opened = new msgs::Application();
-
-			opened->set_name(wnd.title());
+			std::string title = wnd.title();
+			std::string name = wnd.moduleFileName();
+			if (!title.empty()) {
+				opened->set_win_title(title);
+			}
+			if (!name.empty()) {
+				opened->set_name(name);
+			}
 			opened->set_id((uint64_t)wnd.handle());
 			opened->set_allocated_icon(wnd.encodeIcon().release());
 			event.set_allocated_created(opened);

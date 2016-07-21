@@ -2,27 +2,32 @@
 #include "ProcessWindow.h"
 #include "global.h"
 #include "keyconv_vk.h"
-
+#include <Psapi.h>
 #include <iostream>
 #include <string>
 #include <codecvt>
 
 INPUT PressKey(int key);
+std::string toString(std::wstring wstring);
 
 ProcessWindow::ProcessWindow(HWND hWnd) :
 	window_(hWnd)
 {
 	WCHAR wbuf[1024];
-
-	if (GetWindowText(hWnd, wbuf, 256) > 0)
+	std::cout << "*-----------------------------------------------------------------------*" << std::endl;
+	if (GetWindowText(hWnd, wbuf, 256) > 0) {
 		title_ = std::wstring(wbuf);
+		std::wcout << "GetWindowText: " << title_ << std::endl;
+	}
 
 	DWORD proc_id;
 	GetWindowThreadProcessId(window_, &proc_id);
 	process_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, proc_id);
 	DWORD wbuf_size = sizeof(wbuf);
-	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0)
+	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
 		moduleFileName_ = std::wstring(wbuf);
+		std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
+	}
 
 	icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);
 	if (icon_ == 0)
@@ -152,8 +157,16 @@ HWND ProcessWindow::handle() const
 
 std::string ProcessWindow::title() const
 {
+	return toString(this->title_);
+}
+
+std::string ProcessWindow::moduleFileName() const {
+	return toString(this->moduleFileName_);
+}
+
+std::string toString(std::wstring wstring) {
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> conversion;
-	return conversion.to_bytes(this->title_);
+	return conversion.to_bytes(wstring);
 }
 
 bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
