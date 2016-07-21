@@ -3,6 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QString>
+#include <QFileInfo>
 #include <QMap>
 #include <QElapsedTimer>
 #include <QTimer>
@@ -24,11 +25,12 @@ public:
     App();
     App(const msgs::Application& msg);
     App(Id id, QString name) :
-        valid_(true), id_(id), name_(name) { }
+        valid_(true), id_(id), title_(name) { }
 
     inline bool isValid() const { return valid_; }
     inline Id id() const { return id_; }
-    inline const QString& name() const { return name_; }
+    inline const QString& title() const { return title_; }
+    inline const QFileInfo& processPath() const { return processPath_; }
     inline const QPixmap& icon() const { return icon_; }
 
     void setFocused(bool focused);
@@ -38,7 +40,8 @@ public:
 private:
     bool valid_;
     Id id_;
-    QString name_;
+    QString title_;
+    QFileInfo processPath_;
     QPixmap icon_;
 
     bool focused_;

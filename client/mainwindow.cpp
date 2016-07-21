@@ -126,7 +126,7 @@ void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
     if (iter != appListModel_.apps().end()) {
         const auto& app = *iter;
         dialogText += QString("- %1: %2\n")
-                .arg(app.name())
+                .arg(app.title())
                 .arg(statusMessage(res.status()));
     }
 
