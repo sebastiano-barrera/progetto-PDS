@@ -1,65 +1,8 @@
 #include "applist.h"
+
 #include "protocol.pb.h"
 #include "connection.h"
-
-#include <QPixmap>
-#include <QImage>
-#include <QDebug>
-
-
-App::App() :
-    valid_(false)
-    { }
-
-App::App(const msgs::Application &msg) :
-    valid_(true),
-    id_(msg.id()),
-    focused_(false),
-    totalFocusTime_(0)
-{
-    assert (id_ != INVALID_ID);
-
-    if (msg.has_win_title())
-        title_ = QString::fromStdString(msg.win_title());
-
-    if (msg.has_name())
-        processPath_ = QFileInfo(QString::fromStdString(msg.name()));
-
-    if (msg.has_icon()) {
-        auto& icon = msg.icon();
-        QImage image(reinterpret_cast<const uchar*>(icon.pixels().data()),
-                     icon.width(), icon.height(),
-                     QImage::Format_ARGB32);
-        icon_ = QPixmap::fromImage(image.scaledToHeight(16));
-    }
-}
-
-void App::setFocused(bool focused)
-{
-    if (focused_ == focused)
-        return;
-
-    focused_ = focused;
-    if (focused_) {
-        if (valid_)
-            focusTimer_.start();
-    } else {
-        if (focusTimer_.isValid()) {
-            totalFocusTime_ += focusTimer_.elapsed();
-            focusTimer_.invalidate();
-        }
-    }
-}
-
-quint64 App::focusTimeMS() const
-{
-    quint64 elapTime = totalFocusTime_;
-    if (focused_) {
-        assert (focusTimer_.isValid());
-        elapTime += focusTimer_.elapsed();
-    }
-    return elapTime;
-}
+#include "app.h"
 
 
 AppList::AppList(QObject *parent) :
@@ -117,8 +60,9 @@ QVariant AppList::data(const QModelIndex &index, int role) const
             return Qt::AlignHCenter;
 
     } else if (col == 2 && role == Qt::DisplayRole) {
-        if (connectionTimer_.isValid()) {
-            double timePerc = (double) app->focusTimeMS() / connectionTimer_.elapsed() * 100;
+        auto timeConnected = app->parentConn()->timeConnectedMS();
+        if (timeConnected > 0) {
+            double timePerc = (double) app->focusTimeMS() / timeConnected * 100;
             return QString("%1 %").arg(timePerc, 0, 'g', 2);
         } else {
             return  " - ";

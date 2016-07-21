@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     keyconv.cpp \
     connection.cpp \
     serverlistmodel.cpp \
-    connectdialog.cpp
+    connectdialog.cpp \
+    app.cpp
 
 SOURCES += ../proto/protocol.pb.cc \
     ../proto/keys.pb.cc
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     keyconv.h \
     connection.h \
     serverlistmodel.h \
-    connectdialog.h
+    connectdialog.h \
+    app.h
 
 FORMS    += mainwindow.ui \
     connectionwidget.ui \

@@ -5,6 +5,7 @@
 #include "connectdialog.h"
 #include "keyconv.h"
 #include "protocol.pb.h"
+#include "app.h"
 
 #include <QCloseEvent>
 #include <QItemSelectionModel>
@@ -12,8 +13,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui_(new Ui::MainWindow),
-    numPendingReqs_(0)
+    ui_(new Ui::MainWindow)
 {
     proxyModel_.setSourceModel(&appListModel_);
 
@@ -21,34 +21,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->appListView->setModel(&proxyModel_);
     ui_->serverListView->setModel(&serverListModel_);
 
-    proto_.setSocket(&conn_);
-
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
-    connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
+    // connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
-
-    connect(&conn_, &QTcpSocket::connected, &proto_, &ClientProtocol::start);
-    connect(&conn_, &QTcpSocket::connected, &appListModel_, &AppList::resetConnectionTime);
-
-    // GCC: disambiguate overload
-    auto replaceAll = static_cast<void (AppList::*)(const App*, size_t)>(&AppList::replaceAll);
-    connect(&proto_, &ClientProtocol::appListReceived, &appListModel_, replaceAll);
-    connect(&proto_, &ClientProtocol::appCreated, &appListModel_, &AppList::addApp);
-    connect(&proto_, &ClientProtocol::appDestroyed, &appListModel_, &AppList::removeApp);
-    connect(&proto_, &ClientProtocol::stopped, &appListModel_, &AppList::clear);
-    connect(&proto_, &ClientProtocol::appGotFocus, &appListModel_, &AppList::setFocusedApp);
-    connect(&proto_, &ClientProtocol::responseReceived, this, &MainWindow::showResponse);
 
     connect(&msgBox_, &QMessageBox::finished, this, [this](int result){
         msgBox_.setText("");
     });
 
-    updatePendingReqMsg();
-    connect(&proto_, &ClientProtocol::stopped, this, [this]() {
-        numPendingReqs_ = 0;
-        updatePendingReqMsg();
-    });
+    // updatePendingReqMsg();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -88,14 +70,17 @@ void MainWindow::sendKeystroke()
         if (app == nullptr || !app->isFocused()) 
             continue;
 
+        // Using a unique_ptr in preparation for pending requests tracking,
+        // which will be based on storing unique_ptrs
         auto req_inst = std::make_unique<msgs::KeystrokeRequest>(req);
         req_inst->set_app_id(app->id());
-        app->parentConn()->sendRequest(std::move(req_inst));
-        numPendingReqs_++;
+        app->parentConn()->sendRequest(*req_inst);
     }
 
-    updatePendingReqMsg();
+    // updatePendingReqMsg();
 }
+
+#if 0
 
 const char* statusMessage(msgs::Response::Status status)
 {
@@ -110,16 +95,16 @@ const char* statusMessage(msgs::Response::Status status)
 
 void MainWindow::updatePendingReqMsg()
 {
-    if (proto_.isStarted())
-        statusBar()->showMessage(QString("%1 requests pending").arg(numPendingReqs_));
-    else
-        statusBar()->showMessage("Disconnected");
+    // STUB
+//    if (proto_.isStarted())
+//        statusBar()->showMessage(QString("%1 requests pending").arg(numPendingReqs_));
+//    else
+//        statusBar()->showMessage("Disconnected");
 }
 
 void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
                               const msgs::Response &res)
 {
-    numPendingReqs_--;
     updatePendingReqMsg();
 
     if (res.status() == msgs::Response::Success)
@@ -129,7 +114,7 @@ void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
     if (dialogText.size() == 0)
         dialogText = "The following requests failed:\n";
 
-    auto iter = appListModel_.apps().find(req.app_id());
+    auto iter = order_.find(req.app_id());
     if (iter != appListModel_.apps().end()) {
         const auto& app = *iter;
         dialogText += QString("- %1: %2\n")
@@ -155,3 +140,4 @@ void MainWindow::openConnectDialog()
 
     dialog->show();
 }
+#endif

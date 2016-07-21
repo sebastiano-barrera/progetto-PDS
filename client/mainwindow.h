@@ -40,12 +40,12 @@ signals:
 
 private slots:
     void sendKeystroke();
-    void showResponse(const msgs::KeystrokeRequest&,
-                      const msgs::Response&);
-    void openConnectDialog();
+//    void showResponse(const msgs::KeystrokeRequest&,
+//                      const msgs::Response&);
+//    void openConnectDialog();
 
 private:
-    void updatePendingReqMsg();
+    // void updatePendingReqMsg();
 
     std::unique_ptr<Ui::MainWindow> ui_;
     std::vector<std::unique_ptr<Connection>> connections_;
@@ -53,7 +53,6 @@ private:
     ServerListModel serverListModel_;
     AppList appListModel_;
     QMessageBox msgBox_;
-    int numPendingReqs_;
 };
 
 #endif // MAINWINDOW_H

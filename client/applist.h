@@ -11,42 +11,11 @@
 
 namespace msgs {
     class AppList;
+    class Application;
 }
 
-class App {
-    // TODO: extract icon data
-public:
-    typedef quint32 Id;
-    enum {
-        INVALID_ID = (Id) -1
-    };
-
-    App();
-    App(const msgs::Application& msg);
-    App(Id id, QString name) :
-        valid_(true), id_(id), title_(name) { }
-
-    inline bool isValid() const { return valid_; }
-    inline Id id() const { return id_; }
-    inline const QString& title() const { return title_; }
-    inline const QFileInfo& processPath() const { return processPath_; }
-    inline const QPixmap& icon() const { return icon_; }
-
-    void setFocused(bool focused);
-    inline bool isFocused() const { return focused_; }
-    quint64 focusTimeMS() const;
-
-private:
-    bool valid_;
-    Id id_;
-    QString title_;
-    QFileInfo processPath_;
-    QPixmap icon_;
-
-    bool focused_;
-    QElapsedTimer focusTimer_;
-    quint64 totalFocusTime_;
-};
+class App;
+class Connection;
 
 
 class AppList : public QAbstractTableModel
