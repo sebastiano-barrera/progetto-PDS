@@ -42,15 +42,13 @@ void WindowsList::update()
 	
 	MyEnumWindows(&updated);
 	HWND currentFocus = GetForegroundWindow(); //getting foreground window handle
-	if (currentFocus == NULL) {
-		std::cout << "No App on focus" << std::endl;
-	}
+
 	// looking for the old windows --> EVENT: WINDOW CLOSED
 	std::vector<HWND> closed_wins;
 	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
-		std::cout << "Closed window :";
+		std::cout << "Closed window" << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(std::move(pw), ProcessWindow::W_CLOSED);
@@ -61,7 +59,7 @@ void WindowsList::update()
 	//looking for new windows --> EVENT: NEW WINDOW CREATED
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);
-		std::cout << "Opened window : ";
+		std::cout << "Opened window" << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);

@@ -12,7 +12,8 @@
 #define MAXWAIT 120
 #define BUFFSIZE 1024
 
-bool readN(SOCKET s, int size, char* buffer);
+bool readN(SOCKET s, char* buffer, int size);
+bool sendN(SOCKET s, char* buffer, int size);
 
 Client::~Client()
 {
@@ -82,12 +83,12 @@ bool Client::sendProcessList()
 	s_msg = msg.SerializeAsString();
 
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
-	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*)&size_, sizeof(uint32_t))) {
 		std::cerr << "an error occurred while sending message size" << std::endl;
 		return false;
 	}
 
-	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*) s_msg.c_str(), s_msg.size())) {
 		std::cerr << "an error occurred while sending data" << std::endl;
 		return false;
 	}
@@ -99,12 +100,12 @@ bool Client::sendProcessList()
 	s_msg = focus_event.SerializeAsString();
 
 
-	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*)&size_, sizeof(uint32_t))) {
 		std::cerr << "an error occurred while sending onfocus message size" << std::endl;
 		return false;
 	}
 
-	if (send(sck, s_msg.c_str(), s_msg.size(), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*)s_msg.c_str(), s_msg.size())) {
 		std::cerr << "an error occurred while sending onfocus data" << std::endl;
 		return false;
 	}
@@ -121,7 +122,7 @@ void Client::readMessage()
 	std::string serialized_response;
 	uint32_t size;
 	while (true) {
-		if (!readN(sck, 4, (char*)&size_))
+		if (!readN(sck, (char*)&size_, 4))
 			break;
 		//std::cout << "---read size" << std::endl;
 		
@@ -129,7 +130,7 @@ void Client::readMessage()
 		//std::cout << "keystroke size = " << size_ << std::endl;
 		
 		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
-		if (!readN(sck, size_, buffer.get()))
+		if (!readN(sck, buffer.get(), size_))
 			break;
 		//std::cout << "----read message" << std::endl;
 		msg.ParseFromArray(buffer.get(), size_);
@@ -153,10 +154,10 @@ void Client::readMessage()
 		size = htonl(response.ByteSize());
 		serialized_response = response.SerializeAsString();
 
-		if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR)
+		if (!sendN(sck, (char*)&size, sizeof(u_long)))
 			std::cerr << "an error occurred while sending response size" << std::endl;
 
-		if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR)
+		if (!sendN(sck, (char*)serialized_response.c_str(), serialized_response.size()))
 			std::cerr << "an error occurred while response data" << std::endl;
 	}
 	//std::cout << "--MESSAGE READ" << std::endl;
@@ -167,6 +168,7 @@ void Client::closeConnection()
 	closesocket(sck);
 	sck = INVALID_SOCKET;
 	isClosed_ = true;
+	std::cout << "connection closed" << std::endl;
 }
 
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
@@ -217,18 +219,18 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	//std::cout << "Serialized msg size: " << size << std::endl << msg << std::endl;
 	
 	size = htonl(size);
-	if (send(sck, (char*)&size, sizeof(u_long), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*)&size, sizeof(u_long))) {
 		std::cerr << "an error occurred while sending message size" << std::endl;
 	}
 
-	if (send(sck, msg.c_str(), msg.size(), 0) == SOCKET_ERROR) {
+	if (!sendN(sck, (char*)msg.c_str(), msg.size())) {
 		std::cerr << "an error occurred while sending data" << std::endl;
 	}
 	//std::cout << "--MESSAGE SENT" << std::endl;
 }
 
-//reads exactly size byte
-bool readN(SOCKET s, int size, char* buffer){
+//reads exactly size byte or fails
+bool readN(SOCKET s, char* buffer, int size){
 	fd_set readset;
 	struct timeval tv;
 	int left, res;
@@ -263,8 +265,20 @@ bool readN(SOCKET s, int size, char* buffer){
 			return false;
 		}
 	}
-	//if (!GetWindowText(hwnd, NULL, NULL))
-		return FALSE;
-std::cout << "-----READ " << size << " byte" << std::endl;
+	//std::cout << "-----READ " << size << " byte" << std::endl;
 	return true;
+}
+
+//send exactly N byte or fails
+bool sendN(SOCKET s, char* buffer, int size) {
+
+	int sent = 0;
+	while (sent != size && sent != SOCKET_ERROR) {
+		sent = send(s, buffer, size, 0);
+		buffer += sent;
+	}
+	if (sent == size) {
+		return true;
+	}
+	return false;
 }
