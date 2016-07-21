@@ -32,8 +32,9 @@ message AppList {
 
 message Application {
     required uint64 id = 1;
-    required string name = 2;
-    optional Icon icon = 3;
+    optional string name = 2; //process name
+	optional string win_title = 3; //window title
+    optional Icon icon = 4;
 }
 
 message Icon {

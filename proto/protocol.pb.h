@@ -511,7 +511,7 @@ class Application : public ::google::protobuf::Message {
   ::google::protobuf::uint64 id() const;
   void set_id(::google::protobuf::uint64 value);
 
-  // required string name = 2;
+  // optional string name = 2;
   bool has_name() const;
   void clear_name();
   static const int kNameFieldNumber = 2;
@@ -523,10 +523,22 @@ class Application : public ::google::protobuf::Message {
   ::std::string* release_name();
   void set_allocated_name(::std::string* name);
 
-  // optional .msgs.Icon icon = 3;
+  // optional string win_title = 3;
+  bool has_win_title() const;
+  void clear_win_title();
+  static const int kWinTitleFieldNumber = 3;
+  const ::std::string& win_title() const;
+  void set_win_title(const ::std::string& value);
+  void set_win_title(const char* value);
+  void set_win_title(const char* value, size_t size);
+  ::std::string* mutable_win_title();
+  ::std::string* release_win_title();
+  void set_allocated_win_title(::std::string* win_title);
+
+  // optional .msgs.Icon icon = 4;
   bool has_icon() const;
   void clear_icon();
-  static const int kIconFieldNumber = 3;
+  static const int kIconFieldNumber = 4;
   const ::msgs::Icon& icon() const;
   ::msgs::Icon* mutable_icon();
   ::msgs::Icon* release_icon();
@@ -538,17 +550,17 @@ class Application : public ::google::protobuf::Message {
   inline void clear_has_id();
   inline void set_has_name();
   inline void clear_has_name();
+  inline void set_has_win_title();
+  inline void clear_has_win_title();
   inline void set_has_icon();
   inline void clear_has_icon();
-
-  // helper for ByteSize()
-  int RequiredFieldsByteSizeFallback() const;
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint64 id_;
   ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::internal::ArenaStringPtr win_title_;
   ::msgs::Icon* icon_;
   friend void  protobuf_AddDesc_protocol_2eproto();
   friend void protobuf_AssignDesc_protocol_2eproto();
@@ -1271,7 +1283,7 @@ inline void Application::set_id(::google::protobuf::uint64 value) {
   // @@protoc_insertion_point(field_set:msgs.Application.id)
 }
 
-// required string name = 2;
+// optional string name = 2;
 inline bool Application::has_name() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -1325,15 +1337,69 @@ inline void Application::set_allocated_name(::std::string* name) {
   // @@protoc_insertion_point(field_set_allocated:msgs.Application.name)
 }
 
-// optional .msgs.Icon icon = 3;
-inline bool Application::has_icon() const {
+// optional string win_title = 3;
+inline bool Application::has_win_title() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Application::set_has_icon() {
+inline void Application::set_has_win_title() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Application::clear_has_icon() {
+inline void Application::clear_has_win_title() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void Application::clear_win_title() {
+  win_title_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_win_title();
+}
+inline const ::std::string& Application::win_title() const {
+  // @@protoc_insertion_point(field_get:msgs.Application.win_title)
+  return win_title_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Application::set_win_title(const ::std::string& value) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:msgs.Application.win_title)
+}
+inline void Application::set_win_title(const char* value) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:msgs.Application.win_title)
+}
+inline void Application::set_win_title(const char* value, size_t size) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:msgs.Application.win_title)
+}
+inline ::std::string* Application::mutable_win_title() {
+  set_has_win_title();
+  // @@protoc_insertion_point(field_mutable:msgs.Application.win_title)
+  return win_title_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Application::release_win_title() {
+  // @@protoc_insertion_point(field_release:msgs.Application.win_title)
+  clear_has_win_title();
+  return win_title_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Application::set_allocated_win_title(::std::string* win_title) {
+  if (win_title != NULL) {
+    set_has_win_title();
+  } else {
+    clear_has_win_title();
+  }
+  win_title_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), win_title);
+  // @@protoc_insertion_point(field_set_allocated:msgs.Application.win_title)
+}
+
+// optional .msgs.Icon icon = 4;
+inline bool Application::has_icon() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Application::set_has_icon() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Application::clear_has_icon() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Application::clear_icon() {
   if (icon_ != NULL) icon_->::msgs::Icon::Clear();

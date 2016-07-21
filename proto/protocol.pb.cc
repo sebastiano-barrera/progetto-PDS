@@ -110,9 +110,10 @@ void protobuf_AssignDesc_protocol_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AppList, _internal_metadata_),
       -1);
   Application_descriptor_ = file->message_type(3);
-  static const int Application_offsets_[3] = {
+  static const int Application_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, win_title_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Application, icon_),
   };
   Application_reflection_ =
@@ -258,15 +259,15 @@ void protobuf_AddDesc_protocol_2eproto() {
     "%\n\006status\030\002 \002(\0162\025.msgs.Response.Status\"*"
     "\n\006Status\022\013\n\007Success\020\001\022\023\n\017WindowLostFocus"
     "\020\002\"*\n\007AppList\022\037\n\004apps\030\001 \003(\0132\021.msgs.Appli"
-    "cation\"A\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004nam"
-    "e\030\002 \002(\t\022\030\n\004icon\030\003 \001(\0132\n.msgs.Icon\"5\n\004Ico"
-    "n\022\r\n\005width\030\001 \002(\r\022\016\n\006height\030\002 \002(\r\022\016\n\006pixe"
-    "ls\030\003 \002(\014\"\032\n\014AppDestroyed\022\n\n\002id\030\001 \002(\004\"\031\n\013"
-    "AppGotFocus\022\n\n\002id\030\001 \002(\004\"\232\001\n\005Event\022%\n\tdes"
-    "troyed\030\001 \001(\0132\022.msgs.AppDestroyed\022\"\n\007crea"
-    "ted\030\002 \001(\0132\021.msgs.Application\022$\n\tgot_focu"
-    "s\030\003 \001(\0132\021.msgs.AppGotFocus\022 \n\010response\030\004"
-    " \001(\0132\016.msgs.Response", 660);
+    "cation\"T\n\013Application\022\n\n\002id\030\001 \002(\004\022\014\n\004nam"
+    "e\030\002 \001(\t\022\021\n\twin_title\030\003 \001(\t\022\030\n\004icon\030\004 \001(\013"
+    "2\n.msgs.Icon\"5\n\004Icon\022\r\n\005width\030\001 \002(\r\022\016\n\006h"
+    "eight\030\002 \002(\r\022\016\n\006pixels\030\003 \002(\014\"\032\n\014AppDestro"
+    "yed\022\n\n\002id\030\001 \002(\004\"\031\n\013AppGotFocus\022\n\n\002id\030\001 \002"
+    "(\004\"\232\001\n\005Event\022%\n\tdestroyed\030\001 \001(\0132\022.msgs.A"
+    "ppDestroyed\022\"\n\007created\030\002 \001(\0132\021.msgs.Appl"
+    "ication\022$\n\tgot_focus\030\003 \001(\0132\021.msgs.AppGot"
+    "Focus\022 \n\010response\030\004 \001(\0132\016.msgs.Response", 679);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   KeystrokeRequest::default_instance_ = new KeystrokeRequest();
@@ -1662,6 +1663,7 @@ AppList::apps() const {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Application::kIdFieldNumber;
 const int Application::kNameFieldNumber;
+const int Application::kWinTitleFieldNumber;
 const int Application::kIconFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -1688,6 +1690,7 @@ void Application::SharedCtor() {
   _cached_size_ = 0;
   id_ = GOOGLE_ULONGLONG(0);
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  win_title_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   icon_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -1699,6 +1702,7 @@ Application::~Application() {
 
 void Application::SharedDtor() {
   name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  win_title_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
     delete icon_;
   }
@@ -1731,10 +1735,13 @@ Application* Application::New(::google::protobuf::Arena* arena) const {
 
 void Application::Clear() {
 // @@protoc_insertion_point(message_clear_start:msgs.Application)
-  if (_has_bits_[0 / 32] & 7u) {
+  if (_has_bits_[0 / 32] & 15u) {
     id_ = GOOGLE_ULONGLONG(0);
     if (has_name()) {
       name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    }
+    if (has_win_title()) {
+      win_title_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
     if (has_icon()) {
       if (icon_ != NULL) icon_->::msgs::Icon::Clear();
@@ -1770,7 +1777,7 @@ bool Application::MergePartialFromCodedStream(
         break;
       }
 
-      // required string name = 2;
+      // optional string name = 2;
       case 2: {
         if (tag == 18) {
          parse_name:
@@ -1783,13 +1790,30 @@ bool Application::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(26)) goto parse_icon;
+        if (input->ExpectTag(26)) goto parse_win_title;
         break;
       }
 
-      // optional .msgs.Icon icon = 3;
+      // optional string win_title = 3;
       case 3: {
         if (tag == 26) {
+         parse_win_title:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_win_title()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->win_title().data(), this->win_title().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "msgs.Application.win_title");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_icon;
+        break;
+      }
+
+      // optional .msgs.Icon icon = 4;
+      case 4: {
+        if (tag == 34) {
          parse_icon:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_icon()));
@@ -1830,7 +1854,7 @@ void Application::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->id(), output);
   }
 
-  // required string name = 2;
+  // optional string name = 2;
   if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->name().data(), this->name().length(),
@@ -1840,10 +1864,20 @@ void Application::SerializeWithCachedSizes(
       2, this->name(), output);
   }
 
-  // optional .msgs.Icon icon = 3;
+  // optional string win_title = 3;
+  if (has_win_title()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->win_title().data(), this->win_title().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "msgs.Application.win_title");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->win_title(), output);
+  }
+
+  // optional .msgs.Icon icon = 4;
   if (has_icon()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, *this->icon_, output);
+      4, *this->icon_, output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1861,7 +1895,7 @@ void Application::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->id(), target);
   }
 
-  // required string name = 2;
+  // optional string name = 2;
   if (has_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->name().data(), this->name().length(),
@@ -1872,11 +1906,22 @@ void Application::SerializeWithCachedSizes(
         2, this->name(), target);
   }
 
-  // optional .msgs.Icon icon = 3;
+  // optional string win_title = 3;
+  if (has_win_title()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->win_title().data(), this->win_title().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "msgs.Application.win_title");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->win_title(), target);
+  }
+
+  // optional .msgs.Icon icon = 4;
   if (has_icon()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, *this->icon_, target);
+        4, *this->icon_, target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1887,51 +1932,39 @@ void Application::SerializeWithCachedSizes(
   return target;
 }
 
-int Application::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:msgs.Application)
-  int total_size = 0;
-
-  if (has_id()) {
-    // required uint64 id = 1;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt64Size(
-        this->id());
-  }
-
-  if (has_name()) {
-    // required string name = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->name());
-  }
-
-  return total_size;
-}
 int Application::ByteSize() const {
 // @@protoc_insertion_point(message_byte_size_start:msgs.Application)
   int total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required uint64 id = 1;
+  // required uint64 id = 1;
+  if (has_id()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->id());
-
-    // required string name = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->name());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
   }
-  // optional .msgs.Icon icon = 3;
-  if (has_icon()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        *this->icon_);
-  }
+  if (_has_bits_[1 / 32] & 14u) {
+    // optional string name = 2;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
 
+    // optional string win_title = 3;
+    if (has_win_title()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->win_title());
+    }
+
+    // optional .msgs.Icon icon = 4;
+    if (has_icon()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->icon_);
+    }
+
+  }
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1969,6 +2002,10 @@ void Application::MergeFrom(const Application& from) {
       set_has_name();
       name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
     }
+    if (from.has_win_title()) {
+      set_has_win_title();
+      win_title_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.win_title_);
+    }
     if (from.has_icon()) {
       mutable_icon()->::msgs::Icon::MergeFrom(from.icon());
     }
@@ -1993,7 +2030,7 @@ void Application::CopyFrom(const Application& from) {
 }
 
 bool Application::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   if (has_icon()) {
     if (!this->icon_->IsInitialized()) return false;
@@ -2008,6 +2045,7 @@ void Application::Swap(Application* other) {
 void Application::InternalSwap(Application* other) {
   std::swap(id_, other->id_);
   name_.Swap(&other->name_);
+  win_title_.Swap(&other->win_title_);
   std::swap(icon_, other->icon_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -2049,7 +2087,7 @@ void Application::clear_id() {
   // @@protoc_insertion_point(field_set:msgs.Application.id)
 }
 
-// required string name = 2;
+// optional string name = 2;
 bool Application::has_name() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2103,15 +2141,69 @@ void Application::clear_name() {
   // @@protoc_insertion_point(field_set_allocated:msgs.Application.name)
 }
 
-// optional .msgs.Icon icon = 3;
-bool Application::has_icon() const {
+// optional string win_title = 3;
+bool Application::has_win_title() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-void Application::set_has_icon() {
+void Application::set_has_win_title() {
   _has_bits_[0] |= 0x00000004u;
 }
-void Application::clear_has_icon() {
+void Application::clear_has_win_title() {
   _has_bits_[0] &= ~0x00000004u;
+}
+void Application::clear_win_title() {
+  win_title_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_win_title();
+}
+ const ::std::string& Application::win_title() const {
+  // @@protoc_insertion_point(field_get:msgs.Application.win_title)
+  return win_title_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Application::set_win_title(const ::std::string& value) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:msgs.Application.win_title)
+}
+ void Application::set_win_title(const char* value) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:msgs.Application.win_title)
+}
+ void Application::set_win_title(const char* value, size_t size) {
+  set_has_win_title();
+  win_title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:msgs.Application.win_title)
+}
+ ::std::string* Application::mutable_win_title() {
+  set_has_win_title();
+  // @@protoc_insertion_point(field_mutable:msgs.Application.win_title)
+  return win_title_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* Application::release_win_title() {
+  // @@protoc_insertion_point(field_release:msgs.Application.win_title)
+  clear_has_win_title();
+  return win_title_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Application::set_allocated_win_title(::std::string* win_title) {
+  if (win_title != NULL) {
+    set_has_win_title();
+  } else {
+    clear_has_win_title();
+  }
+  win_title_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), win_title);
+  // @@protoc_insertion_point(field_set_allocated:msgs.Application.win_title)
+}
+
+// optional .msgs.Icon icon = 4;
+bool Application::has_icon() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void Application::set_has_icon() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void Application::clear_has_icon() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 void Application::clear_icon() {
   if (icon_ != NULL) icon_->::msgs::Icon::Clear();

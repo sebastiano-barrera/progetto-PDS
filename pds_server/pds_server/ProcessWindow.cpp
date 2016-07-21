@@ -8,6 +8,7 @@
 #include <codecvt>
 
 INPUT PressKey(int key);
+std::string toString(std::wstring wstring);
 
 ProcessWindow::ProcessWindow(HWND hWnd) :
 	window_(hWnd)
@@ -26,16 +27,6 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
 		moduleFileName_ = std::wstring(wbuf);
 		std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
-	}
-	memset(wbuf, 0, 1024);
-	if (GetProcessImageFileNameW(process_, wbuf, wbuf_size)) {
-		moduleFileName_ = std::wstring(wbuf);
-		std::wcout << "GetProcessImageFileNameW: " << moduleFileName_ << std::endl;
-	}
-	memset(wbuf, 0, 1024);
-	if (GetModuleFileNameExW(process_,NULL, wbuf, wbuf_size)) {
-		moduleFileName_ = std::wstring(wbuf);
-		std::wcout << title_ << "GetModuleFileNameExW: " << moduleFileName_ << std::endl;
 	}
 
 	icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);
@@ -166,8 +157,16 @@ HWND ProcessWindow::handle() const
 
 std::string ProcessWindow::title() const
 {
+	return toString(this->title_);
+}
+
+std::string ProcessWindow::moduleFileName() const {
+	return toString(this->moduleFileName_);
+}
+
+std::string toString(std::wstring wstring) {
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> conversion;
-	return conversion.to_bytes(this->title_);
+	return conversion.to_bytes(wstring);
 }
 
 bool ProcessWindow::sendKeystroke(msgs::KeystrokeRequest req)
