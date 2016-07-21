@@ -16,7 +16,7 @@ Client& ClientList::addClient(Client c)
 
 void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status s)
 {
-	std::lock_guard<std::mutex> lg(lock_); //LOCK_USELESS(?) solo il thread che monitora le finestre chiama la funzione, dovrebbe non essere necessario il locking
+	std::lock_guard<std::mutex> lg(lock_);
 	for (auto &c : clients) {
 		c.sendMessage(wnd, s);
 	}
@@ -24,8 +24,8 @@ void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status s)
 
 Client ClientList::getClient()
 {
-	std::unique_lock<std::mutex> lg(lock_);
-	cv_.wait(lg, [this]() { return size_ > 0; });
+	std::unique_lock<std::mutex> ul(lock_);
+	cv_.wait(ul, [this]() { return size_ > 0; });
 	Client c = std::move(clients.front());
 	clients.pop_front();
 	size_--;
@@ -42,4 +42,5 @@ void ClientList::cleanup()
 {
 	std::lock_guard<std::mutex> lg(lock_);
 	clients.remove_if([](const Client &c) {return c.isClosed(); }); //rimuovo i client non più attivi
+	size_ = clients.size();
 }

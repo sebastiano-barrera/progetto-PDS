@@ -49,15 +49,15 @@ int main(int argc, char**argv)
 	short port = atoi(argv[1]);
 	SOCKET connected, s = sockInit(port);
 	std::thread(checkWindowsEvents).detach();
-	threadPoolInit(3);
+	threadPoolInit(16);
 	while (true) {
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
 		connected = accept(s, (struct sockaddr*)&caddress, &length);
 		char address[64];
 		std::string s((char*) inet_ntop(AF_INET, &caddress, address, 32));
-		std::cout << "New connection established\nclient port: " << ntohs(caddress.sin_port) << " address: "<<s<<std::endl;
 		pending.addClient(Client(connected));
+		
 	}
 	closesocket(s);
 	WSACleanup();
@@ -74,9 +74,7 @@ void serveClient() {
 }
 
 void checkWindowsEvents() {
-	//std::cout << "Lanciato thread per controllare gli eventi" << std::endl;
 	while (true) {
-		//windows_list.printProcessList();
 		windows_list.update();
 		Sleep(250);
 	}
@@ -85,7 +83,14 @@ void checkWindowsEvents() {
 void threadPoolInit(int n)
 {
 	for (int i = 0; i < n; i++) {
-		std::thread(serveClient).detach();
+		try {
+			std::thread(serveClient).detach();
+		}
+		catch(std::exception e){
+			e.what();
+			std::cout << "creati " << i << "/" << n << "thread" << std::endl;
+			break;
+		}
 	}
 }
 

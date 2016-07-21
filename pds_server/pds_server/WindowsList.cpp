@@ -7,9 +7,7 @@
 
 BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam);
 void MyEnumWindows(std::set<HWND>* v);
-BOOL IsAltTabWindow(HWND hwnd);
-
-using namespace std;
+BOOL hasGUI(HWND hwnd);
 
 WindowsList::WindowsList()
 {
@@ -31,7 +29,7 @@ std::vector<ProcessWindow> WindowsList::windows() const
 void WindowsList::printProcessList()
 {	
 	auto procWins = this->windows();
-	std::lock_guard<std::mutex> lck(this->lock_); //LOCK_USELESS(?)
+	std::lock_guard<std::mutex> lck(this->lock_); //someone may call update() while printing the list
 	for (const auto& pw : procWins)
 		pw.windowInfo();
 }
@@ -40,7 +38,7 @@ void WindowsList::update()
 {
 	// Elenco delle finestre aggiornato
 	std::set<HWND> updated;
-	std::lock_guard<mutex> lck(lock_); // the update process must be atomic
+	std::lock_guard<std::mutex> lck(lock_); // the update process must be atomic
 	
 	MyEnumWindows(&updated);
 	HWND currentFocus = GetForegroundWindow(); //getting foreground window handle
@@ -52,8 +50,8 @@ void WindowsList::update()
 	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
-		cout << "Closed window :";
-		pw.windowInfo();
+		std::cout << "Closed window :";
+		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(std::move(pw), ProcessWindow::W_CLOSED);
 	}
@@ -64,7 +62,7 @@ void WindowsList::update()
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);
 		std::cout << "Opened window : ";
-		pw.windowInfo();
+		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);
 	}
@@ -75,7 +73,7 @@ void WindowsList::update()
 		onFocus_ = currentFocus;
 		auto pw = ProcessWindow(onFocus_);
 		std::cout << "Focus changed" << std::endl;
-		pw.windowInfo();
+		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_ONFOCUS);
 	}
@@ -100,13 +98,13 @@ void MyEnumWindows(std::set<HWND> *win_handles) {
 
 BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
 	auto win_handles = reinterpret_cast<std::set<HWND>*>(lParam);
-	if (IsAltTabWindow(hWnd)) {
+	if (hasGUI(hWnd)) {
 		win_handles->insert(hWnd);
 	}
 	return true;
 }
 
-BOOL IsAltTabWindow(HWND hwnd)
+BOOL hasGUI(HWND hwnd)
 {
 	TITLEBARINFO ti;
 	HWND hwndTry, hwndWalk = NULL;
@@ -114,7 +112,11 @@ BOOL IsAltTabWindow(HWND hwnd)
 	if (!IsWindowVisible(hwnd))
 		return FALSE;
 
-	hwndTry = GetAncestor(hwnd, GA_ROOTOWNER);
+	WCHAR buff[256];
+	if (!GetWindowText(hwnd, buff, 256)) //if there is not title is very likely that is not a visible window
+		return FALSE;
+	
+	hwndTry = GetAncestor(hwnd, GA_ROOTOWNER); //get the root window
 	while (hwndTry != hwndWalk)
 	{
 		hwndWalk = hwndTry;

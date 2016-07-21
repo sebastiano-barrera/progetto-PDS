@@ -14,10 +14,10 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 	window_(hWnd)
 {
 	WCHAR wbuf[1024];
-	std::cout << "*-----------------------------------------------------------------------*" << std::endl;
+	//std::cout << "*-----------------------------------------------------------------------*" << std::endl;
 	if (GetWindowText(hWnd, wbuf, 256) > 0) {
 		title_ = std::wstring(wbuf);
-		std::wcout << "GetWindowText: " << title_ << std::endl;
+		//std::wcout << "GetWindowText: " << title_ << std::endl;
 	}
 
 	DWORD proc_id;
@@ -26,7 +26,7 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 	DWORD wbuf_size = sizeof(wbuf);
 	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
 		moduleFileName_ = std::wstring(wbuf);
-		std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
+		//std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
 	}
 
 	icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);

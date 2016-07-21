@@ -53,7 +53,7 @@ Client::Client(Client && src)
 
 bool Client::sendProcessList()
 {
-	std::cout << "-sending process list" << std::endl;
+	//std::cout << "-sending process list" << std::endl;
 	uint32_t size_ = 0;
 	msgs::AppGotFocus * focus = new::msgs::AppGotFocus();
 	msgs::AppList msg;
@@ -108,13 +108,13 @@ bool Client::sendProcessList()
 		std::cerr << "an error occurred while sending onfocus data" << std::endl;
 		return false;
 	}
-	std::cout << "-PROCESS LIST SENT" << std::endl;
+	//std::cout << "-PROCESS LIST SENT" << std::endl;
 	return true;
 }
 
 void Client::readMessage()
 {
-	std::cout << "--reading message" << std::endl;
+	//std::cout << "--reading message" << std::endl;
 	uint32_t size_=0;
 	msgs::KeystrokeRequest msg;
 	msgs::Event response;
@@ -123,15 +123,15 @@ void Client::readMessage()
 	while (true) {
 		if (!readN(sck, 4, (char*)&size_))
 			break;
-		std::cout << "---read size" << std::endl;
+		//std::cout << "---read size" << std::endl;
 		
 		size_ = ntohl(size_);
-		std::cout << "keystroke size = " << size_ << std::endl;
+		//std::cout << "keystroke size = " << size_ << std::endl;
 		
 		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
 		if (!readN(sck, size_, buffer.get()))
 			break;
-		std::cout << "----read message" << std::endl;
+		//std::cout << "----read message" << std::endl;
 		msg.ParseFromArray(buffer.get(), size_);
 
 		msgs::Response *rsp = new msgs::Response();
@@ -159,12 +159,11 @@ void Client::readMessage()
 		if (send(sck, serialized_response.c_str(), serialized_response.size(), 0) == SOCKET_ERROR)
 			std::cerr << "an error occurred while response data" << std::endl;
 	}
-	std::cout << "--MESSAGE READ" << std::endl;
+	//std::cout << "--MESSAGE READ" << std::endl;
 }
 
 void Client::closeConnection()
 {
-	std::cout << "CLOSING CONNECTION" << std::endl;
 	closesocket(sck);
 	sck = INVALID_SOCKET;
 	isClosed_ = true;
@@ -172,7 +171,7 @@ void Client::closeConnection()
 
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
-	std::cout << "--sending message" << std::endl;
+	//std::cout << "--sending message" << std::endl;
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
 	msgs::AppGotFocus focus;
@@ -225,7 +224,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	if (send(sck, msg.c_str(), msg.size(), 0) == SOCKET_ERROR) {
 		std::cerr << "an error occurred while sending data" << std::endl;
 	}
-	std::cout << "--MESSAGE SENT" << std::endl;
+	//std::cout << "--MESSAGE SENT" << std::endl;
 }
 
 //reads exactly size byte
@@ -234,7 +233,7 @@ bool readN(SOCKET s, int size, char* buffer){
 	struct timeval tv;
 	int left, res;
 	left = size;
-	std::cout << "-----called readN to read " << size << " byte" << std::endl;
+	//std::cout << "-----called readN to read " << size << " byte" << std::endl;
 	memset(buffer, 0, size);
 	while (left > 0) {
 		FD_ZERO(&readset);
@@ -255,7 +254,7 @@ bool readN(SOCKET s, int size, char* buffer){
 				return false;
 			}
 			left -= res;
-			std::cout << "\treceived " << res << " left " << left << std::endl;
+			//std::cout << "\treceived " << res << " left " << left << std::endl;
 			if (left != 0) {
 				buffer += res;
 			}
@@ -264,6 +263,8 @@ bool readN(SOCKET s, int size, char* buffer){
 			return false;
 		}
 	}
-	std::cout << "-----READ " << size << " byte" << std::endl;
+	//if (!GetWindowText(hwnd, NULL, NULL))
+		return FALSE;
+std::cout << "-----READ " << size << " byte" << std::endl;
 	return true;
 }
