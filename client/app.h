@@ -6,6 +6,8 @@
 #include <QFileInfo>
 #include <QElapsedTimer>
 
+#include "clientprotocol.h"
+
 namespace msgs {
 class Application;
 }
@@ -28,7 +30,8 @@ public:
     };
 
     App(Connection *conn, const msgs::Application& msg, QObject *parent = 0);
-    App& operator=(App&&);
+
+    void resetFromMessage(const msgs::Application& msg);
 
     inline Connection* parentConn() const { return parentConn_; }
     inline Id id() const { return id_; }

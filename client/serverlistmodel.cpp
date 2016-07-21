@@ -93,10 +93,10 @@ QVariant ServerListModel::data(const QModelIndex &index, int role) const
 
     int col = index.column();
     if (col == 0 && role == Qt::DisplayRole) {
-        const auto& addr = conn->hostAddress();
+        QString addr = conn->endpointAddress();
         if (addr.isNull())
             return " - ";
-        return QString("%1:%2").arg(addr.toString()).arg(conn->port());
+        return addr;
     } else if (col == 1 && role == Qt::DisplayRole) {
         return sockStateMessage(conn->socket().state());
     }

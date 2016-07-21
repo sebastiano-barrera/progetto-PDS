@@ -7,14 +7,19 @@
 
 App::App(Connection *conn, const msgs::Application &msg, QObject *parent) :
     QObject(parent),
-    id_(msg.id()),
-    parentConn_(conn),
-    focused_(false),
-    totalFocusTime_(0)
+    parentConn_(conn)
 {
     assert (conn != nullptr);
-    assert (id_ != INVALID_ID);
+    resetFromMessage(msg);
+}
 
+void App::resetFromMessage(const msgs::Application &msg)
+{
+    assert (msg.id() != INVALID_ID);
+
+    id_ = msg.id();
+    focused_ = false;
+    totalFocusTime_ = 0;
 
     if (msg.has_win_title())
         title_ = QString::fromStdString(msg.win_title());
@@ -31,20 +36,6 @@ App::App(Connection *conn, const msgs::Application &msg, QObject *parent) :
     }
 }
 
-App& App::operator=(App&& rhs)
-{
-    std::swap(valid_, rhs.valid_);
-    std::swap(id_, rhs.id_);
-    std::swap(name_, rhs.name_);
-    if (parentConn_ != rhs.parentConn_) {
-        std::swap(parentConn_, rhs.parentConn_);
-        std::swap(focusTimer_, rhs.focusTimer_);
-        std::swap(totalFocusTime_, rhs.totalFocusTime_);
-    }
-    setFocused(rhs.focused_);
-    return *this;
-}
-
 void App::setFocused(bool focused)
 {
     if (focused_ == focused)
@@ -52,8 +43,7 @@ void App::setFocused(bool focused)
 
     focused_ = focused;
     if (focused_) {
-        if (valid_)
-            focusTimer_.start();
+        focusTimer_.start();
     } else {
         if (focusTimer_.isValid()) {
             totalFocusTime_ += focusTimer_.elapsed();

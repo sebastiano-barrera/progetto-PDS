@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->serverListView->setModel(&serverListModel_);
 
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
-    // connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
+    connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
 
@@ -74,13 +74,11 @@ void MainWindow::sendKeystroke()
         // which will be based on storing unique_ptrs
         auto req_inst = std::make_unique<msgs::KeystrokeRequest>(req);
         req_inst->set_app_id(app->id());
-        app->parentConn()->sendRequest(*req_inst);
+        app->parentConn()->sendRequest(std::move(req_inst));
     }
 
     // updatePendingReqMsg();
 }
-
-#if 0
 
 const char* statusMessage(msgs::Response::Status status)
 {
@@ -95,14 +93,15 @@ const char* statusMessage(msgs::Response::Status status)
 
 void MainWindow::updatePendingReqMsg()
 {
-    // STUB
-//    if (proto_.isStarted())
-//        statusBar()->showMessage(QString("%1 requests pending").arg(numPendingReqs_));
-//    else
-//        statusBar()->showMessage("Disconnected");
+    unsigned total = 0;
+    for (const auto& conn : connections_)
+        total += conn->pendingRequestsCount();
+
+    statusBar()->showMessage(QString("%1 pending requests").arg(total));
 }
 
-void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
+void MainWindow::showResponse(Connection *conn,
+                              const msgs::KeystrokeRequest &req,
                               const msgs::Response &res)
 {
     updatePendingReqMsg();
@@ -110,17 +109,21 @@ void MainWindow::showResponse(const msgs::KeystrokeRequest &req,
     if (res.status() == msgs::Response::Success)
         return;
 
+    const auto* app = conn->appById(req.app_id());
+    if (app == nullptr) {
+        qWarning() << "A request failed for a now-disappeared application\n";
+        return;
+    }
+
     auto dialogText = msgBox_.text();
     if (dialogText.size() == 0)
         dialogText = "The following requests failed:\n";
 
-    auto iter = order_.find(req.app_id());
-    if (iter != appListModel_.apps().end()) {
-        const auto& app = *iter;
-        dialogText += QString("- %1: %2\n")
-                .arg(app.title())
-                .arg(statusMessage(res.status()));
-    }
+    dialogText += QString("- From %1: %2 (%3): %4\n")
+            .arg(conn->hostAddress().toString())
+            .arg(app->processPath().fileName())
+            .arg(app->title())
+            .arg(statusMessage(res.status()));
 
     msgBox_.setText(dialogText);
     msgBox_.show();
@@ -133,6 +136,8 @@ void MainWindow::openConnectDialog()
         // move the connection object out of the dialog,
         // claim ownership, and add to collection
         std::unique_ptr<Connection> conn = std::move(dialog->giveConnection());
+        connect(conn.get(), &Connection::responseReceived,
+                this, &MainWindow::showResponse);
         connections_.emplace_back(std::move(conn));
 
         emit connectionAdded(connections_.back().get());
@@ -140,4 +145,3 @@ void MainWindow::openConnectDialog()
 
     dialog->show();
 }
-#endif

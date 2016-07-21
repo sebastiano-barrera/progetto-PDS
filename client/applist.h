@@ -24,6 +24,7 @@ class AppList : public QAbstractTableModel
 
     QTimer updateTimer_;
     QVector<const App*> order_;
+    unsigned numConns_;
 
 public:
     explicit AppList(QObject *parent = 0);
@@ -36,10 +37,11 @@ public:
 
 public slots:
     void addApp(const App *app);
-    void removeApp(const App *app);
     void addConnection(const Connection *);
 
 private slots:
+    void removeApp(const App *app);
+    void decreaseConnCount();
     void focusTimeColumnChanged();
 };
 

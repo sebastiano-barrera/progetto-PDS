@@ -1,5 +1,6 @@
 #include "connection.h"
 #include "protocol.pb.h"
+#include "app.h"
 
 #include <cassert>
 
@@ -18,6 +19,7 @@ Connection::Connection(QObject *parent) :
     connect(&proto_, &ClientProtocol::appDestroyed, this, &Connection::destroyApp);
     connect(&proto_, &ClientProtocol::appGotFocus, this, &Connection::setFocusedApp);
     connect(&proto_, &ClientProtocol::appListReceived, this, &Connection::setAppList);
+    connect(&proto_, &ClientProtocol::responseReceived, this, &Connection::handleResponse);
 
     connect(&proto_, &ClientProtocol::stopped, this, &Connection::reset);
 
@@ -37,6 +39,13 @@ void Connection::resetConnectionTime()
     assert (connectionTimer_.isValid());
 }
 
+QString Connection::endpointAddress() const
+{
+    if (addr_.isNull())
+        return QString();
+    return QString("%1:%2").arg(addr_.toString()).arg(port_);
+}
+
 void Connection::reset()
 {
     apps_.clear();
@@ -51,6 +60,8 @@ void Connection::setAppList(const std::vector<const msgs::Application *> &appMsg
 
 void Connection::createApp(const msgs::Application &msg)
 {
+    qWarning("Got app:\n%d\t%s\t%s\n\n",
+             msg.id(), msg.name().c_str(), msg.win_title().c_str());
     auto iter = apps_.find(msg.id());
     if (iter == apps_.end()) {
         // NOTE: The `App` must be created with parent = NULL
@@ -63,7 +74,7 @@ void Connection::createApp(const msgs::Application &msg)
         apps_.emplace(appId, std::move(app));
         emit appCreated(apps_[appId].get());
     } else {
-        *iter->second = App {this, msg};
+        iter->second->resetFromMessage(msg);
     }
 }
 
@@ -113,9 +124,10 @@ quint64 Connection::timeConnectedMS() const
     return 0;
 }
 
-void Connection::sendRequest(const msgs::KeystrokeRequest &req)
+void Connection::handleResponse(const msgs::KeystrokeRequest& req,
+                                const msgs::Response &res)
 {
-    proto_.sendRequest(req);
+    emit responseReceived(this, req, res);
 }
 
 void Connection::socketStateChanged()
@@ -125,4 +137,13 @@ void Connection::socketStateChanged()
         addr_ = sock_.peerAddress();
         port_ = sock_.peerPort();
     }
+}
+
+const App* Connection::appById(ClientProtocol::AppId appId) const
+{
+    auto iter = apps_.find(appId);
+    if (iter == apps_.end())
+        return nullptr;
+
+    return iter->second.get();
 }

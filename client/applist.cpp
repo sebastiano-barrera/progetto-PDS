@@ -6,7 +6,8 @@
 
 
 AppList::AppList(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent),
+    numConns_(0)
 {
     updateTimer_.setInterval(200);
     updateTimer_.setSingleShot(false);
@@ -34,7 +35,7 @@ int AppList::rowCount(const QModelIndex &parent) const
 int AppList::columnCount(const QModelIndex &parent) const
 {
     // `parent` should be the index of the invisible root
-    return parent.isValid() ? 0 : 4;
+    return parent.isValid() ? 0 : 5;
 }
 
 QVariant AppList::data(const QModelIndex &index, int role) const
@@ -47,19 +48,22 @@ QVariant AppList::data(const QModelIndex &index, int role) const
     if (app == nullptr || col >= 4)
         return QVariant();
 
-    if (col == 0) {
+    if (col == 0 && role == Qt::DisplayRole) {
+        return app->parentConn()->endpointAddress();
+
+    } else if (col == 1) {
         if (role == Qt::DisplayRole)
             return app->processPath().fileName();
         else if (role == Qt::DecorationRole)
             return app->icon();
 
-    } else if (col == 1) {
+    } else if (col == 2) {
         if (role == Qt::DisplayRole)
             return app->isFocused() ? QString("●") : QString();
         else if (role == Qt::TextAlignmentRole)
             return Qt::AlignHCenter;
 
-    } else if (col == 2 && role == Qt::DisplayRole) {
+    } else if (col == 3 && role == Qt::DisplayRole) {
         auto timeConnected = app->parentConn()->timeConnectedMS();
         if (timeConnected > 0) {
             double timePerc = (double) app->focusTimeMS() / timeConnected * 100;
@@ -68,7 +72,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
             return  " - ";
         }
 
-    } else if (col == 3 && role == Qt::DisplayRole) {
+    } else if (col == 4 && role == Qt::DisplayRole) {
         auto title = app->title();
         return title.size() == 0 ? " - " : title;
     }
@@ -79,6 +83,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 QVariant AppList::headerData(int section, Qt::Orientation orientation, int role) const
 {
     static const char* const headers[] = {
+        "Server",
         "Process",
         "Focused",
         "Time focused (since connection)",
@@ -123,16 +128,30 @@ void AppList::addConnection(const Connection *conn)
     if (conn == nullptr)
         return;
 
-    for (const App* app : conn->apps())
+    auto appList = conn->apps();
+    for (const App* app : appList)
         addApp(app);
 
     connect(conn, &Connection::appCreated, this, &AppList::addApp);
+    connect(conn, &Connection::destroyed, this, &AppList::decreaseConnCount);
+
+    updateTimer_.start();
 }
+
+void AppList::decreaseConnCount()
+{
+    if (numConns_ == 0)
+        return;
+    numConns_--;
+    if (numConns_ == 0)
+        updateTimer_.stop();
+}
+
 
 void AppList::focusTimeColumnChanged()
 {
     QModelIndex root;
-    QModelIndex topLeft = index(0, 1);
+    QModelIndex topLeft = index(0, 0);
     QModelIndex bottomRight = index(rowCount(root) - 1,  columnCount(root) - 1);
     dataChanged(topLeft, bottomRight);
 }
