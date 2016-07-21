@@ -55,12 +55,15 @@ bool Client::sendProcessList()
 {
 	std::cout << "-sending process list" << std::endl;
 	uint32_t size_ = 0;
-	msgs::AppGotFocus focus;
+	msgs::AppGotFocus * focus = new::msgs::AppGotFocus();
 	msgs::AppList msg;
+	msgs::Event focus_event;
 	std::string s_msg;
 
-	focus.set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
+	focus->set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
+	focus_event.set_allocated_got_focus(focus);
 	auto windows = windows_list.windows();
+	
 	for (auto it = windows.begin(); it != windows.end(); it++) {
 		msgs::Application* app = msg.add_apps();
 		app->set_id((uint64_t) it->handle());
@@ -85,9 +88,9 @@ bool Client::sendProcessList()
 
 
 	//sending on focus window
-	size_ = focus.ByteSize();
+	size_ = focus_event.ByteSize();
 	size_ = htonl(size_);
-	s_msg = focus.SerializeAsString();
+	s_msg = focus_event.SerializeAsString();
 
 
 	if (send(sck, (char*)&size_, sizeof(uint32_t), 0) == SOCKET_ERROR) {

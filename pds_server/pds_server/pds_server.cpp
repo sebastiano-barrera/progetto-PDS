@@ -49,7 +49,7 @@ int main(int argc, char**argv)
 	short port = atoi(argv[1]);
 	SOCKET connected, s = sockInit(port);
 	std::thread(checkWindowsEvents).detach();
-	threadPoolInit(8);
+	threadPoolInit(3);
 	while (true) {
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
@@ -78,7 +78,7 @@ void checkWindowsEvents() {
 	while (true) {
 		//windows_list.printProcessList();
 		windows_list.update();
-		Sleep(2500);
+		Sleep(250);
 	}
 }
 

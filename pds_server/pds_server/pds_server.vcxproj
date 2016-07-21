@@ -166,7 +166,9 @@
     <ClInclude Include="WindowsList.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\proto\keyconv_vk.cpp" />
+    <ClCompile Include="..\..\proto\keyconv_vk.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\proto\keys.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
