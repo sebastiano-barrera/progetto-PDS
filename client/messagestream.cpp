@@ -97,7 +97,7 @@ err:
 void MessageStream::sendMessage(const char* data, size_t len)
 {
     std::unique_lock<std::mutex> lock(mutex_);
-    quint32 len_n = qToBigEndian(len);
+    quint32 len_n = qToBigEndian<quint32>(len);
     dev_->write((char*) &len_n, sizeof(len_n));
     dev_->write(data, len);
 }

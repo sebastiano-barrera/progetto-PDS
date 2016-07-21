@@ -120,6 +120,6 @@ ClientProtocol::RequestId ClientProtocol::sendRequest(std::unique_ptr<msgs::Keys
     std::string raw = req->SerializeAsString();
     msgStream_.sendMessage(raw.data(), raw.size());
 
-    pending_reqs_.insert({ req_id, std::move(req) });
+    pending_reqs_.emplace(req_id, std::move(req));
     return req_id;
 }
