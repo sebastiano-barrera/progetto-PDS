@@ -122,8 +122,11 @@ QVariant AppList::data(const QModelIndex &index, int role) const
         else if (role == Qt::DecorationRole)
             return app->icon();
 
-    } else if (col == 1 && role == Qt::CheckStateRole) {
-            return app->isFocused();
+    } else if (col == 1) {
+        if (role == Qt::DisplayRole)
+            return app->isFocused() ? QString("●") : QString();
+        else if (role == Qt::TextAlignmentRole)
+            return Qt::AlignHCenter;
 
     } else if (col == 2 && role == Qt::DisplayRole) {
         if (connectionTimer_.isValid()) {
