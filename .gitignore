@@ -58,3 +58,9 @@ client/deploy/
 # QtCreator files
 client/*.user
 client/*.user.*
+
+# Our generated files
+proto/*.pb.h
+proto/*.pb.cc
+proto/keys.proto
+proto/keyconv_vk.cpp
