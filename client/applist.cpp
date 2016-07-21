@@ -45,7 +45,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     const auto* app = atIndex(index);
     int col = index.column();
-    if (app == nullptr || col >= 4)
+    if (app == nullptr || col >= 5)
         return QVariant();
 
     if (col == 0 && role == Qt::DisplayRole) {

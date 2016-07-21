@@ -67,14 +67,17 @@ bool Client::sendProcessList()
 	for (auto it = windows.begin(); it != windows.end(); it++) {
 		msgs::Application* app = msg.add_apps();
 		app->set_id((uint64_t) it->handle());
+		
 		std::string title = it->title();
-		std::string moduleFileName = it->moduleFileName();
 		if (!title.empty()) {
-			app->set_name(moduleFileName);
-		}
-		if (!moduleFileName.empty()) {
 			app->set_win_title(title);
 		}
+		
+		std::string moduleFileName = it->moduleFileName();
+		if (!moduleFileName.empty()) {
+			app->set_name(moduleFileName);
+		}
+		
 		app->set_allocated_icon(it->encodeIcon().release());
 	}
 	
