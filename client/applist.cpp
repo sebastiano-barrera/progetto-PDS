@@ -113,7 +113,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     const auto* app = atIndex(index);
     int col = index.column();
-    if (app == nullptr || col >= 3)
+    if (app == nullptr || col >= 4)
         return QVariant();
 
     if (col == 0) {
@@ -146,7 +146,7 @@ QVariant AppList::headerData(int section, Qt::Orientation orientation, int role)
     static const char* const headers[] = {
         "Process",
         "Focused",
-        "Time focused (since connection)"
+        "Time focused (since connection)",
         "Window title",
     };
     static const size_t n_headers = sizeof(headers)/sizeof(headers[0]);
