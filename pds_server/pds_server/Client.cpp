@@ -247,7 +247,11 @@ bool readN(SOCKET s, int size, char* buffer){
 			if (res == 0) {//connection closed by client
 				return false;
 			}
-			else if (res == -1) { //recv() failed;
+			else if (res == SOCKET_ERROR) {//recv() failed;
+				res = WSAGetLastError();
+				if (res == WSAEWOULDBLOCK) {
+					continue; //call select() again
+				}
 				return false;
 			}
 			left -= res;
@@ -255,12 +259,8 @@ bool readN(SOCKET s, int size, char* buffer){
 			if (left != 0) {
 				buffer += res;
 			}
-			
 		}
-		else if (res == 0) { //timer expired
-			return false;
-		}
-		else { //socket error
+		else { //socket error or timer expired
 			return false;
 		}
 	}
