@@ -13,8 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_(new Ui::MainWindow),
     numPendingReqs_(0)
 {
+    proxyModel_.setSourceModel(&appListModel_);
+
     ui_->setupUi(this);
-    ui_->appListView->setModel(&appListModel_);
+    ui_->appListView->setModel(&proxyModel_);
     ui_->connectBar->setSocket(&conn_);
 
     proto_.setSocket(&conn_);

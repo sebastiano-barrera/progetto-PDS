@@ -6,7 +6,7 @@
 
 #include "ui_mainwindow.h"
 #include <QMainWindow>
-#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 #include <QTcpSocket>
 #include <QTimer>
 #include <QMessageBox>
@@ -42,6 +42,7 @@ private:
     std::unique_ptr<Ui::MainWindow> ui_;
     QTcpSocket conn_;
     ClientProtocol proto_;
+    QSortFilterProxyModel proxyModel_;
     AppList appListModel_;
     QMessageBox msgBox_;
     int numPendingReqs_;

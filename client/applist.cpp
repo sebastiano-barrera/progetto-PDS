@@ -113,7 +113,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     const auto* app = atIndex(index);
     int col = index.column();
-    if (app == nullptr || col >= 3)
+    if (app == nullptr || col >= 4)
         return QVariant();
 
     if (col == 0) {
@@ -122,8 +122,11 @@ QVariant AppList::data(const QModelIndex &index, int role) const
         else if (role == Qt::DecorationRole)
             return app->icon();
 
-    } else if (col == 1 && role == Qt::CheckStateRole) {
-            return app->isFocused();
+    } else if (col == 1) {
+        if (role == Qt::DisplayRole)
+            return app->isFocused() ? QString("●") : QString();
+        else if (role == Qt::TextAlignmentRole)
+            return Qt::AlignHCenter;
 
     } else if (col == 2 && role == Qt::DisplayRole) {
         if (connectionTimer_.isValid()) {
@@ -146,7 +149,7 @@ QVariant AppList::headerData(int section, Qt::Orientation orientation, int role)
     static const char* const headers[] = {
         "Process",
         "Focused",
-        "Time focused (since connection)"
+        "Time focused (since connection)",
         "Window title",
     };
     static const size_t n_headers = sizeof(headers)/sizeof(headers[0]);
