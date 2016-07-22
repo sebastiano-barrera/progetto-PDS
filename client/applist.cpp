@@ -67,7 +67,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
         auto timeConnected = app->parentConn()->timeConnectedMS();
         if (timeConnected > 0) {
             double timePerc = (double) app->focusTimeMS() / timeConnected * 100;
-            return QString("%1 %").arg(timePerc, 0, 'g', 2);
+            return QString("%1 %").arg(timePerc, 0, 'f', 2);
         } else {
             return  " - ";
         }
