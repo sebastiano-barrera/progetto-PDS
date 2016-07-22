@@ -45,7 +45,8 @@ private slots:
     void addConnection();
     void removeConnection();
     void reconnectSelected();
-    void selectedConnectionChanged();
+    void connSelectionChanged();
+    void appSelectionChanged();
 
 private:
     void updatePendingReqMsg();

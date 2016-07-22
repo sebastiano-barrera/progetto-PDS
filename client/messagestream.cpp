@@ -18,14 +18,14 @@ void MessageStream::setDevice(QIODevice *dev)
     if (dev_) {
         // discard temporary state
         dev_->disconnect(this);
-        msgbuf_ = nullptr;
-        remaining_ = 0;
+        reset();
     }
 
     dev_ = dev;
 
     if (dev_) {
         connect(dev_, &QIODevice::readyRead, this, &MessageStream::readyRead);
+        connect(dev_, &QIODevice::aboutToClose, this, &MessageStream::reset);
     }
 }
 
@@ -104,4 +104,10 @@ void MessageStream::sendMessage(const char* data, size_t len)
     quint32 len_n = qToBigEndian<quint32>(len);
     dev_->write((char*) &len_n, sizeof(len_n));
     dev_->write(data, len);
+}
+
+void MessageStream::reset()
+{
+    msgbuf_ = nullptr;
+    remaining_ = 0;
 }

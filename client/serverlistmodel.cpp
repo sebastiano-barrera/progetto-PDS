@@ -106,7 +106,7 @@ QVariant ServerListModel::data(const QModelIndex &index, int role) const
         return addr;
     } else if (col == 1 && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
         const auto& socket = conn->socket();
-        if (socket.error() != QAbstractSocket::UnknownSocketError)
+        if (socket.state() == QAbstractSocket::UnconnectedState && socket.error() != QAbstractSocket::UnknownSocketError)
             return QString("Error: %2").arg(socket.errorString());
         return sockStateMessage(socket.state());
     }

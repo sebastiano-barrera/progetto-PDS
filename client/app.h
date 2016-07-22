@@ -30,20 +30,31 @@ public:
     };
 
     App(Connection *conn, const msgs::Application& msg, QObject *parent = 0);
+    virtual ~App();
 
     void resetFromMessage(const msgs::Application& msg);
 
-    inline Connection* parentConn() const { return parentConn_; }
-    inline Id id() const { return id_; }
-    inline const QString& title() const { return title_; }
-    inline const QFileInfo& processPath() const { return processPath_; }
-    inline const QPixmap& icon() const { return icon_; }
+    inline Connection* parentConn() const {  return parentConn_; }
+    inline Id id() const {  return id_; }
+    inline const QString& title() const {
+        return valid_ ? title_ : defaultTitle_;
+    }
+    inline const QFileInfo& processPath() const {
+        return valid_ ? processPath_ : defaultTitle_;
+    }
+    inline const QPixmap* icon() const {
+        return valid_ ? &icon_ : nullptr;
+    }
 
     void setFocused(bool focused);
     inline bool isFocused() const { return focused_; }
     quint64 focusTimeMS() const;
 
 private:
+    static const QFileInfo defaultProcessPath_;
+    static const QString defaultTitle_;
+
+    bool valid_;
     Id id_;
     Connection *parentConn_;
     QString title_;

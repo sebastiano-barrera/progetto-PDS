@@ -13,8 +13,6 @@ ConnectionWidget::ConnectionWidget(QWidget *parent) :
 
     connect(ui_->lneHostName, &QLineEdit::returnPressed,
             this, &ConnectionWidget::openConn);
-    connect(ui_->btnConnect, &QPushButton::clicked,
-            this, &ConnectionWidget::connectClicked);
 }
 
 ConnectionWidget::~ConnectionWidget()
@@ -43,21 +41,6 @@ void ConnectionWidget::setSocket(QAbstractSocket *sock)
     stateChanged();
 }
 
-void ConnectionWidget::connectClicked()
-{
-    if (sock_ == nullptr)
-        return;
-
-    qDebug() << "socket state is " << sock_->state();
-
-    if (sock_->state() == QAbstractSocket::UnconnectedState)
-        openConn();    // unconnected => connect
-    else if (sock_->state() == QAbstractSocket::ConnectedState)
-        closeConn();   // connected => disconnect
-
-    // all other states are transitory (in which case, just do nothing)
-}
-
 void ConnectionWidget::openConn()
 {
     if (!sock_)
@@ -83,8 +66,6 @@ void ConnectionWidget::stateChanged()
     switch(sock_->state()) {
     case QAbstractSocket::ConnectedState:
         setEnabled(true);
-        ui_->lblError->setText("Connected");
-        ui_->btnConnect->setText("Disconnect");
         break;
 
     case QAbstractSocket::HostLookupState:
@@ -100,7 +81,6 @@ void ConnectionWidget::stateChanged()
     case QAbstractSocket::UnconnectedState:
         setEnabled(true);
         ui_->lblError->setText("Not connected");
-        ui_->btnConnect->setText("Connect");
         break;
 
 

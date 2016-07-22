@@ -26,8 +26,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui_->btnRemoveConn, &QPushButton::clicked, this, &MainWindow::removeConnection);
     connect(ui_->btnReconnect, &QPushButton::clicked, this, &MainWindow::reconnectSelected);
 
-    connect((*ui_).serverListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
-            this, &MainWindow::selectedConnectionChanged);
+    connect(ui_->serverListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::connSelectionChanged);
+    connect(ui_->appListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::appSelectionChanged);
 
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
@@ -73,7 +75,7 @@ void MainWindow::sendKeystroke()
              << " selected items";
     // copy a new request for each selected window
     for (QModelIndex index : selIndices) {
-        const App* app = appListModel_.atIndex(index);
+        const App* app = appListModel_.atIndex(proxyModel_.mapToSource(index));
         if (app == nullptr || !app->isFocused()) 
             continue;
 
@@ -101,8 +103,10 @@ const char* statusMessage(msgs::Response::Status status)
 void MainWindow::updatePendingReqMsg()
 {
     unsigned total = 0;
-    for (const auto& conn : connections_)
+    for (const auto& conn : connections_) {
+        assert (conn != nullptr);
         total += conn->pendingRequestsCount();
+    }
 
     statusBar()->showMessage(QString("%1 pending requests").arg(total));
 }
@@ -143,12 +147,17 @@ void MainWindow::addConnection()
         // move the connection object out of the dialog,
         // claim ownership, and add to collection
         std::unique_ptr<Connection> conn = std::move(dialog->giveConnection());
-        connect(conn.get(), &Connection::responseReceived,
-                this, &MainWindow::showResponse);
-        connections_.push_back(conn.release());
+        if (!conn)
+            return;
 
+        connect(conn.get(), &Connection::responseReceived, this, &MainWindow::showResponse);
+        connections_.push_back(conn.release());
         emit connectionAdded(connections_.back());
+
+        dialog->deleteLater();
     });
+
+    connect(dialog, &QDialog::rejected, dialog, &QDialog::deleteLater);
 
     dialog->show();
 }
@@ -179,13 +188,31 @@ void MainWindow::reconnectSelected()
     }
 }
 
-void MainWindow::selectedConnectionChanged()
+void MainWindow::connSelectionChanged()
 {
     QItemSelectionModel* selModel = ui_->serverListView->selectionModel();
     auto selRows = selModel->selectedRows();
 
-    if (selRows.size() > 0) {
+    if (selRows.size() == 0) {
+        ui_->btnReconnect->setEnabled(false);
+        ui_->btnRemoveConn->setEnabled(false);
+    } else {
         ui_->btnReconnect->setEnabled(true);
         ui_->btnRemoveConn->setEnabled(true);
     }
+}
+
+void MainWindow::appSelectionChanged()
+{
+    QItemSelectionModel* selModel = ui_->appListView->selectionModel();
+    auto selRows = selModel->selectedRows();
+
+    unsigned count = 0;
+    for (auto index : selRows) {
+        auto *app = appListModel_.atIndex(proxyModel_.mapToSource(index));
+        if (app->isFocused())
+            count++;
+    }
+
+    ui_->lblNumFocusedWin->setText(QString("Will be sent only to the %1 focused apps").arg(count));
 }

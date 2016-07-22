@@ -1,6 +1,7 @@
 #ifndef CONNECTDIALOG_H
 #define CONNECTDIALOG_H
 
+#include <QAbstractSocket>
 #include <QDialog>
 
 #include <memory>
@@ -21,6 +22,9 @@ public:
     ~ConnectDialog();
 
     std::unique_ptr<Connection> giveConnection();
+
+private slots:
+    void socketStateChanged(QAbstractSocket::SocketState);
 
 private:
     std::unique_ptr<Connection> conn_;

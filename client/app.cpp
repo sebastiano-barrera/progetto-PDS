@@ -4,13 +4,23 @@
 #include <QImage>
 #include <QDebug>
 
+const QFileInfo App::defaultProcessPath_;
+const QString App::defaultTitle_;
+
 
 App::App(Connection *conn, const msgs::Application &msg, QObject *parent) :
     QObject(parent),
-    parentConn_(conn)
+    parentConn_(conn),
+    valid_(true)
 {
     assert (conn != nullptr);
     resetFromMessage(msg);
+}
+
+App::~App()
+{
+    qWarning("-- App being destroyed: 0x%x", this);
+    valid_ = false;
 }
 
 void App::resetFromMessage(const msgs::Application &msg)

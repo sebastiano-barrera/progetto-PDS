@@ -18,10 +18,11 @@ public:
     inline QAbstractSocket* socket() const { return sock_; }
     void setSocket(QAbstractSocket *sock);
 
-protected slots:
+public slots:
     void openConn();
     void closeConn();
-    void connectClicked();
+
+protected slots:
     void stateChanged();
     void error(QAbstractSocket::SocketError err);
 

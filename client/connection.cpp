@@ -87,6 +87,12 @@ void Connection::destroyApp(ClientProtocol::AppId appId)
     // This will cause the `App` object to be deleted;
     // the AppList model will handle this event by removing the row
     // corresponding to the deleted `App`.
+    auto iter = apps_.find(appId);
+    if (iter == apps_.end())
+        return;
+
+    iter->second->setFocused(false);
+    iter->second->deleteLater();
     apps_.erase(appId);
 }
 
@@ -96,6 +102,7 @@ void Connection::setFocusedApp(ClientProtocol::AppId appId)
     if (iter != apps_.end())
         iter->second->setFocused(false);
 
+    qWarning("Change focus: %d -> %d", focusedApp_, appId);
     focusedApp_ = appId;
 
     iter = apps_.find(appId);

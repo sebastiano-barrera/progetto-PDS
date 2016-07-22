@@ -10,7 +10,9 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->connWidget->setSocket(&conn_->socket());
-    connect(this, &QDialog::finished, this, &QObject::deleteLater);
+    connect(ui->btnConnect,   &QPushButton::clicked, ui->connWidget, &ConnectionWidget::openConn);
+    connect(ui->btnCancel,    &QPushButton::clicked, this,           &QDialog::reject);
+    connect(&conn_->socket(), &QAbstractSocket::stateChanged, this, &ConnectDialog::socketStateChanged);
 }
 
 ConnectDialog::~ConnectDialog()
@@ -23,3 +25,8 @@ std::unique_ptr<Connection> ConnectDialog::giveConnection()
     return std::move(conn_);
 }
 
+void ConnectDialog::socketStateChanged(QAbstractSocket::SocketState state)
+{
+    if (state == QAbstractSocket::ConnectedState)
+        this->accept();
+}

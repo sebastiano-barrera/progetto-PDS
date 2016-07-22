@@ -28,6 +28,8 @@ private slots:
     void readyRead();
 
 private:
+    void reset();
+
     QIODevice *dev_;
     std::unique_ptr<QByteArray> msgbuf_;
     quint32 remaining_;
