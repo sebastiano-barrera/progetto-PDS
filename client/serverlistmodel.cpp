@@ -12,7 +12,13 @@ void ServerListModel::addConnection(Connection *conn)
 
     connect(conn, &Connection::destroyed,    this, [=]() { removeConnection(conn); });
     connect(&conn->socket(), &QAbstractSocket::stateChanged, this, [=]() { updateConnection(conn); });
-    connect(&conn->socket(), &QAbstractSocket::error, this, [=]() { updateConnection(conn); });
+    // Disambiguate identifier `error`
+    auto sig_error = static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error);
+    connect(&conn->socket(), sig_error,
+            this, [=](QAbstractSocket::SocketError err) {
+                (void) err;
+                updateConnection(conn);
+            });
 
     int index = conns_.size();
     beginInsertRows(QModelIndex(), index, index);
@@ -100,10 +106,9 @@ QVariant ServerListModel::data(const QModelIndex &index, int role) const
         return addr;
     } else if (col == 1 && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
         const auto& socket = conn->socket();
-        auto stateMsg = sockStateMessage(socket.state());
-        if (socket.error())
-            return QString("%1 with error: %2").arg(stateMsg).arg(socket.errorString());
-        return stateMsg;
+        if (socket.error() != QAbstractSocket::UnknownSocketError)
+            return QString("Error: %2").arg(socket.errorString());
+        return sockStateMessage(socket.state());
     }
 
     return QVariant();

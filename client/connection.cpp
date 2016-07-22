@@ -48,6 +48,8 @@ QString Connection::endpointAddress() const
 
 void Connection::reset()
 {
+    for (auto& item : apps_)
+        item.second->deleteLater();
     apps_.clear();
 }
 
@@ -69,10 +71,10 @@ void Connection::createApp(const msgs::Application &msg)
         // correctly without Qt's object hierarchy information.
         // If parent was != NULL, the object could potentially be destroyed twice
         // (once by unique_ptr and once by destructor we inherit by QObject)
-        auto app = std::make_unique<App>(this, msg);
+        auto app = new App(this, msg);
         auto appId = app->id();
-        apps_.emplace(appId, std::move(app));
-        emit appCreated(apps_[appId].get());
+        apps_.emplace(appId, app);
+        emit appCreated(apps_[appId]);
     } else {
         iter->second->resetFromMessage(msg);
     }
@@ -106,14 +108,14 @@ const App* Connection::focusedApp() const
     auto iter = apps_.find(focusedApp_);
     if (iter == apps_.end())
         return nullptr;
-    return iter->second.get();
+    return iter->second;
 }
 
 QVector<const App*> Connection::apps() const
 {
     QVector<const App*> apps;
     for (const auto& itemPair : apps_)
-        apps.append(itemPair.second.get());
+        apps.append(itemPair.second);
     return apps;
 }
 
@@ -145,5 +147,5 @@ const App* Connection::appById(ClientProtocol::AppId appId) const
     if (iter == apps_.end())
         return nullptr;
 
-    return iter->second.get();
+    return iter->second;
 }

@@ -7,7 +7,8 @@
 ClientProtocol::ClientProtocol(QTcpSocket *client, QObject *parent) :
     QObject(parent),
     client_(nullptr),
-    state_(Stopped)
+    state_(Stopped),
+    last_id_(0)
 {
     setSocket(client);
     connect(&msgStream_, &MessageStream::messageReceived, this, &ClientProtocol::receiveMessage);
@@ -54,6 +55,8 @@ void ClientProtocol::stop()
 
 void ClientProtocol::hardStop()
 {
+    if (state_ == Stopped)
+        return;
     // Here the socket is to be considered already closed for any reason
     // (closed by either local or remote peer, or error)
     // It's mostly important to signal the end of the protocol

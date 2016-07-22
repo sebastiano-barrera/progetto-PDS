@@ -45,17 +45,19 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     const auto* app = atIndex(index);
     int col = index.column();
-    if (app == nullptr || col >= 5)
+    if (app == nullptr || col >= 4)
         return QVariant();
 
     if (col == 0 && role == Qt::DisplayRole) {
         return app->parentConn()->endpointAddress();
 
     } else if (col == 1) {
-        if (role == Qt::DisplayRole)
-            return app->processPath().fileName();
-        else if (role == Qt::DecorationRole)
-            return app->icon();
+        if (role == Qt::DisplayRole) {
+            auto filename = app->processPath().fileName();
+            return QVariant(filename);
+        } else if (role == Qt::DecorationRole) {
+            return QVariant(app->icon());
+        }
 
     } else if (col == 2) {
         if (role == Qt::DisplayRole)

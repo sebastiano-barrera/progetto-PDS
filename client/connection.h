@@ -31,8 +31,14 @@ class Connection : public QObject
     quint32 port_;
 
     // using a map keeps the keys ordered, which allows us to predict
-    // the order of the rows in the model (AppListModel)
-    std::unordered_map<ClientProtocol::AppId, std::unique_ptr<App>> apps_;
+    // the order of the rows in the model (AppListModel).
+
+    // The `App` must be stored through a raw pointer, so we can avoid deleting
+    // it directly, instead letting Qt's main loop delete it (by calling
+    // deleteLater()). This way, handlers for signals such as destroyed(), that
+    // other objects use to correctly update themselves, can still access the
+    // object being deleted correctly.
+    std::unordered_map<ClientProtocol::AppId, App*> apps_;
     ClientProtocol::AppId focusedApp_;
 
     QElapsedTimer connectionTimer_;

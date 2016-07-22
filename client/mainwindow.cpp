@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
     connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
+    connect(ui_->btnDisconnect, &QPushButton::clicked, this, &MainWindow::disconnectSelected);
+
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
 
@@ -42,6 +44,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         ui_->keySelector->setKey(Qt::ALT + Qt::Key_F4);
     }
 #else
+    // Works fine on Linux, would you guess
     (void) event;
 #endif
 }
@@ -77,7 +80,7 @@ void MainWindow::sendKeystroke()
         app->parentConn()->sendRequest(std::move(req_inst));
     }
 
-    // updatePendingReqMsg();
+    updatePendingReqMsg();
 }
 
 const char* statusMessage(msgs::Response::Status status)
@@ -144,4 +147,14 @@ void MainWindow::openConnectDialog()
     });
 
     dialog->show();
+}
+
+void MainWindow::disconnectSelected()
+{
+    QItemSelectionModel* selModel = ui_->serverListView->selectionModel();
+    auto selRows = selModel->selectedRows();
+    for (auto index : selRows) {
+        auto *conn = serverListModel_.atIndex(index);
+        conn->socket().close();
+    }
 }

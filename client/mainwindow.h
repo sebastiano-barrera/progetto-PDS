@@ -43,6 +43,7 @@ private slots:
     void showResponse(Connection *conn, const msgs::KeystrokeRequest&,
                       const msgs::Response&);
     void openConnectDialog();
+    void disconnectSelected();
 
 private:
     void updatePendingReqMsg();
