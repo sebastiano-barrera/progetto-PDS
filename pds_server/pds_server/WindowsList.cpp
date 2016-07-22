@@ -48,7 +48,7 @@ void WindowsList::update()
 	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
-		std::cout << "Closed window" << std::endl;
+		std::cout << "Closed window "<<old_handle << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(std::move(pw), ProcessWindow::W_CLOSED);
@@ -59,7 +59,7 @@ void WindowsList::update()
 	//looking for new windows --> EVENT: NEW WINDOW CREATED
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);
-		std::cout << "Opened window" << std::endl;
+		std::cout << "Opened window "<< new_handle << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);

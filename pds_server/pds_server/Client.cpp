@@ -122,17 +122,21 @@ void Client::readMessage()
 	std::string serialized_response;
 	uint32_t size;
 	while (true) {
-		if (!readN(sck, (char*)&size_, 4))
+		if (!readN(sck, (char*)&size_, 4)) {
+			std::cout << "failed reading size" << std::endl;
 			break;
+		}
 		//std::cout << "---read size" << std::endl;
 
 		size_ = ntohl(size_);
 		//std::cout << "keystroke size = " << size_ << std::endl;
 
 		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
-		if (!readN(sck, buffer.get(), size_))
+		if (!readN(sck, buffer.get(), size_)) {
+			std::cout << "failed reading msg" << std::endl;
 			break;
-		//std::cout << "----read message" << std::endl;
+		}
+		std::cout << "----read message" << std::endl;
 		msg.ParseFromArray(buffer.get(), size_);
 
 		msgs::Response *rsp = new msgs::Response();
@@ -225,7 +229,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	if (!sendN(sck, (char*)msg.c_str(), msg.size())) {
 		std::cerr << "an error occurred while sending data" << std::endl;
 	}
-	//std::cout << "--MESSAGE SENT" << std::endl;
+	std::cout << "--MESSAGE SENT " << s << std::endl;
 }
 
 //reads exactly size byte or fails
