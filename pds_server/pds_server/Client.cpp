@@ -9,7 +9,7 @@
 #include <atlbase.h>
 #include <atlconv.h>
 
-#define MAXWAIT 120
+#define MAXWAIT 600
 #define BUFFSIZE 1024
 
 bool readN(SOCKET s, char* buffer, int size);
@@ -273,9 +273,11 @@ bool readN(SOCKET s, char* buffer, int size){
 bool sendN(SOCKET s, char* buffer, int size) {
 
 	int sent = 0;
+	int left = size;
 	while (sent != size && sent != SOCKET_ERROR) {
-		sent = send(s, buffer, size, 0);
+		sent = send(s, buffer, left, 0);
 		buffer += sent;
+		left -= sent;
 	}
 	if (sent == size) {
 		return true;

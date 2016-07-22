@@ -26,11 +26,11 @@
 
 SOCKET sockInit(SHORT port);
 
-
 std::condition_variable cv;
 WindowsList windows_list;
 ClientList pending;
 ClientList active;
+
 
 void checkWindowsEvents();
 void threadPoolInit(int n);
@@ -54,8 +54,9 @@ int main(int argc, char**argv)
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
 		connected = accept(s, (struct sockaddr*)&caddress, &length);
-		char address[64];
-		std::string s((char*) inet_ntop(AF_INET, &caddress, address, 32));
+		char address[32]="";
+		std::string s((char*) inet_ntop(AF_INET, &caddress.sin_addr, address, 32));
+		std::cout << "new connection from " << s << ":" << caddress.sin_port << std::endl;
 		pending.addClient(Client(connected));
 		
 	}
