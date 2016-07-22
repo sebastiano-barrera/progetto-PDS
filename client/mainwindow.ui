@@ -40,16 +40,26 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QPushButton" name="btnConnect">
+          <widget class="QPushButton" name="btnAddConn">
            <property name="text">
-            <string>Connect</string>
+            <string>Add</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnDisconnect">
+          <widget class="QPushButton" name="btnReconnect">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
-            <string>Disconnect</string>
+            <string>Reconnect</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnRemoveConn">
+           <property name="text">
+            <string>Remove</string>
            </property>
           </widget>
          </item>

@@ -50,7 +50,9 @@ void Connection::reset()
 {
     for (auto& item : apps_)
         item.second->deleteLater();
+
     apps_.clear();
+    focusedApp_ = App::INVALID_ID;
 }
 
 void Connection::setAppList(const std::vector<const msgs::Application *> &appMsgs)

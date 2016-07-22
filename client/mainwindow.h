@@ -12,9 +12,9 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QMessageBox>
+#include <QVector>
 
 #include <memory>
-#include <vector>
 
 namespace Ui { class MainWindow; }
 namespace msgs {
@@ -42,14 +42,16 @@ private slots:
     void sendKeystroke();
     void showResponse(Connection *conn, const msgs::KeystrokeRequest&,
                       const msgs::Response&);
-    void openConnectDialog();
-    void disconnectSelected();
+    void addConnection();
+    void removeConnection();
+    void reconnectSelected();
+    void selectedConnectionChanged();
 
 private:
     void updatePendingReqMsg();
 
     std::unique_ptr<Ui::MainWindow> ui_;
-    std::vector<std::unique_ptr<Connection>> connections_;
+    QVector<Connection*> connections_;
     QSortFilterProxyModel proxyModel_;  
     ServerListModel serverListModel_;
     AppList appListModel_;

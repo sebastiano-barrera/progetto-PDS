@@ -22,8 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->serverListView->setModel(&serverListModel_);
 
     connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
-    connect(ui_->btnConnect, &QPushButton::clicked, this, &MainWindow::openConnectDialog);
-    connect(ui_->btnDisconnect, &QPushButton::clicked, this, &MainWindow::disconnectSelected);
+    connect(ui_->btnAddConn, &QPushButton::clicked, this, &MainWindow::addConnection);
+    connect(ui_->btnRemoveConn, &QPushButton::clicked, this, &MainWindow::removeConnection);
+    connect(ui_->btnReconnect, &QPushButton::clicked, this, &MainWindow::reconnectSelected);
+
+    connect((*ui_).serverListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::selectedConnectionChanged);
 
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
@@ -132,7 +136,7 @@ void MainWindow::showResponse(Connection *conn,
     msgBox_.show();
 }
 
-void MainWindow::openConnectDialog()
+void MainWindow::addConnection()
 {
     auto dialog = new ConnectDialog(this);
     connect(dialog, &QDialog::accepted, [=]() {
@@ -141,20 +145,47 @@ void MainWindow::openConnectDialog()
         std::unique_ptr<Connection> conn = std::move(dialog->giveConnection());
         connect(conn.get(), &Connection::responseReceived,
                 this, &MainWindow::showResponse);
-        connections_.emplace_back(std::move(conn));
+        connections_.push_back(conn.release());
 
-        emit connectionAdded(connections_.back().get());
+        emit connectionAdded(connections_.back());
     });
 
     dialog->show();
 }
 
-void MainWindow::disconnectSelected()
+void MainWindow::removeConnection()
 {
     QItemSelectionModel* selModel = ui_->serverListView->selectionModel();
     auto selRows = selModel->selectedRows();
     for (auto index : selRows) {
         auto *conn = serverListModel_.atIndex(index);
         conn->socket().close();
+        conn->deleteLater();
+
+        int index = connections_.indexOf(conn);
+        if (index != -1)
+            connections_.remove(index);
+    }
+}
+
+void MainWindow::reconnectSelected()
+{
+    QItemSelectionModel* selModel = ui_->serverListView->selectionModel();
+    auto selRows = selModel->selectedRows();
+    for (auto index : selRows) {
+        auto *conn = serverListModel_.atIndex(index);
+        conn->socket().close();
+        conn->socket().connectToHost(conn->hostAddress(), conn->port());
+    }
+}
+
+void MainWindow::selectedConnectionChanged()
+{
+    QItemSelectionModel* selModel = ui_->serverListView->selectionModel();
+    auto selRows = selModel->selectedRows();
+
+    if (selRows.size() > 0) {
+        ui_->btnReconnect->setEnabled(true);
+        ui_->btnRemoveConn->setEnabled(true);
     }
 }
