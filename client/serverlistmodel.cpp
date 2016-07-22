@@ -12,6 +12,7 @@ void ServerListModel::addConnection(Connection *conn)
 
     connect(conn, &Connection::destroyed,    this, [=]() { removeConnection(conn); });
     connect(&conn->socket(), &QAbstractSocket::stateChanged, this, [=]() { updateConnection(conn); });
+    connect(&conn->socket(), &QAbstractSocket::error, this, [=]() { updateConnection(conn); });
 
     int index = conns_.size();
     beginInsertRows(QModelIndex(), index, index);
@@ -97,8 +98,12 @@ QVariant ServerListModel::data(const QModelIndex &index, int role) const
         if (addr.isNull())
             return " - ";
         return addr;
-    } else if (col == 1 && role == Qt::DisplayRole) {
-        return sockStateMessage(conn->socket().state());
+    } else if (col == 1 && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
+        const auto& socket = conn->socket();
+        auto stateMsg = sockStateMessage(socket.state());
+        if (socket.error())
+            return QString("%1 with error: %2").arg(stateMsg).arg(socket.errorString());
+        return stateMsg;
     }
 
     return QVariant();
