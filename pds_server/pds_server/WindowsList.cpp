@@ -67,13 +67,20 @@ void WindowsList::update()
 	
 	//potrebbe capitare che la finestra in foreground non sia tra quelle recuperate da MyEnumWindows, in questo caso
 	//l'evento del cambio di fuoco non viene notificato e si aspetta il controllo successivo
-	if (onFocus_ != currentFocus && updated.find(currentFocus) != updated.end()) {
-		onFocus_ = currentFocus;
-		auto pw = ProcessWindow(onFocus_);
-		std::cout << "Focus changed" << std::endl;
+	if (onFocus_ != currentFocus) {
+		std::cout << "Focus changed, old focus : "<< onFocus_ << " current focus : " <<currentFocus << std::endl;
+		if (updated.find(currentFocus) != updated.end()) { //nuova finestra onfocus presente nella lista aggiornata
+			onFocus_ = currentFocus;
+		}
+		else { //nuova finestra onfocus non presente nella lista aggiornata, potrebbe essere il desktop
+			onFocus_ = (HWND)MAXUINT64; //this is how we represent the lost of focus
+		}
+		
+		auto pw = ProcessWindow(onFocus_);	
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_ONFOCUS);
+		onFocus_ = currentFocus; // we need to restore the proper value for onFocus_
 	}
 	
 	std::swap(winHandles_, updated);
