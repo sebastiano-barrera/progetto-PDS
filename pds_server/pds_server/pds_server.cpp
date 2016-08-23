@@ -69,12 +69,14 @@ int main(int argc, char**argv)
 void serveClient() {
 	while (true) {
 		auto& client = active.addClient(pending.getClient());
+		//std::cout << std::this_thread::get_id() << " woken up" << std::endl;
 		client.serve();
 		active.cleanup();
 	}
 }
 
 void checkWindowsEvents() {
+	//std::cout << "daemon " << std::this_thread::get_id() << std::endl;
 	while (true) {
 		windows_list.update();
 		Sleep(250);

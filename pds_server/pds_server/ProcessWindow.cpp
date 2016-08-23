@@ -13,32 +13,38 @@ std::string toString(std::wstring wstring);
 ProcessWindow::ProcessWindow(HWND hWnd) :
 	window_(hWnd)
 {
-	WCHAR wbuf[1024];
-	//std::cout << "*-----------------------------------------------------------------------*" << std::endl;
-	if (GetWindowText(hWnd, wbuf, 256) > 0) {
-		title_ = std::wstring(wbuf);
-		//std::wcout << "GetWindowText: " << title_ << std::endl;
+	if (hWnd != (HWND)MAXUINT64) { //if it's equal the focus is on the desktop
+		WCHAR wbuf[1024];
+		//std::cout << "*-----------------------------------------------------------------------*" << std::endl;
+		
+		if (GetWindowText(hWnd, wbuf, 256) > 0) {
+			title_ = std::wstring(wbuf);
+			//std::wcout << "GetWindowText: " << title_ << std::endl;
+		}
+		
+		DWORD proc_id;
+		GetWindowThreadProcessId(window_, &proc_id);
+		process_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, proc_id);
+		DWORD wbuf_size = sizeof(wbuf);
+		if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
+			moduleFileName_ = std::wstring(wbuf);
+			//std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
+		}
+		
+		icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);
+		if (icon_ == 0)
+			icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL, 0);
+		if (icon_ == 0)
+			icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_BIG, 0);
+		if (icon_ == 0)
+			icon_ = (HICON) GetClassLongPtr(window_, GCL_HICON);
+		if (icon_ == 0)
+			icon_ = (HICON) GetClassLongPtr(window_, GCL_HICONSM);
+
 	}
-
-	DWORD proc_id;
-	GetWindowThreadProcessId(window_, &proc_id);
-	process_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, proc_id);
-	DWORD wbuf_size = sizeof(wbuf);
-	if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
-		moduleFileName_ = std::wstring(wbuf);
-		//std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
+	else {
+		title_ = L"Desktop";
 	}
-
-	icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL2, 0);
-	if (icon_ == 0)
-		icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_SMALL, 0);
-	if (icon_ == 0)
-		icon_ = (HICON) SendMessage(window_, WM_GETICON, ICON_BIG, 0);
-	if (icon_ == 0)
-		icon_ = (HICON) GetClassLongPtr(window_, GCL_HICON);
-	if (icon_ == 0)
-		icon_ = (HICON) GetClassLongPtr(window_, GCL_HICONSM);
-
 }
 
 void ProcessWindow::windowInfo() const

@@ -16,13 +16,12 @@ WindowsList::WindowsList()
 }
 
 std::vector<ProcessWindow> WindowsList::windows() const
-{
+{	
 	std::lock_guard<std::mutex> lg(lock_);
 	std::vector<ProcessWindow> windows;
 	
 	for (HWND handle : winHandles_)
 		windows.emplace_back(handle);
-	
 	return windows;
 }
 
@@ -39,7 +38,7 @@ void WindowsList::update()
 	// Elenco delle finestre aggiornato
 	std::set<HWND> updated;
 	std::lock_guard<std::mutex> lck(lock_); // the update process must be atomic
-	
+
 	MyEnumWindows(&updated);
 	HWND currentFocus = GetForegroundWindow(); //getting foreground window handle
 
@@ -67,7 +66,8 @@ void WindowsList::update()
 	
 	//potrebbe capitare che la finestra in foreground non sia tra quelle recuperate da MyEnumWindows, in questo caso
 	//l'evento del cambio di fuoco non viene notificato e si aspetta il controllo successivo
-	if (onFocus_ != currentFocus) {
+	///*
+	if (onFocus_ != currentFocus && currentFocus!=NULL) {
 		std::cout << "Focus changed, old focus : "<< onFocus_ << " current focus : " <<currentFocus << std::endl;
 		if (updated.find(currentFocus) != updated.end()) { //nuova finestra onfocus presente nella lista aggiornata
 			onFocus_ = currentFocus;
@@ -82,7 +82,6 @@ void WindowsList::update()
 		active.notify(pw, ProcessWindow::W_ONFOCUS);
 		onFocus_ = currentFocus; // we need to restore the proper value for onFocus_
 	}
-	
 	std::swap(winHandles_, updated);
 }
 

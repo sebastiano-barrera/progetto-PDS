@@ -54,7 +54,8 @@ Client::Client(Client && src)
 
 bool Client::sendProcessList()
 {
-	//std::cout << "-sending process list" << std::endl;
+	std::lock_guard<std::mutex> lg(cLock_); // we don't want the "daemon" and the serving thread to serve the same client at the same time
+	std::cout << std::this_thread::get_id() <<" -sending process list" << std::endl;
 	uint32_t size_ = 0;
 	msgs::AppGotFocus * focus = new::msgs::AppGotFocus();
 	msgs::AppList msg;
@@ -83,13 +84,14 @@ bool Client::sendProcessList()
 	s_msg = msg.SerializeAsString();
 
 	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
+	//std::cout << "process list size  " << ntohl(size_)<< std::endl;
 	if (!sendN(sck, (char*)&size_, sizeof(uint32_t))) {
-		std::cerr << "an error occurred while sending message size" << std::endl;
+		std::cerr << "an error occurred while sending process list size" << std::endl;
 		return false;
 	}
 
 	if (!sendN(sck, (char*)s_msg.c_str(), s_msg.size())) {
-		std::cerr << "an error occurred while sending data" << std::endl;
+		std::cerr << "an error occurred while sending process list" << std::endl;
 		return false;
 	}
 
@@ -109,7 +111,7 @@ bool Client::sendProcessList()
 		std::cerr << "an error occurred while sending onfocus data" << std::endl;
 		return false;
 	}
-	//std::cout << "-PROCESS LIST SENT" << std::endl;
+	std::cout << "-PROCESS LIST SENT" << std::endl;
 	return true;
 }
 
@@ -176,7 +178,7 @@ void Client::closeConnection()
 
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
-	//std::cout << "--sending message" << std::endl;
+	std::lock_guard<std::mutex> lg(cLock_); // we don't want the "daemon" and the serving thread to serve the same client at the same time
 	msgs::Application opened;
 	msgs::AppDestroyed closed;
 	msgs::AppGotFocus focus;
@@ -184,6 +186,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	std::string msg;
 	uint32_t size;
 
+	std::cout << std::this_thread::get_id() << "--sending message" << std::endl;
 	// Note: the `set_allocated_*` methods take ownership of the passed pointer,
 	// and will `delete` them at the exit of the scope.
 	switch (s) {
