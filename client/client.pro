@@ -43,7 +43,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     connectionwidget.ui \
-    connectdialog.ui
+    connectdialog.ui \
+    keystrokeselector.ui
 
 
 INCLUDEPATH += $$PWD/../extern/include $$PWD/../proto/cpp
