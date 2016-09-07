@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->appListView->setModel(&proxyModel_);
     ui_->serverListView->setModel(&serverListModel_);
 
-    connect(ui_->btnSend, &QPushButton::clicked, this, &MainWindow::sendKeystroke);
+    connect(ui_->keySelector, &KeystrokeSelector::sendRequested, this, &MainWindow::sendKeystroke);
     connect(ui_->btnAddConn, &QPushButton::clicked, this, &MainWindow::addConnection);
     connect(ui_->btnRemoveConn, &QPushButton::clicked, this, &MainWindow::removeConnection);
     connect(ui_->btnReconnect, &QPushButton::clicked, this, &MainWindow::reconnectSelected);

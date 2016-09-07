@@ -35,6 +35,7 @@ protected:
 
 signals:
     void keyChanged(int key);
+    void sendRequested();
 
 private slots:
     void acquireKey();

@@ -93,9 +93,9 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
             if (event.has_response()) {
                 auto iter = pending_reqs_.find(event.response().req_id());
                 if (iter != pending_reqs_.end()) {
-                    const auto& req = *iter->second;
-                    emit responseReceived(req, event.response());
+                    auto req = *iter->second;
                     pending_reqs_.erase(iter);
+                    emit responseReceived(req, event.response());
                 }
             }
             break;

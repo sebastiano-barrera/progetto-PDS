@@ -14,6 +14,7 @@ KeystrokeSelector::KeystrokeSelector(QWidget *parent) :
     ui_->setupUi(this);
 
     connect(ui_->btnGrab, &QPushButton::clicked, this, &KeystrokeSelector::acquireKey);
+    connect(ui_->btnSend, &QPushButton::clicked, this, [this]() { emit sendRequested(); });
     connect(ui_->comboBox, &QComboBox::editTextChanged, this, &KeystrokeSelector::setKeyFromString);
 
     successPalette_ = ui_->comboBox->lineEdit()->palette();
