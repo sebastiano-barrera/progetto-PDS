@@ -16,13 +16,12 @@ WindowsList::WindowsList()
 }
 
 std::vector<ProcessWindow> WindowsList::windows() const
-{
+{	
 	std::lock_guard<std::mutex> lg(lock_);
 	std::vector<ProcessWindow> windows;
 	
 	for (HWND handle : winHandles_)
 		windows.emplace_back(handle);
-	
 	return windows;
 }
 
@@ -39,7 +38,7 @@ void WindowsList::update()
 	// Elenco delle finestre aggiornato
 	std::set<HWND> updated;
 	std::lock_guard<std::mutex> lck(lock_); // the update process must be atomic
-	
+
 	MyEnumWindows(&updated);
 	HWND currentFocus = GetForegroundWindow(); //getting foreground window handle
 
@@ -48,7 +47,7 @@ void WindowsList::update()
 	std::set_difference(winHandles_.begin(), winHandles_.end(), updated.begin(), updated.end(), std::inserter(closed_wins, closed_wins.begin()));
 	for (auto old_handle : closed_wins) {
 		auto pw = ProcessWindow(old_handle);
-		std::cout << "Closed window" << std::endl;
+		std::cout << "Closed window "<<old_handle << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(std::move(pw), ProcessWindow::W_CLOSED);
@@ -59,7 +58,7 @@ void WindowsList::update()
 	//looking for new windows --> EVENT: NEW WINDOW CREATED
 	for (auto new_handle : new_wins) {
 		auto pw = ProcessWindow(new_handle);
-		std::cout << "Opened window" << std::endl;
+		std::cout << "Opened window "<< new_handle << std::endl;
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_OPENED);
@@ -67,15 +66,22 @@ void WindowsList::update()
 	
 	//potrebbe capitare che la finestra in foreground non sia tra quelle recuperate da MyEnumWindows, in questo caso
 	//l'evento del cambio di fuoco non viene notificato e si aspetta il controllo successivo
-	if (onFocus_ != currentFocus && updated.find(currentFocus) != updated.end()) {
-		onFocus_ = currentFocus;
-		auto pw = ProcessWindow(onFocus_);
-		std::cout << "Focus changed" << std::endl;
+	///*
+	if (onFocus_ != currentFocus && currentFocus!=NULL) {
+		std::cout << "Focus changed, old focus : "<< onFocus_ << " current focus : " <<currentFocus << std::endl;
+		if (updated.find(currentFocus) != updated.end()) { //nuova finestra onfocus presente nella lista aggiornata
+			onFocus_ = currentFocus;
+		}
+		else { //nuova finestra onfocus non presente nella lista aggiornata, potrebbe essere il desktop
+			onFocus_ = (HWND)MAXUINT64; //this is how we represent the lost of focus
+		}
+		
+		auto pw = ProcessWindow(onFocus_);	
 		//pw.windowInfo();
 		//SEND EVENT
 		active.notify(pw, ProcessWindow::W_ONFOCUS);
+		onFocus_ = currentFocus; // we need to restore the proper value for onFocus_
 	}
-	
 	std::swap(winHandles_, updated);
 }
 

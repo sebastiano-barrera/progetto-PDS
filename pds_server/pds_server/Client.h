@@ -6,6 +6,7 @@ class Client
 {
 	SOCKET sck;
 	bool isClosed_;
+	std::mutex cLock_;
 
 public:
 	~Client();
