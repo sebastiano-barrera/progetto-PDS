@@ -1,14 +1,17 @@
 #ifndef KEYSTROKESELECTOR_H
 #define KEYSTROKESELECTOR_H
 
-#include <QPushButton>
+#include <QComboBox>
 #include <QKeySequence>
+
+#include <memory>
 
 class QKeyEvent;
 class QCloseEvent;
+namespace Ui { class KeystrokeSelector; }
 
 
-class KeystrokeSelector : public QPushButton
+class KeystrokeSelector : public QWidget
 {
     Q_OBJECT
 
@@ -17,9 +20,12 @@ class KeystrokeSelector : public QPushButton
     // advantage of some of its methods
     QKeySequence key_;
     bool waitingInput_;
+    std::unique_ptr<Ui::KeystrokeSelector> ui_;
+    QPalette successPalette_, failurePalette_;
 
 public:
     explicit KeystrokeSelector(QWidget *parent = 0);
+    ~KeystrokeSelector();
 
     inline int key() const { return key_[0]; }
     void setKey(int key);
@@ -32,6 +38,7 @@ signals:
 
 private slots:
     void acquireKey();
+    void setKeyFromString(const QString&);
 
 private:
     void updateText();
