@@ -15,9 +15,9 @@ class ClientList
 public:
 	ClientList();
 	Client& addClient(Client c);
-	void notify(ProcessWindow wnd, ProcessWindow::Status s);
-	unsigned int size() const;
 	Client getClient();
+	void notify(ProcessWindow wnd, ProcessWindow::Status s);
 	void cleanup();
+	unsigned int size() const;
 };
 

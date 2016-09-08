@@ -14,14 +14,15 @@ Client& ClientList::addClient(Client c)
 	return last_ref;
 }
 
-void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status s)
+void ClientList::notify(ProcessWindow wnd, ProcessWindow::Status event)
 {
 	std::lock_guard<std::mutex> lg(lock_);
-	for (auto &c : clients) {
-		c.sendMessage(wnd, s);
+	for (auto &c : clients) { //sending the notification to each client
+		c.sendMessage(wnd, event);
 	}
 }
 
+//gets the first client in the list
 Client ClientList::getClient()
 {
 	std::unique_lock<std::mutex> ul(lock_);
@@ -41,6 +42,6 @@ unsigned int ClientList::size() const
 void ClientList::cleanup()
 {
 	std::lock_guard<std::mutex> lg(lock_);
-	clients.remove_if([](const Client &c) {return c.isClosed(); }); //rimuovo i client non più attivi
+	clients.remove_if([](const Client &c) {return c.isClosed(); }); //removing disconnected clients
 	size_ = clients.size();
 }

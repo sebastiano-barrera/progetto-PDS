@@ -8,12 +8,11 @@
 
 class ProcessWindow
 {
-	HWND window_;
 	HANDLE process_;
 	HICON icon_;
+	HWND window_;
 	std::wstring title_; //window title
-	std::wstring moduleFileName_;
-	//TODO: icon representation
+	std::wstring moduleFileName_; //executable file name
 
 public:
 	enum Status { W_CLOSED, W_OPENED, W_ONFOCUS };

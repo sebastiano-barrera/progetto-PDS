@@ -12,8 +12,8 @@
 #define MAXWAIT 600
 #define BUFFSIZE 1024
 
-bool readN(SOCKET s, char* buffer, int size);
-bool sendN(SOCKET s, char* buffer, int size);
+bool readN(SOCKET s, char* buffer, int size); //reads exactly size bytes
+bool sendN(SOCKET s, char* buffer, int size); //writes exactly size bytes
 
 Client::~Client()
 {
@@ -40,11 +40,13 @@ bool Client::isClosed() const
 	return isClosed_;
 }
 
+//friend swap function for copy&swap idiom
 void swap(Client &c1, Client &c2) {
 	std::swap(c1.sck, c2.sck);
 	std::swap(c1.isClosed_, c2.isClosed_);
 }
 
+//movement constructor
 Client::Client(Client && src)
 {
 	sck = INVALID_SOCKET;
@@ -62,6 +64,8 @@ bool Client::sendProcessList()
 	msgs::Event focus_event;
 	std::string s_msg;
 
+	// Note: the `set_allocated_*` methods take ownership of the passed pointer,
+	// and will `delete` them at the exit of the scope.
 	focus->set_id((uint64_t)windows_list.onFocus()); //saving current onfocus window
 	focus_event.set_allocated_got_focus(focus);
 	auto windows = windows_list.windows();
@@ -83,8 +87,6 @@ bool Client::sendProcessList()
 	size_ = htonl(size_);
 	s_msg = msg.SerializeAsString();
 
-	//DA GESTIRE IL CASO IN CUI RIESCA L'INVIO DELLA DIMENSIONE MA NON DELLA LISTA
-	//std::cout << "process list size  " << ntohl(size_)<< std::endl;
 	if (!sendN(sck, (char*)&size_, sizeof(uint32_t))) {
 		std::cerr << "an error occurred while sending process list size" << std::endl;
 		return false;
@@ -118,11 +120,12 @@ bool Client::sendProcessList()
 void Client::readMessage()
 {
 	//std::cout << "--reading message" << std::endl;
-	uint32_t size_ = 0;
+	uint32_t size_ = 0; // incoming message size
 	msgs::KeystrokeRequest msg;
 	msgs::Event response;
 	std::string serialized_response;
-	uint32_t size;
+	uint32_t size; // outgoing message size
+
 	while (true) {
 		if (!readN(sck, (char*)&size_, 4)) {
 			std::cout << "failed reading size" << std::endl;
@@ -131,7 +134,7 @@ void Client::readMessage()
 		//std::cout << "---read size" << std::endl;
 
 		size_ = ntohl(size_);
-		//std::cout << "keystroke size = " << size_ << std::endl;
+		std::cout << "keystroke size = " << size_ << std::endl;
 
 		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
 		if (!readN(sck, buffer.get(), size_)) {
@@ -142,15 +145,14 @@ void Client::readMessage()
 		msg.ParseFromArray(buffer.get(), size_);
 
 		msgs::Response *rsp = new msgs::Response();
-		//controllo che la finestra richiesta sia quella onfocus, 
-		//in caso positivo mando l'input
+		//the input is sent only if the target window is the one on focus
 		HWND target = (HWND)msg.app_id();
 		if (target == windows_list.onFocus() && ProcessWindow(target).sendKeystroke(msg)) {
 			rsp->set_req_id(msg.req_id());
 			rsp->set_status(msgs::Response::Status::Response_Status_Success);
 		}
 		else {
-			//send error msg
+			//setting error msg
 			rsp->set_req_id(msg.req_id());
 			rsp->set_status(msgs::Response::Status::Response_Status_WindowLostFocus);
 		}
@@ -170,18 +172,21 @@ void Client::readMessage()
 
 void Client::closeConnection()
 {
-	closesocket(sck);
-	sck = INVALID_SOCKET;
-	isClosed_ = true;
-	std::cout << "connection closed" << std::endl;
+	if (sck!=INVALID_SOCKET) {
+		closesocket(sck);
+		sck = INVALID_SOCKET;
+		isClosed_ = true;
+		std::cout << "connection closed" << std::endl;
+	}
+
 }
 
 void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 {
 	std::lock_guard<std::mutex> lg(cLock_); // we don't want the "daemon" and the serving thread to serve the same client at the same time
-	msgs::Application opened;
-	msgs::AppDestroyed closed;
-	msgs::AppGotFocus focus;
+	msgs::Application * opened;
+	msgs::AppDestroyed * closed;
+	msgs::AppGotFocus * focus;
 	msgs::Event event;
 	std::string msg;
 	uint32_t size;
@@ -191,7 +196,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	// and will `delete` them at the exit of the scope.
 	switch (s) {
 	case ProcessWindow::W_OPENED: {
-		auto opened = new msgs::Application();
+		opened = new msgs::Application();
 		std::string title = wnd.title();
 		std::string name = wnd.moduleFileName();
 		if (!title.empty()) {
@@ -206,14 +211,13 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 		break;
 	}
 	case ProcessWindow::W_CLOSED: {
-		auto closed = new msgs::AppDestroyed();
-
+		closed = new msgs::AppDestroyed();
 		closed->set_id((uint64_t)wnd.handle());
 		event.set_allocated_destroyed(closed);
 		break;
 	}
 	case ProcessWindow::W_ONFOCUS: {
-		auto focus = new msgs::AppGotFocus();
+		focus = new msgs::AppGotFocus();
 		focus->set_id((uint64_t)wnd.handle());
 		event.set_allocated_got_focus(focus);
 		break;
@@ -235,7 +239,7 @@ void Client::sendMessage(ProcessWindow wnd, ProcessWindow::Status s)
 	std::cout << "--MESSAGE SENT " << s << std::endl;
 }
 
-//reads exactly size byte or fails
+
 bool readN(SOCKET s, char* buffer, int size) {
 	fd_set readset;
 	struct timeval tv;
@@ -250,6 +254,7 @@ bool readN(SOCKET s, char* buffer, int size) {
 		tv.tv_usec = 0;
 		res = select(0, &readset, NULL, NULL, &tv);
 		if (res > 0) {
+			std::cout << "select unlocked" << std::endl;
 			res = recv(s, buffer, left, 0);
 			if (res == 0) {//connection closed by client
 				return false;
@@ -271,11 +276,11 @@ bool readN(SOCKET s, char* buffer, int size) {
 			return false;
 		}
 	}
-	//std::cout << "-----READ " << size << " byte" << std::endl;
+	std::cout << "-----READ " << size << " byte" << std::endl;
 	return true;
 }
 
-//send exactly N byte or fails
+
 bool sendN(SOCKET s, char* buffer, int size) {
 
 	int sent = 0;

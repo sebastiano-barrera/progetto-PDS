@@ -5,6 +5,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+
 #include <WinSock2.h>
 #include <Windows.h>
 #include <WS2tcpip.h>
@@ -15,7 +16,7 @@
 
 #include "protocol.pb.h"
 #include "global.h"
-
+#define THREAD_NO 16
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -23,17 +24,17 @@
 
 #define MAX_CONN 5
 
-
+/*functions prototypes*/
+void checkWindowsEvents();
+void threadPoolInit(int n);
 SOCKET sockInit(SHORT port);
 
+
+/*global variables*/
 std::condition_variable cv;
 WindowsList windows_list;
 ClientList pending;
 ClientList active;
-
-
-void checkWindowsEvents();
-void threadPoolInit(int n);
 
 
 int main(int argc, char**argv)
@@ -48,8 +49,8 @@ int main(int argc, char**argv)
 
 	short port = atoi(argv[1]);
 	SOCKET connected, s = sockInit(port);
-	std::thread(checkWindowsEvents).detach();
-	threadPoolInit(16);
+	std::thread(checkWindowsEvents).detach(); //launching monitoring thread
+	threadPoolInit(THREAD_NO); //initializing threadpool
 	while (true) {
 		struct sockaddr_in caddress;
 		int length = sizeof(struct sockaddr_in);
@@ -57,8 +58,7 @@ int main(int argc, char**argv)
 		char address[32]="";
 		std::string s((char*) inet_ntop(AF_INET, &caddress.sin_addr, address, 32));
 		std::cout << "new connection from " << s << ":" << caddress.sin_port << std::endl;
-		pending.addClient(Client(connected));
-		
+		pending.addClient(Client(connected));	
 	}
 	closesocket(s);
 	WSACleanup();
@@ -68,28 +68,25 @@ int main(int argc, char**argv)
 
 void serveClient() {
 	while (true) {
-		auto& client = active.addClient(pending.getClient());
-		//std::cout << std::this_thread::get_id() << " woken up" << std::endl;
+		auto& client = active.addClient(pending.getClient()); //getting a client from the waiting list
 		client.serve();
-		active.cleanup();
+		active.cleanup(); //cleaning active clients list
 	}
 }
 
 void checkWindowsEvents() {
-	//std::cout << "daemon " << std::this_thread::get_id() << std::endl;
 	while (true) {
 		windows_list.update();
 		Sleep(250);
 	}
 }
 
-void threadPoolInit(int n)
-{
+void threadPoolInit(int n) {
 	for (int i = 0; i < n; i++) {
 		try {
 			std::thread(serveClient).detach();
 		}
-		catch(std::exception e){
+		catch(std::exception e){ //can't launch all the specified threads
 			e.what();
 			std::cout << "creati " << i << "/" << n << "thread" << std::endl;
 			break;
@@ -99,8 +96,8 @@ void threadPoolInit(int n)
 
 SOCKET sockInit(SHORT port) {
 	WSADATA wsadata;
-	struct sockaddr_in sin;
 	SOCKET temp_sock;
+	struct sockaddr_in sin;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsadata) != 0) {
 		std::cerr << "WSAStartup() failed"<<std::endl;

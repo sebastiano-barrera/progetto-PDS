@@ -15,9 +15,8 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 {
 	if (hWnd != (HWND)MAXUINT64) { //if it's equal the focus is on the desktop
 		WCHAR wbuf[1024];
-		//std::cout << "*-----------------------------------------------------------------------*" << std::endl;
 		
-		if (GetWindowText(hWnd, wbuf, 256) > 0) {
+		if (GetWindowText(hWnd, wbuf, 256) > 0) { //getting window titlte
 			title_ = std::wstring(wbuf);
 			//std::wcout << "GetWindowText: " << title_ << std::endl;
 		}
@@ -26,7 +25,7 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 		GetWindowThreadProcessId(window_, &proc_id);
 		process_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, proc_id);
 		DWORD wbuf_size = sizeof(wbuf);
-		if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) {
+		if (QueryFullProcessImageNameW(process_, 0, wbuf, &wbuf_size) > 0) { //getting executable file name
 			moduleFileName_ = std::wstring(wbuf);
 			//std::wcout << "QueryFullProcessImageNameW: " << moduleFileName_ << std::endl;
 		}
@@ -47,6 +46,7 @@ ProcessWindow::ProcessWindow(HWND hWnd) :
 	}
 }
 
+//prints ProcessWindow details
 void ProcessWindow::windowInfo() const
 {
 	std::wcout << "Window: Title:" << title_ << " (" << moduleFileName_ << ", icon: " << icon_ << ")" << std::endl;
@@ -170,6 +170,7 @@ std::string ProcessWindow::moduleFileName() const {
 	return toString(this->moduleFileName_);
 }
 
+//wstring to string converter
 std::string toString(std::wstring wstring) {
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> conversion;
 	return conversion.to_bytes(wstring);
@@ -217,7 +218,7 @@ INPUT PressKey(int key) {
 	input.type = INPUT_KEYBOARD;
 	input.ki.wVk = key;
 	input.ki.time = 0;
-	input.ki.wScan = MapVirtualKey(key, MAPVK_VK_TO_VSC); // TROVATO SU STACKOVERFLOW, SEMBRA FUNZIONARE ANCHE CON 0
+	input.ki.wScan = MapVirtualKey(key, MAPVK_VK_TO_VSC); 
 	input.ki.dwFlags = 0;
 	input.ki.dwExtraInfo = 0;
 	return input;
