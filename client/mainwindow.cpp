@@ -26,10 +26,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui_->btnRemoveConn, &QPushButton::clicked, this, &MainWindow::removeConnection);
     connect(ui_->btnReconnect, &QPushButton::clicked, this, &MainWindow::reconnectSelected);
 
-    connect(ui_->serverListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
-            this, &MainWindow::connSelectionChanged);
-    connect(ui_->appListView->selectionModel(),  &QItemSelectionModel::selectionChanged,
-            this, &MainWindow::appSelectionChanged);
+    auto selModel = ui_->serverListView->selectionModel();
+    connect(selModel,  &QItemSelectionModel::selectionChanged, this, &MainWindow::connSelectionChanged);
+    connect(selModel,  &QItemSelectionModel::selectionChanged, this, &MainWindow::appSelectionChanged);
+    connect(&proxyModel_, &QAbstractItemModel::dataChanged, this, &MainWindow::appSelectionChanged);
+    connect(&proxyModel_, &QAbstractItemModel::rowsInserted, this, &MainWindow::appSelectionChanged);
+    connect(&proxyModel_, &QAbstractItemModel::rowsRemoved, this, &MainWindow::appSelectionChanged);
+    connect(&proxyModel_, &QAbstractItemModel::rowsMoved, this, &MainWindow::appSelectionChanged);
 
     connect(this, &MainWindow::connectionAdded, &serverListModel_, &ServerListModel::addConnection);
     connect(this, &MainWindow::connectionAdded, &appListModel_, &AppList::addConnection);
@@ -77,7 +80,7 @@ void MainWindow::sendKeystroke()
     // copy a new request for each selected window
     for (QModelIndex index : selIndices) {
         const App* app = appListModel_.atIndex(proxyModel_.mapToSource(index));
-        if (app == nullptr || !app->isFocused()) 
+        if (app == nullptr || !app->isFocused())
             continue;
 
         // Using a unique_ptr in preparation for pending requests tracking,
