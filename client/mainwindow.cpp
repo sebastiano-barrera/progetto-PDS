@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
         msgBox_.setText("");
     });
 
+    appSelectionChanged();
     // updatePendingReqMsg();
 }
 
@@ -214,5 +215,11 @@ void MainWindow::appSelectionChanged()
             count++;
     }
 
-    ui_->lblNumFocusedWin->setText(QString("Will be sent only to the %1 focused apps").arg(count));
+    QString text;
+    if (count == 0)
+        text = QString("Please select one or more focused windows");
+    else
+        text = QString("Will be sent only to the %1 focused apps").arg(count);
+
+    ui_->lblNumFocusedWin->setText(text);
 }
