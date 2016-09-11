@@ -18,14 +18,14 @@ void MessageStream::setDevice(QIODevice *dev)
     if (dev_) {
         // discard temporary state
         dev_->disconnect(this);
-        msgbuf_ = nullptr;
-        remaining_ = 0;
+        reset();
     }
 
     dev_ = dev;
 
     if (dev_) {
         connect(dev_, &QIODevice::readyRead, this, &MessageStream::readyRead);
+        connect(dev_, &QIODevice::aboutToClose, this, &MessageStream::reset);
     }
 }
 
@@ -57,6 +57,11 @@ void MessageStream::readyRead()
         if (!msgbuf_) {
             // No message
             quint32 msg_len;
+
+            // Make sure we have at least enough bytes for a uint32
+            if (dev_->bytesAvailable() < sizeof(msg_len))
+                break;
+
             int ret = dev_->read((char*) &msg_len, sizeof(msg_len));
             if (ret == -1)
                 goto err;
@@ -70,9 +75,8 @@ void MessageStream::readyRead()
         char buf[MAX_READ];
 
         qint32 nbytesread = dev_->read(buf, std::min(remaining_, MAX_READ));
-        if (nbytesread == 0 && remaining_ > 0)
-            qWarning("Message ended prematurely (%u < %d)",
-                     msgbuf_->size(), msgbuf_->size() + remaining_);
+        if (nbytesread == 0)
+            continue;
         if (nbytesread == -1)
             goto err;
 
@@ -100,4 +104,10 @@ void MessageStream::sendMessage(const char* data, size_t len)
     quint32 len_n = qToBigEndian<quint32>(len);
     dev_->write((char*) &len_n, sizeof(len_n));
     dev_->write(data, len);
+}
+
+void MessageStream::reset()
+{
+    msgbuf_ = nullptr;
+    remaining_ = 0;
 }
