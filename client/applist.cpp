@@ -1,75 +1,17 @@
 #include "applist.h"
+
 #include "protocol.pb.h"
-
-#include <QPixmap>
-#include <QImage>
-#include <QDebug>
-
-
-App::App() :
-    valid_(false)
-    { }
-
-App::App(const msgs::Application &msg) :
-    valid_(true),
-    id_(msg.id()),
-    focused_(false),
-    totalFocusTime_(0)
-{
-    assert (id_ != INVALID_ID);
-
-    if (msg.has_win_title())
-        title_ = QString::fromStdString(msg.win_title());
-
-    if (msg.has_name())
-        processPath_ = QFileInfo(QString::fromStdString(msg.name()));
-
-    if (msg.has_icon()) {
-        auto& icon = msg.icon();
-        QImage image(reinterpret_cast<const uchar*>(icon.pixels().data()),
-                     icon.width(), icon.height(),
-                     QImage::Format_ARGB32);
-        icon_ = QPixmap::fromImage(image.scaledToHeight(16));
-    }
-}
-
-void App::setFocused(bool focused)
-{
-    if (focused_ == focused)
-        return;
-
-    focused_ = focused;
-    if (focused_) {
-        if (valid_)
-            focusTimer_.start();
-    } else {
-        if (focusTimer_.isValid()) {
-            totalFocusTime_ += focusTimer_.elapsed();
-            focusTimer_.invalidate();
-        }
-    }
-}
-
-quint64 App::focusTimeMS() const
-{
-    quint64 elapTime = totalFocusTime_;
-    if (focused_) {
-        assert (focusTimer_.isValid());
-        elapTime += focusTimer_.elapsed();
-    }
-    return elapTime;
-}
-
+#include "connection.h"
+#include "app.h"
 
 
 AppList::AppList(QObject *parent) :
     QAbstractTableModel(parent),
-    focusedApp_(App::INVALID_ID)
+    numConns_(0)
 {
     updateTimer_.setInterval(200);
     updateTimer_.setSingleShot(false);
     connect(&updateTimer_, &QTimer::timeout, this, &AppList::focusTimeColumnChanged);
-    // updateTimer_ is started by resetConnectionTime()
 }
 
 const App* AppList::atIndex(const QModelIndex& index) const
@@ -77,19 +19,9 @@ const App* AppList::atIndex(const QModelIndex& index) const
     if (index.parent().isValid())
         return nullptr;
 
-    auto id = apps_.keys().value(index.row(), App::INVALID_ID);
-    if (id == App::INVALID_ID)
+    if (index.row() >= order_.size())
         return nullptr;
-    return &apps_.find(id).value();
-}
-
-QModelIndex AppList::indexOf(App::Id appId, int column) const
-{
-    int row = apps_.keys().indexOf(appId);
-    if (row == -1)
-        return {};  // return invalid index
-
-    return this->index(row, column);
+    return order_.at(index.row());
 }
 
 int AppList::rowCount(const QModelIndex &parent) const
@@ -97,13 +29,13 @@ int AppList::rowCount(const QModelIndex &parent) const
     if (parent.isValid())  // parent != invisible root
         return 0;
 
-    return apps_.size();
+    return order_.size();
 }
 
 int AppList::columnCount(const QModelIndex &parent) const
 {
     // `parent` should be the index of the invisible root
-    return parent.isValid() ? 0 : 4;
+    return parent.isValid() ? 0 : 5;
 }
 
 QVariant AppList::data(const QModelIndex &index, int role) const
@@ -113,30 +45,38 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 
     const auto* app = atIndex(index);
     int col = index.column();
-    if (app == nullptr || col >= 4)
+    if (app == nullptr || col > 4)
         return QVariant();
 
-    if (col == 0) {
-        if (role == Qt::DisplayRole)
-            return app->processPath().fileName();
-        else if (role == Qt::DecorationRole)
-            return app->icon();
+    if (col == 0 && role == Qt::DisplayRole) {
+        return app->parentConn()->endpointAddress();
 
     } else if (col == 1) {
+        if (role == Qt::DisplayRole) {
+            auto& path = app->processPath();
+            auto filename = path.fileName();
+            return QVariant(filename);
+        } else if (role == Qt::DecorationRole) {
+            auto pixmap_ptr = app->icon();
+            return pixmap_ptr ? *pixmap_ptr : QVariant();
+        }
+
+    } else if (col == 2) {
         if (role == Qt::DisplayRole)
             return app->isFocused() ? QString("●") : QString();
         else if (role == Qt::TextAlignmentRole)
             return Qt::AlignHCenter;
 
-    } else if (col == 2 && role == Qt::DisplayRole) {
-        if (connectionTimer_.isValid()) {
-            double timePerc = (double) app->focusTimeMS() / connectionTimer_.elapsed() * 100;
-            return QString("%1 %").arg(timePerc, 0, 'g', 2);
+    } else if (col == 3 && role == Qt::DisplayRole) {
+        auto timeConnected = app->parentConn()->timeConnectedMS();
+        if (timeConnected > 0) {
+            double timePerc = (double) app->focusTimeMS() / timeConnected * 100;
+            return QString("%1 %").arg(timePerc, 0, 'f', 2);
         } else {
             return  " - ";
         }
 
-    } else if (col == 3 && role == Qt::DisplayRole) {
+    } else if (col == 4 && role == Qt::DisplayRole) {
         auto title = app->title();
         return title.size() == 0 ? " - " : title;
     }
@@ -147,6 +87,7 @@ QVariant AppList::data(const QModelIndex &index, int role) const
 QVariant AppList::headerData(int section, Qt::Orientation orientation, int role) const
 {
     static const char* const headers[] = {
+        "Server",
         "Process",
         "Focused",
         "Time focused (since connection)",
@@ -162,70 +103,59 @@ QVariant AppList::headerData(int section, Qt::Orientation orientation, int role)
     return headers[section];
 }
 
-void AppList::replaceAll(const App *apps, size_t n_apps)
+void AppList::addApp(const App *app)
 {
-    replaceAll(apps, apps + n_apps);
-}
-
-void AppList::addApp(const App &app)
-{
-    if (apps_.contains(app.id())) {
-        apps_[app.id()] = app;
+    if (app == nullptr)
         return;
-    }
 
-    // There really should be a way to do this that is O(log n) and
-    // doesn't involve copying
-    QList<App::Id> keys = apps_.keys();
-    int index = qLowerBound(keys, app.id()) - keys.begin();
+    connect(app, &QObject::destroyed, this, [=]() { removeApp(app); });
 
+    int index = order_.size();
     beginInsertRows(QModelIndex(), index, index);
-    apps_.insert(app.id(), app);
+    order_.append(app);
     endInsertRows();
 }
 
-void AppList::removeApp(App::Id id)
+void AppList::removeApp(const App *app)
 {
-    if (!apps_.contains(id))
+    // here, the App object may be about to be destroyed
+    int row = order_.indexOf(app);
+    if (row == -1)
         return;
-
-    int row = apps_.keys().indexOf(id);
     beginRemoveRows(QModelIndex(), row, row);
-    apps_.remove(id);
+    order_.removeAt(row);
     endRemoveRows();
 }
 
-void AppList::clear()
+void AppList::addConnection(const Connection *conn)
 {
-    beginResetModel();
-    apps_.clear();
-    endResetModel();
+    if (conn == nullptr)
+        return;
+
+    auto appList = conn->apps();
+    for (const App* app : appList)
+        addApp(app);
+
+    connect(conn, &Connection::appCreated, this, &AppList::addApp);
+    connect(conn, &Connection::destroyed, this, &AppList::decreaseConnCount);
+
+    updateTimer_.start();
 }
 
-void AppList::setFocusedApp(App::Id appId)
+void AppList::decreaseConnCount()
 {
-    auto iter = apps_.find(focusedApp_);
-    if (iter != apps_.end())
-        iter->setFocused(false);
-
-    focusedApp_ = appId;
-
-    iter = apps_.find(appId);
-    if (iter != apps_.end())
-        iter->setFocused(true);
+    if (numConns_ == 0)
+        return;
+    numConns_--;
+    if (numConns_ == 0)
+        updateTimer_.stop();
 }
+
 
 void AppList::focusTimeColumnChanged()
 {
     QModelIndex root;
-    QModelIndex topLeft = index(0, 1);
+    QModelIndex topLeft = index(0, 0);
     QModelIndex bottomRight = index(rowCount(root) - 1,  columnCount(root) - 1);
     dataChanged(topLeft, bottomRight);
-}
-
-void AppList::resetConnectionTime()
-{
-    updateTimer_.start();
-    connectionTimer_.restart();
-    assert (connectionTimer_.isValid());
 }

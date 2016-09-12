@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "messagestream.h"
-#include "applist.h"
 #include "protocol.pb.h"
 
 class QTcpSocket;
+
+class App;
 
 
 class ClientProtocol : public QObject
@@ -21,6 +22,9 @@ class ClientProtocol : public QObject
 public:
     typedef quint32 RequestId;
     enum { INVALID_REQUEST = (quint32) -1 };
+
+    typedef quint32 AppId;
+    enum { INVALID_APP_ID = (quint32) -1 };
 
     explicit ClientProtocol(QTcpSocket *client = 0, QObject *parent = 0);
 
@@ -35,10 +39,10 @@ public:
 signals:
     void started();
     void stopped();
-    void appListReceived(const App *app, size_t n_apps);
-    void appCreated(const App&);
-    void appDestroyed(App::Id);
-    void appGotFocus(App::Id);
+    void appListReceived(const std::vector<const msgs::Application *> &appList);
+    void appCreated(const msgs::Application &msg);
+    void appDestroyed(AppId);
+    void appGotFocus(AppId);
     void responseReceived(const msgs::KeystrokeRequest& req,
                           const msgs::Response& res);
 

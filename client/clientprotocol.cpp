@@ -7,7 +7,8 @@
 ClientProtocol::ClientProtocol(QTcpSocket *client, QObject *parent) :
     QObject(parent),
     client_(nullptr),
-    state_(Stopped)
+    state_(Stopped),
+    last_id_(0)
 {
     setSocket(client);
     connect(&msgStream_, &MessageStream::messageReceived, this, &ClientProtocol::receiveMessage);
@@ -54,6 +55,8 @@ void ClientProtocol::stop()
 
 void ClientProtocol::hardStop()
 {
+    if (state_ == Stopped)
+        return;
     // Here the socket is to be considered already closed for any reason
     // (closed by either local or remote peer, or error)
     // It's mostly important to signal the end of the protocol
@@ -68,13 +71,12 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
         case Init: {
             msgs::AppList appList;
             appList.ParseFromArray(msg.data(), msg.size());
+            auto& apps = appList.apps();
 
-            // some copying happens here. don't know how to avoid it "cleanly"
-            QVector<App> apps;
-            for (const msgs::Application& app : appList.apps())
-                apps.append(App(app));
+            // copy the pointers to a vector and send the vector around
+            std::vector<const msgs::Application*> appMsgs {apps.data(), apps.data() + apps.size()};
+            emit appListReceived(appMsgs);
 
-            emit appListReceived(apps.data(), apps.size());
             state_ = AcceptingEvents;
             break;
         }
@@ -83,7 +85,7 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
             msgs::Event event;
             event.ParseFromArray(msg.data(), msg.size());
             if (event.has_created())
-                emit appCreated(App(event.created()));
+                emit appCreated(event.created());
             if (event.has_destroyed())
                 emit appDestroyed(event.destroyed().id());
             if (event.has_got_focus())
@@ -91,9 +93,9 @@ void ClientProtocol::receiveMessage(const QByteArray &msg)
             if (event.has_response()) {
                 auto iter = pending_reqs_.find(event.response().req_id());
                 if (iter != pending_reqs_.end()) {
-                    const auto& req = *iter->second;
-                    emit responseReceived(req, event.response());
+                    auto req = *iter->second;
                     pending_reqs_.erase(iter);
+                    emit responseReceived(req, event.response());
                 }
             }
             break;

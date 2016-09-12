@@ -1,0 +1,37 @@
+#include "keyconv.h"
+
+<%
+require 'yaml'
+table = YAML.load STDIN
+%>
+
+msgs::Keycode keyconv::toKeycode(int qkey) {
+    switch(qkey) {
+    <%- table.each do |e|
+            key = e['qt']['key']
+            mods = e['qt']['mods']
+            pieces = [key] + mods
+    -%>
+    case (<%= pieces.join "+" %>):
+        return ::msgs::<%= e['proto'] %>;
+    <%-	 end -%>
+
+    default:
+        return ::msgs::KeyUnknown;
+    }
+}
+
+int keyconv::toQtKey(::msgs::Keycode proto_key) {
+    switch(proto_key) {
+    <%- table.each do |e|
+            key = e['qt']['key']
+            mods = e['qt']['mods']
+            pieces = [key] + mods -%>
+    case ::msgs::<%= e['proto'] %>:
+        return <%= pieces.join "+" %>;
+    <%- end -%>
+
+    default:
+        return Qt::Key_unknown;
+    }
+}
