@@ -89,12 +89,17 @@ HWND WindowsList::onFocus()
 }
 
 void MyEnumWindows(std::set<HWND> *win_handles) {
+	if (!EnumWindows(MyEnumWindowsProc, reinterpret_cast<LPARAM>(win_handles))) {
+		std::cout << "WindowsList() failed\n" << std::endl;
+	}
+	/*
 	if (EnumWindows(MyEnumWindowsProc, reinterpret_cast<LPARAM>(win_handles))) {
 		//std::cout << "Windows windows_ created" << std::endl;
 	}
 	else {
 		std::cout << "WindowsList() failed\n" << std::endl;
 	}
+	*/
 }
 
 BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
@@ -108,7 +113,6 @@ BOOL CALLBACK MyEnumWindowsProc(__in HWND hWnd, __in LPARAM lParam) {
 BOOL hasGUI(HWND hwnd)
 {
 	TITLEBARINFO ti;
-	HWND hwndTry, hwndWalk = NULL;
 
 	if (!IsWindowVisible(hwnd))
 		return FALSE;
@@ -117,21 +121,10 @@ BOOL hasGUI(HWND hwnd)
 	if (!GetWindowText(hwnd, buff, 256)) //if there is not title is very likely that is not a visible window
 		return FALSE;
 	
-	hwndTry = GetAncestor(hwnd, GA_ROOTOWNER); //get the root window
-	while (hwndTry != hwndWalk)
-	{
-		hwndWalk = hwndTry;
-		hwndTry = GetLastActivePopup(hwndWalk);
-		if (IsWindowVisible(hwndTry))
-			break;
-	}
-	if (hwndWalk != hwnd)
-		return FALSE;
-
 	// the following removes some task tray programs and "Program Manager"
 	ti.cbSize = sizeof(ti);
 	GetTitleBarInfo(hwnd, &ti);
-	if (ti.rgstate[0] & STATE_SYSTEM_INVISIBLE)
+	if (ti.rgstate[0] & STATE_SYSTEM_INVISIBLE) //checks if the title bar is invisible
 		return FALSE;
 
 	// Tool windows should not be displayed either, these do not appear in the

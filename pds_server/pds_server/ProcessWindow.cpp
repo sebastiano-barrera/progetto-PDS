@@ -70,6 +70,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 		return nullptr;
 	}
 	
+	// retrieving the bitmap
 	if (GetObject(icon_info.hbmColor, sizeof(bmp), &bmp) <= 0)
 		return nullptr;
 
@@ -81,7 +82,7 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	hdr->bV5Height = bmp.bmHeight;
 	hdr->bV5Planes = 1;
 	// 4 bytes per pixel: (hi) ARGB (lo)
-	hdr->bV5BitCount = 32;
+	hdr->bV5BitCount = 32; //number of bits that define each pixel
 	hdr->bV5Compression = BI_BITFIELDS;
 	hdr->bV5RedMask   = 0x00FF0000;
 	hdr->bV5GreenMask = 0x0000FF00;
@@ -110,15 +111,13 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	}
 
 	// Make space for the image pixels data
-	void *new_hdr = std::realloc(hdr, sizeof(BITMAPV5HEADER) + hdr->bV5SizeImage);
-	if (!new_hdr) {
+	void *pixels = std::malloc(hdr->bV5SizeImage);
+	if (!pixels) {
 		std::free(hdr);
 		ReleaseDC(NULL, hdc);
 		return nullptr;
 	}
-	hdr = (BITMAPV5HEADER*)new_hdr;
 
-	void *pixels = ((uint8_t*) hdr) + sizeof(BITMAPV5HEADER);
 	BOOL got_bits = GetDIBits(hdc, icon_info.hbmColor, 
 		0L, bmp.bmHeight,
 		(LPBYTE) pixels,
@@ -130,14 +129,14 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	if (got_bits == FALSE) {
 		// Well, damn.
 		std::free(hdr);
+		std::free(pixels);
 		return nullptr;
 	}
 
-	// Got the bitmap data ... upside down and with channels inverted (BGR).
-	// The following adapts the data we have to the format we want (24 bits per pixel, uncompressed RGB).
+	// Got the bitmap data ... upside down
+	// The following adapts the data we have to the format we want (32 bits per pixel, uncompressed ARGB).
 	// This code won't work after changing either format.
 
-	// Invert order of channels (BGRA -> ARGB)
 	// Turn image upside down
 	typedef unsigned char color_t[4];
 	for (int y = 0; y < hdr->bV5Height/2; y++) {
@@ -152,7 +151,8 @@ std::unique_ptr<msgs::Icon> ProcessWindow::encodeIcon() const
 	icon->set_height(hdr->bV5Height);
 	icon->set_pixels(pixels, hdr->bV5SizeImage);
 	
-	std::free(hdr);  // also frees pixels
+	std::free(hdr);
+	std::free(pixels);
 	return icon;
 }
 

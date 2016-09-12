@@ -134,7 +134,7 @@ void Client::readMessage()
 		//std::cout << "---read size" << std::endl;
 
 		size_ = ntohl(size_);
-		std::cout << "keystroke size = " << size_ << std::endl;
+		std::cout << "keystroke request received" << std::endl;
 
 		std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size_);
 		if (!readN(sck, buffer.get(), size_)) {
@@ -252,9 +252,8 @@ bool readN(SOCKET s, char* buffer, int size) {
 		FD_SET(s, &readset);
 		tv.tv_sec = MAXWAIT;
 		tv.tv_usec = 0;
-		res = select(0, &readset, NULL, NULL, &tv);
+		res = select(0, &readset, NULL, NULL, /*&tv*/ NULL);
 		if (res > 0) {
-			std::cout << "select unlocked" << std::endl;
 			res = recv(s, buffer, left, 0);
 			if (res == 0) {//connection closed by client
 				return false;
